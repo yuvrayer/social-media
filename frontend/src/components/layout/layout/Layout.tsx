@@ -1,5 +1,4 @@
 import { useContext } from 'react'
-import Login from '../../auth/login/Login'
 import Followers from '../../follows/followers/Followers'
 import Following from '../../follows/following/Following'
 import Footer from '../footer/Footer'
@@ -7,6 +6,7 @@ import Header from '../header/Header'
 import Routing from '../routing/Routing'
 import './Layout.css'
 import { AuthContext } from '../../auth/auth/Auth'
+import RoutingNotSigned from '../routing/RoutingNotSigned'
 
 export default function Layout() {
 
@@ -35,7 +35,7 @@ export default function Layout() {
             </>}
 
             {!isLoggedIn && <>
-                <Login />
+                <RoutingNotSigned />
             </>}
 
         </div>

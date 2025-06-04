@@ -1,11 +1,11 @@
-.Login form {
+.Signup form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.Login label {
+.Signup label {
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Comment from "../../models/comment";
 import User from "../../models/user";
-import { io } from "socket.io-client";
 import socket from "../../io/io";
 import SocketMessages from "socket-enums-shaharsol";
 

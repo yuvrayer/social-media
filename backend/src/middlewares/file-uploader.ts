@@ -1,4 +1,3 @@
-import { CreateBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { NextFunction, Request, Response } from "express";
 import { UploadedFile } from "express-fileupload";

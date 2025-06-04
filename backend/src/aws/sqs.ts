@@ -1,4 +1,3 @@
-import { CreateBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import { CreateQueueCommand, SQSClient } from "@aws-sdk/client-sqs";
 import config from 'config'
 
