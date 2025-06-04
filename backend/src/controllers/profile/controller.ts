@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../../models/user";
 import Post from "../../models/post";
-import Comment from "../../models/comment";
 import postIncludes from "../common/post-includes";
 import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";

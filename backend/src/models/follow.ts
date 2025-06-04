@@ -1,8 +1,6 @@
 import { 
-    AllowNull, 
     Column, 
     DataType, 
-    Default, 
     ForeignKey, 
     Model, 
     PrimaryKey, 
