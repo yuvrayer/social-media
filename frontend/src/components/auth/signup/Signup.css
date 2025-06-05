@@ -10,3 +10,7 @@
     flex-direction: column;
     justify-content: center;
 }
+
+.Signup img {
+    height: 300px;
+}
