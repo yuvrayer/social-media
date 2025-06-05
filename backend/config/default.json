@@ -19,7 +19,7 @@
         }
     },
     "s3": {
-        "bucket": "il.co.johnbryce.shaharsol",
+        "bucket": "il.co.yuvalrayer",
         "isLocalstack": true,
         "connection": {
             "region": "us-east-1",
@@ -33,7 +33,7 @@
     },
     "sqs": {
         "isLocalstack": true,
-        "queueName": "shaharsol-sn-queue",
+        "queueName": "yuvalrayer-sn-queue",
         "connection": {
             "region": "us-east-1",
             "credentials": {

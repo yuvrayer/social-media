@@ -11,40 +11,47 @@ import { SendMessageCommand } from "@aws-sdk/client-sqs";
 declare global {
     namespace Express {
         interface Request {
-            imageUrl?: string
+            profileImgUrl?: string
         }
     }
 }
 
-export default async function fileUploader (req: Request, res: Response, next: NextFunction) {
-    if (!req.files.postImage) return next()
+export default async function fileUploader(req: Request, res: Response, next: NextFunction) {
+    try {
+        if (!req.files.postImage && !req.files.profileImg) return next()
 
-    const postImage = req.files.postImage as UploadedFile
+        let uploadedImage = null
+        if (!req.files.postImage && req.files.profileImg) {
+            uploadedImage = req.files.profileImg as UploadedFile
+        } else { uploadedImage = req.files.postImage as UploadedFile }
 
-    const upload = new Upload({
-        client: s3Client,
-        params: {
-            Bucket: config.get<string>('s3.bucket'),
-            Key: `${v4()}${path.extname(postImage.name)}`, 
-            Body: postImage.data,
-            ContentType: postImage.mimetype
-        }
-    })
-
-    const response = await upload.done()
-    console.log(response)
-
-    const sqsResponse = await sqsClient.send(new SendMessageCommand({
-        QueueUrl: queueUrl,
-        MessageBody: JSON.stringify({
-            bucket: response.Bucket,
-            key: response.Key
+        const upload = new Upload({
+            client: s3Client,
+            params: {
+                Bucket: config.get<string>('s3.bucket'),
+                Key: `${v4()}${path.extname(uploadedImage.name)}`,
+                Body: uploadedImage.data,
+                ContentType: uploadedImage.mimetype
+            }
         })
-    }))
-    console.log(sqsResponse)
 
-    // req.imageUrl = response.Location
-    req.imageUrl = `${response.Bucket}/${response.Key}`
+        const response = await upload.done()
+        console.log(response)
 
+        const sqsResponse = await sqsClient.send(new SendMessageCommand({
+            QueueUrl: queueUrl,
+            MessageBody: JSON.stringify({
+                bucket: response.Bucket,
+                key: response.Key
+            })
+        }))
+        console.log(sqsResponse)
+
+        // req.imageUrl = response.Location
+        req.imageUrl = `${response.Bucket}/${response.Key}`
+    }
+    catch (e) {
+        alert(e)
+    }
     next()
 }

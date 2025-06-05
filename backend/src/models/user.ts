@@ -37,6 +37,10 @@ export default class User extends Model{
     @Column(DataType.STRING(64))
     password: string
 
+    @AllowNull(true)
+    @Column(DataType.STRING(255))
+    profileImgUrl: string
+
     @HasMany(() => Post, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'

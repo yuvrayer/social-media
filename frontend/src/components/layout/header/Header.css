@@ -13,3 +13,11 @@
 .Header .active {
     color: green;
 }
+
+.Header img {
+    height: 50px;
+}
+
+.Header img:hover {
+    cursor: pointer;
+}

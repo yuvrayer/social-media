@@ -22,6 +22,9 @@ export async function createAppQueueIfNotExist() {
     } catch (e) {
         // ignore
         console.log('Queue probably already exist')
+        if (e.name !== 'QueueAlreadyExists') {
+            console.error('Unexpected error creating queue:', e)
+        }
     }
 }
 export default sqsClient
