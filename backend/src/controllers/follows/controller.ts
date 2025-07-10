@@ -5,6 +5,17 @@ import { col } from "sequelize";
 import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";
 
+
+export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
+    try {
+        const users = await User.findAll()
+        res.json(users)
+    } catch (e) {
+        next(e)
+    }
+}
+
+
 export async function getFollowers(req: Request, res: Response, next: NextFunction) {
     try {
         const userId = req.userId

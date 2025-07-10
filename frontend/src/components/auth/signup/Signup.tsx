@@ -8,7 +8,7 @@ import SignupModel from '../../../models/user/Signup'
 
 export default function Signup(): JSX.Element {
 
-    const { register, handleSubmit } = useForm<SignupModel>()
+    const { register, handleSubmit, formState } = useForm<SignupModel>()
 
     const { newLogin } = useContext(AuthContext)!
 
@@ -36,24 +36,77 @@ export default function Signup(): JSX.Element {
     }
 
     return (
-        <div className='Signup'>
-            Sign up: <br /><br />
-            <form onSubmit={handleSubmit(submit)}>
-                <input placeholder='username' {...register('username')} />
-                <input placeholder='name' {...register('name')} />
-                <input placeholder='password' type="password" {...register('password')} />
-                <span>profile pic (optional): </span>
-                <input type="file" {...register(`profileImg`)} onChange={previewImage} ></input> <br />
-                {previewImageSrc && <img src={previewImageSrc} />}
+        <div className='SignupContainer'>
+            <div className='Signup'>
+                <h1>Sign up: </h1>
+                <form onSubmit={handleSubmit(submit)}>
+                    <input placeholder='username' {...register('username', {
+                        required: {
+                            value: true,
+                            message: 'you must provide a user name'
+                        },
+                        minLength: {
+                            value: 6,
+                            message: "Name must be at least 6 characters",
+                        },
+                        maxLength: {
+                            value: 40,
+                            message: "Name must be at most 40 characters",
+                        }
+                    })} />
+                    <span className='error'>{formState.errors.username?.message}</span>
+                    <br />
+                    <input placeholder='name' {...register('name', {
+                        required: {
+                            value: true,
+                            message: 'you must provide a name'
+                        },
+                        pattern: {
+                            value: /^[a-zA-Z0-9]+$/,
+                            message: "Name must only contain letters and numbers"
+                        },
+                        minLength: {
+                            value: 2,
+                            message: "Name must be at least 2 characters",
+                        },
+                        maxLength: {
+                            value: 40,
+                            message: "Name must be at most 40 characters",
+                        }
+                    })} />
+                    <span className='error'>{formState.errors.name?.message}</span>
+                    <br />
 
+                    <input placeholder='password' type="password" {...register('password', {
+                        required: {
+                            value: true,
+                            message: 'you must provide a password'
+                        },
+                        minLength: {
+                            value: 6,
+                            message: "Name must be at least 6 characters",
+                        },
+                        maxLength: {
+                            value: 40,
+                            message: "Name must be at most 40 characters",
+                        }
+                    })} />
+                    <span className='error'>{formState.errors.password?.message}</span>
+                    <br /><br />
 
-                <button>Sign up</button>
-            </form>
+                    <span>profile pic (optional): </span>
+                    <input type="file" {...register(`profileImg`)} onChange={previewImage} ></input> <br />
+                    {previewImageSrc && <img src={previewImageSrc} />}
 
-            <br /><br />
-            Already have a user?
-            <br />
-            <button onClick={loginPage}>log in</button>
+                    <br />
+                    <button>Sign up</button>
+                </form>
+
+                <br /><br />
+                Already have a user?
+                <br />
+                <button onClick={loginPage}>log in</button>
+            </div>
         </div>
     )
 }

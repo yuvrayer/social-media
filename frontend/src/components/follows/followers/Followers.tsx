@@ -11,18 +11,24 @@ export default function Followers() {
     const followersService = useService(FollowersService)
 
     useEffect(() => {
-        followersService.getFollowers()
-            .then(setFollowers)
-            .catch(alert)
+        try {
+            followersService.getFollowers()
+                .then(setFollowers)
+                .catch(alert)
+        } catch (e) {
+            alert(e)
+        }
     }, [])
 
     return (
         <div className='Followers'>
-            <h3>People who follow me</h3>
-            {followers.map(follow => <Follow
-                key={follow.id}
-                user={follow}
-            ></Follow>)}
+            <h3>People who follow me:</h3>
+            <div className='FollowingPeople'>
+                {followers.map(follow => <Follow
+                    key={follow.id}
+                    user={follow}
+                ></Follow>)}
+            </div>
         </div>
     )
 }

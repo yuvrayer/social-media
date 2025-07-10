@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { follow, getFollowers, getFollowing, unfollow } from "../controllers/follows/controller";
+import { follow, getAllUsers, getFollowers, getFollowing, unfollow } from "../controllers/follows/controller";
 import paramsValidation from "../middlewares/params-validation";
 import { followValidator, unfollowValidator } from "../controllers/follows/validator";
 import enforceAuth from "../middlewares/enforce-auth";
@@ -8,6 +8,7 @@ const router = Router()
 
 router.use(enforceAuth)
 
+router.get('/allUsers', getAllUsers)
 router.get('/followers', getFollowers)
 router.get('/following', getFollowing)
 router.post('/follow/:id', paramsValidation(followValidator), follow)

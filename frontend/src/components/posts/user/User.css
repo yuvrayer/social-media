@@ -1,0 +1,24 @@
+.User {
+    margin: 15px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.User img {
+    height: 200px;
+}
+
+.UserImg {
+    display: flex;
+}
+
+.UserImg button {
+    position: relative;
+    height: 30px;
+    background-color: deepskyblue;
+    top: 150px;
+    font-weight: bold;
+    right: 50px;
+}

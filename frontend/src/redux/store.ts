@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import { followingSlice } from "./followingSlice";
 import { profileSlice } from "./profileSlice";
 import { feedSlice } from "./feedSlice";
+import { storySlice } from "./storySlice";
 
 const store = configureStore({
     reducer: { // i.e. slices
         following: followingSlice.reducer, // i.e a single slice
         profile: profileSlice.reducer,
-        feed: feedSlice.reducer
+        feed: feedSlice.reducer,
+        story: storySlice.reducer
     }
 })
 

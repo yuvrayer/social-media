@@ -18,8 +18,7 @@ interface FollowProps {
 }
 export default function Follow(props: FollowProps): JSX.Element {
 
-
-    const { user: { id, name } } = props
+    const { user: { id, name, profileImgUrl } } = props
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
@@ -58,8 +57,10 @@ export default function Follow(props: FollowProps): JSX.Element {
 
     return (
         <div className='Follow'>
-            <div>
-                <img src={profilePicSource} />
+            <div> {profileImgUrl ?
+                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${profileImgUrl}`} />
+                : <img src={profilePicSource} />
+            }
             </div>
             <div>
                 {name}

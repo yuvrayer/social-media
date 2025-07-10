@@ -5,8 +5,48 @@
     align-items: center;
 }
 
-.Login label {
+.LoginContainer {
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    height: 50%;
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+}
+
+.Login {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    width: 300px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+
+}
+
+.Login label {
+    color: dodgerblue;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.Login button {
+    color: white;
+    background-color: dodgerblue;
+    border: 0px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+
+.Login input {
+    height: 20px;
+}
+
+.Login span {
+    text-align: center;
 }

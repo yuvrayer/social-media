@@ -1,11 +1,25 @@
 .Header {
-    display: flex;
+    display: grid;
     flex-direction: row;
     justify-content: space-between;
+    margin-top: 8px;
+    grid-template-rows: 2;
+    grid-template-columns: 1fr 8fr 2.2fr;
+}
+
+.Header .Logo {
+    grid-column: 1;
+    grid-row: 1 / 2;
+}
+
+.Header .Navigation {
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .Header nav {
     display: flex;
+    justify-content: center;
     flex-direction: row;
     gap: 6px;
 }
@@ -20,4 +34,20 @@
 
 .Header img:hover {
     cursor: pointer;
+}
+
+.Header .Story {
+    grid-column: 2;
+    grid-row: 1;
+    border: 1px dashed black;
+    margin: 0px 15px 5px 0px;
+    flex-direction: row;
+    display: flex;
+    overflow-x: scroll;
+}
+
+.Header .Right {
+    margin-right: 15px;
+    grid-column: 3;
+    grid-row: 1 / 2;
 }

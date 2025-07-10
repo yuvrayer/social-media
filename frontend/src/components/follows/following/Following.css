@@ -1,4 +1,9 @@
-.Following {
+.FollowingPeople {
     display: flex;
     flex-direction: row;
+    overflow-x: scroll;
+}
+
+.Follow {
+    text-align: center;
 }
