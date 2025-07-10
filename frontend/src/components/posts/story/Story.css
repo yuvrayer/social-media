@@ -1,0 +1,54 @@
+.SingleStory {
+    text-align: center;
+    justify-content: left;
+}
+
+
+.story-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    display: inline-block;
+    position: relative;
+}
+
+.SingleStory .profileImg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: block;
+    object-fit: cover;
+}
+
+.no-ring {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    padding: 3px;
+    background: transparent;
+    display: inline-block;
+    position: relative;
+}
+
+.add-icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    transform: translate(30%, 30%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: white;
+    color: #3897f0;
+    /* Instagram blue */
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}

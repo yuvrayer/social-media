@@ -57,12 +57,13 @@ export async function signup(req: Request<{}, {}, { username: string, password: 
     }
 }
 
-export async function changeDetail(req: Request<{}, {}, { name: string, id: string }>, res: Response, next: NextFunction) {
+export async function changeDetail(req: Request<{}, {}, { name: string, id: string, alreadyPic: string }>, res: Response, next: NextFunction) {    
+    
     const { name } = req.body
-    let profileImgUrl = null
+    let profileImgUrl = req.body.alreadyPic
 
     try {
-        if (req.imageUrl) {
+        if (req.imageUrl && !req.body.alreadyPic) {
             profileImgUrl = req.imageUrl
         }
 

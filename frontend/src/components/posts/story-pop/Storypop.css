@@ -1,0 +1,165 @@
+.StoryPopup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.StoryPopup-Overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+}
+
+.StoryPopup-Content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.StoryPopup-Image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    width: 100vw;
+    height: 100vh;
+}
+
+.StoryPopup-Close {
+    position: absolute;
+    right: 0px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.StoryPopup-ProgressBar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+    z-index: 10;
+}
+
+.ProgressSegment {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    position: relative;
+}
+
+.ProgressSegment.filled::before,
+.ProgressSegment.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: white;
+    transition: width 0.3s;
+}
+
+.ProgressSegment.filled::before {
+    width: 100%;
+}
+
+.ProgressSegment.active::before {
+    width: 0%;
+    animation: fill 8s linear forwards;
+}
+
+@keyframes fill {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}
+
+.StoryPopup-Nav {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    z-index: 5;
+    cursor: pointer;
+}
+
+.StoryPopup-Nav.Left {
+    left: 0;
+}
+
+.StoryPopup-Nav.Right {
+    right: 0;
+}
+
+.StoryPopup-Header {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    right: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10;
+}
+
+.StoryPopup-User {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+    font-weight: 500;
+    font-size: 16px;
+}
+
+.StoryPopup-AvatarWrapper {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.StoryPopup-Avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.StoryPopup-Username {
+    color: white;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.StoryPopup-Close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.StoryPopup img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}

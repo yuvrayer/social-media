@@ -1,0 +1,20 @@
+.Search {
+    margin: 15px;
+}
+
+.Search .Follow {
+    justify-content: center;
+    font-size: xx-large;
+}
+
+.Search .Follow img {
+    width: 200px;
+    max-height: 270px;
+}
+
+.Search .Follow button {
+    font-weight: bold;
+    font-size:large;
+    width: 150px;
+    height: 30px;
+}

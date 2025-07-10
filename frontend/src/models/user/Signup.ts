@@ -2,5 +2,5 @@ import Login from "./Login";
 
 export default interface Signup extends Login {
     name: string,
-    profileImg: File
+    profileImg: File | null
 }

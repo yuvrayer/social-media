@@ -27,14 +27,15 @@ export default function Following() {
 
     return (
         <div className='Following'>
-
             {following.length === 0 && <Loading />}
             {following.length > 0 && <>
-                <h3>People I follow</h3>
-                {following.map(follow => <Follow
-                    key={follow.id}
-                    user={follow}
-                ></Follow>)}
+                <h3>People I follow:</h3>
+                <div className='FollowingPeople'>
+                    {following.map(follow => <Follow
+                        key={follow.id}
+                        user={follow}
+                    ></Follow>)}
+                </div>
             </>}
         </div>
     )

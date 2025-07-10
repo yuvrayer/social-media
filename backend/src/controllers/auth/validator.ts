@@ -11,11 +11,12 @@ export const signupValidator = loginValidator.append({
 
 export const changeDetailValidator = Joi.object({
     name: Joi.string().min(2).max(40).required(),
+    alreadyPic: Joi.string().required().allow(``),
     id: Joi.string().required()
 })
 
 export const signupFilesValidator = Joi.object({
     profileImg: Joi.object({
         mimetype: Joi.string().valid('image/png', 'image/jpg', 'image/jpeg')
-    }).unknown(true).optional()
+    }).unknown(true).optional().allow(null)
 })

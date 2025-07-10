@@ -21,7 +21,7 @@ export default function Post(props: PostProps): JSX.Element {
         comments,
         imageUrl
     } = props.post
-    const { name } = props.post.user
+    const { username } = props.post.user
 
 
     const navigate = useNavigate()
@@ -45,16 +45,18 @@ export default function Post(props: PostProps): JSX.Element {
         navigate(`/edit/${id}`)
     }
 
+    const bucket = "il.co.yuvalrayer"
+
     return (
         <div className='Post'>
             <div>
                 {title}
             </div>
             <div>
-                by {name} at {createdAt}
+                by {username} at {createdAt}
             </div>
             {imageUrl && <div>
-                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${imageUrl}`} />
+                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${bucket}/${imageUrl}`} />
             </div>}
             <div>
                 {body}

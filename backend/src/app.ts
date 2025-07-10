@@ -13,6 +13,7 @@ import cors from 'cors'
 import fileUpload from "express-fileupload"
 import { createAppBucketIfNotExist } from "./aws/s3"
 import { createAppQueueIfNotExist, queueUrl } from "./aws/sqs"
+import storyRouter from "./routers/story"
 
 const force = config.get<boolean>('sequelize.sync.force')
 
@@ -25,7 +26,7 @@ export async function start() {
 
     await createAppQueueIfNotExist();
     console.log(`queue url is ${queueUrl}`)
-    
+
     // middlewares
     app.use(cors()) // allow any client to use this server
 
@@ -46,6 +47,7 @@ export async function start() {
     app.use('/follows', followsRouter)
     app.use('/comments', commentsRouter)
     app.use('/feed', feedRouter)
+    app.use('/story', storyRouter)
 
     // special notFound middleware
     app.use(notFound)

@@ -5,12 +5,54 @@
     align-items: center;
 }
 
-.Signup label {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
 .Signup img {
     height: 300px;
+}
+
+
+.SignupContainer {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    grid-column: 1 / -1;
+    grid-row: 1 / -1;
+    overflow-y: scroll;
+}
+
+.Signup {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    width: 300px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+
+}
+
+.Signup h1 {
+    color: dodgerblue;
+    font-size: 60px;
+}
+
+.Signup button {
+    color: white;
+    background-color: dodgerblue;
+    border: 0px;
+    height: 30px;
+    border-radius: 4px;
+}
+
+.Signup input {
+    height: 20px;
+}
+
+.Signup .error {
+    color: red;
+    font-weight: bold;
+    margin-bottom: -15px;
 }

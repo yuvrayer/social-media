@@ -34,3 +34,7 @@
 .Layout > * {
     border: 1px dashed lightcoral;
 }
+
+aside {
+    max-width: 357px;
+}

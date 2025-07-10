@@ -4,6 +4,7 @@ import Feed from "../../posts/feed/Feed";
 import NotFound from "../not-found/NotFound";
 import EditPost from "../../posts/edit/EditPost";
 import User from "../../posts/user/User";
+import Search from "../../posts/search/Search";
 
 export default function Routing(): JSX.Element {
     return (
@@ -14,6 +15,7 @@ export default function Routing(): JSX.Element {
             <Route path="/feed" element={<Feed />} />
             <Route path="/edit/:id/" element={<EditPost />} />
             <Route path="/user" element={<User />} />
+            <Route path="/search" element={<Search />} />
             <Route path="*" element={<NotFound />} />
         </Routes>
     )
