@@ -1,18 +1,32 @@
+import StoryService from "../../../services/auth-aware/Story"
 import { useEffect, useState, useRef } from 'react';
 import './Storypop.css';
+import useService from "../../../hooks/useService";
 
 interface StoryPopupProps {
     images: string[];
     onClose: () => void;
-    name: string
-    profileImgUrl: string
+    name: string;
+    profileImgUrl: string,
+    currentUserId: string,
+    userId: string
 }
 
-export default function StoryPopup({ images, onClose, name, profileImgUrl }: StoryPopupProps) {
+export default function StoryPopup({ images, onClose, name, profileImgUrl, userId, currentUserId }: StoryPopupProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const storyService = useService(StoryService)
+
+    const markStoryViewed = async () => {
+        try {
+            await storyService.markStoryAsViewed(userId, currentUserId);
+        } catch (e) {
+            console.error("Failed to mark story as viewed:", e);
+        }
+    };
 
     useEffect(() => {
+        markStoryViewed()
         startTimer();
         return () => {
             if (timeoutRef.current) clearTimeout(timeoutRef.current);

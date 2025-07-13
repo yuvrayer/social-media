@@ -4,12 +4,14 @@ import StoryService from "../../../services/auth-aware/Story"
 import useService from '../../../hooks/useService'
 import { newStory } from '../../../redux/storySlice'
 import { useAppDispatch } from '../../../redux/hooks'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import profilePicSource from '../../../assets/images/profile.jpg'
 import StoryPopup from '../story-pop/Storypop'
 
 interface StoryProps {
-    userDetails: StoryModel
+    userDetails: StoryModel,
+    currentUserId: string,
+    viewedIds: string[]
 }
 
 export default function Story(props: StoryProps) {
@@ -20,6 +22,18 @@ export default function Story(props: StoryProps) {
 
     const [showPopup, setShowPopup] = useState(false)
     const [images, setImages] = useState<string[]>([])
+    const [ringClass, setRingClass] = useState<string>()
+
+    const [isViewed, setIsViewed] = useState<boolean>(props.viewedIds.includes(userId))
+    const trueUser = userId === props.currentUserId ? true : false
+
+    // Check if this story's `userId` has been seen
+
+    useEffect(() => {
+        setRingClass(hasStory
+            ? isViewed ? 'story-ring-viewed' : 'story-ring'
+            : 'no-ring');
+    }, [hasStory, isViewed]);
 
     async function handleViewStory() {
         try {
@@ -29,6 +43,7 @@ export default function Story(props: StoryProps) {
             )
             setImages(imageUrls)
             setShowPopup(true)
+            setIsViewed(true)
         } catch (e) {
             alert(e)
         }
@@ -46,11 +61,11 @@ export default function Story(props: StoryProps) {
 
         try {
             // Upload to LocalStack/S3
-            const uploadedUrl = await storyService.addStory(userId, file, profileImgUrl, name);
-            console.log('Uploaded URL:', uploadedUrl);
+            const uploadedInfo = await storyService.addStory(userId, file, profileImgUrl, name);
+            console.log('Uploaded URL:', uploadedInfo);
 
             //i want the app to pop an upload window, which will after going to localstack, will be the url
-            dispatch(newStory({ ...props.userDetails, storyImgUrl: uploadedUrl.storyImgUrl }))
+            dispatch(newStory({ ...props.userDetails, storyImgUrl: uploadedInfo.storyImgUrl }))
         } catch (e) {
             alert(e)
         }
@@ -65,12 +80,14 @@ export default function Story(props: StoryProps) {
                 ref={fileInputRef}
                 onChange={handleFileChange}
             />
-            <div className={hasStory ? "story-ring" : "no-ring"}>
+            <div className={ringClass}>
                 <img src={profileImgUrl ? `${import.meta.env.VITE_AWS_SERVER_URL}/${profileImgUrl}` : profilePicSource}
                     onClick={hasStory ? handleViewStory : handleAddStory}
                     className='profileImg'
                 />
-                {!hasStory && <span className="add-icon">+</span>}
+                {trueUser && <span className="add-icon"
+                    onClick={handleAddStory}
+                >+</span>}
             </div>
             <br />
             {name}
@@ -80,7 +97,9 @@ export default function Story(props: StoryProps) {
                     images={images}
                     onClose={() => setShowPopup(false)}
                     name={name}
-                    profileImgUrl={profileImgUrl}
+                    profileImgUrl={profileImgUrl ? profileImgUrl : `il.co.yuvalrayer/profile.jpg`}
+                    currentUserId={props.currentUserId}
+                    userId={userId}
                 />
             )}
         </div>

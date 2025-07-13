@@ -12,3 +12,8 @@ export const newStoryFilesValidator = Joi.object({
         mimetype: Joi.string().valid('image/png', 'image/jpg', 'image/jpeg')
     }).unknown(true).optional()
 })
+
+export const addSawValidator = Joi.object({
+    userIdUploaded: Joi.string().required(),
+    userIdSaw: Joi.string().required()
+})

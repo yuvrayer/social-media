@@ -52,3 +52,14 @@
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
+
+.story-ring-viewed {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    padding: 3px;
+    background: grey; /* grey ring */
+    display: inline-block;
+    position: relative;
+    opacity: 0.6;
+}

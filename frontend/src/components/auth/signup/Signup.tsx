@@ -5,19 +5,44 @@ import { ChangeEvent, useContext, useState } from 'react'
 import { AuthContext } from '../auth/Auth'
 import { useNavigate } from 'react-router-dom'
 import SignupModel from '../../../models/user/Signup'
+import { AxiosError } from 'axios'
 
 export default function Signup(): JSX.Element {
 
-    const { register, handleSubmit, formState } = useForm<SignupModel>()
+    const { register, handleSubmit, formState, setError } = useForm<SignupModel>()
 
     const { newLogin } = useContext(AuthContext)!
 
     async function submit(signup: SignupModel) {
         signup.profileImg = (signup.profileImg as unknown as FileList)[0]
-        const jwt = await auth.signup(signup)
-        // here i need to code something that will set the JWT in the AuthContext state
-        newLogin(jwt)
+
+        try {
+            const jwt = await auth.signup(signup)
+            // here i need to code something that will set the JWT in the AuthContext state
+            newLogin(jwt)
+        } catch (e) {
+            const err = e as AxiosError<{ message?: string }>
+
+            const { message } = err.response?.data || {}
+
+            if (err.response?.status === 409) {
+                // Set the error on the correct field
+                if (message === 'Username already taken') {
+                    setError('username', { type: 'server', message })
+                }
+                else if (message === 'Name is in use already') {
+                    setError('name', { type: 'server', message })
+                }
+                else {
+                    alert(message || 'Signup conflict occurred')
+                }
+            } else {
+                // Fallback
+                alert(message || 'An unexpected error occurred')
+            }
+        }
     }
+
 
     const navigate = useNavigate()
 

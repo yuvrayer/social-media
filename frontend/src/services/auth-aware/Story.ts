@@ -1,5 +1,6 @@
 import AuthAware from "./AuthAware";
 import StoryModel from "../../models/story/Story.ts";
+import SawStoryBy from "../../models/story/SawStoryBy.ts"
 
 interface AddStoryResponse {
     createdAt: string,
@@ -40,4 +41,16 @@ export default class Story extends AuthAware {
         const response = await this.axiosInstance.get<StoryModel[]>(`${import.meta.env.VITE_REST_SERVER_URL}/story/get/${userId}`)
         return response.data
     }
+
+    async getViewedStoryIds(): Promise<SawStoryBy[]> {
+        const response = await this.axiosInstance.get<SawStoryBy[]>(`${import.meta.env.VITE_REST_SERVER_URL}/story/getSeenStories`)
+        return response.data
+    }
+
+
+    async markStoryAsViewed(userIdUploaded: string, userIdSaw: string): Promise<SawStoryBy> {
+        const response = await this.axiosInstance.post<SawStoryBy>(`${import.meta.env.VITE_REST_SERVER_URL}/story/addSaw`, {userIdUploaded, userIdSaw})
+        return response.data
+    }
+
 }
