@@ -4,7 +4,7 @@ import useName from '../../../hooks/useName'
 import useProfileImg from '../../../hooks/useProfileImg'
 import profilePicSource from '../../../assets/images/profile.jpg'
 import Story from '../../posts/story/Story'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../auth/auth/Auth'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import useService from '../../../hooks/useService'
@@ -39,6 +39,7 @@ export default function Header() {
     const hasStory = whoHasStory.some(story => story.userId === userId);
     const storyImgUrl = whoHasStory.find(user => user.userId === userId)?.storyImgUrl || ``
     const storyService = useService(StoryService)
+    const [viewedIds, setViewedIds] = useState<string[]>([])
 
     const dispatch = useAppDispatch()
 
@@ -47,6 +48,12 @@ export default function Header() {
             try {
                 const stories = await storyService.getStoriesData()
                 dispatch(init(stories))
+                const viewedStories = await storyService.getViewedStoryIds()
+                const viewedUserUploads = viewedStories
+                    .filter(s => s.userIdSaw === userId)
+                    .map(s => s.userIdUploaded);
+                setViewedIds(viewedUserUploads ? viewedUserUploads : [``])
+
             } catch (e) {
                 alert(e)
             }
@@ -61,21 +68,32 @@ export default function Header() {
                 Logo
             </div>
             <div className='Story'>
-                <Story key={v4()} userDetails={{ name, profileImgUrl, hasStory, userId, storyImgUrl }}></Story>
-                {whoHasStory
-                    .filter(user => user.userId !== userId)
-                    .map(user => (
-                        <Story
-                            key={v4()}
-                            userDetails={{
-                                userId: user.userId,
-                                name: user.name,
-                                profileImgUrl: user.profileImgUrl,
-                                hasStory: true,
-                                storyImgUrl: user.storyImgUrl ?? ''
-                            }}
-                        />
-                    ))}
+                <Story key={v4()}
+                    userDetails={{ name, profileImgUrl, hasStory, userId, storyImgUrl }}
+                    currentUserId={userId}
+                    viewedIds={viewedIds}
+                ></Story>
+                {Array.from(
+                    new Map(
+                        whoHasStory
+                            .filter(user => user.userId !== userId)
+                            .map(user => [user.userId, user]) // create [userId, user] pairs
+                    ).values() // only keep the unique users by userId
+                ).map(user => (
+                    <Story
+                        key={user.userId}
+                        userDetails={{
+                            userId: user.userId,
+                            name: user.name,
+                            profileImgUrl: user.profileImgUrl,
+                            hasStory: true,
+                            storyImgUrl: user.storyImgUrl ?? ''
+                        }}
+                        viewedIds={viewedIds}
+                        currentUserId={userId}
+                    />
+                ))}
+
             </div>
             <div className='Navigation'>
                 <nav>

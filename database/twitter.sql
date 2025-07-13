@@ -356,3 +356,21 @@ CREATE TABLE `stories` (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `story_views` (
+  `id` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `user_id_uploaded` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `user_id_saw` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `created_at` DATETIME NOT NULL,
+  `updated_at` DATETIME NOT NULL,
+
+  PRIMARY KEY (`id`),
+
+  FOREIGN KEY (`user_id_uploaded`) REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  FOREIGN KEY (`user_id_saw`) REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
