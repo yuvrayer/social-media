@@ -1,28 +1,28 @@
 import { NextFunction, Request, Response } from "express";
-import User from "../../models/user";
 import Post from "../../models/post";
 import postIncludes from "../common/post-includes";
+import Follow from "../../models/follow";
 
-export async function getFeed(req: Request, res: Response, next: NextFunction) {
+export async function getFeed(req: Request<{ userId: string }>, res: Response, next: NextFunction) {
     try {
-        const userId = req.userId
+        const userId = req.params.userId
 
-        const user = await User.findByPk(userId, {
-            include: [ { 
-                model: User,
-                as: 'following',
-                include: [ { 
-                    model: Post,
-                    ...postIncludes
-                } ]
-            } ]
+        const following = await Follow.findAll({
+            where: { followerId: userId },
+            attributes: ['followeeId']
         })
 
-        const feed = user.following.reduce((cumulative: Post[], { posts }) => {
-            return [...cumulative, ...posts]
-        }, []).sort((a: Post, b: Post) => a.createdAt < b.createdAt ? 1 : -1)
+        const followeeIds = following.map(f => f.followeeId)
 
-        res.json(feed)        
+        const posts = await Post.findAll({
+            where: {
+                userId: followeeIds
+            },
+            ...postIncludes,
+            order: [['createdAt', 'DESC']]
+        })
+
+        res.json({ posts: posts, postsNum: posts.length })
 
         // example how to do the same with RAW QUERY using sequelize:
         // const feed = await sequelize.query(`

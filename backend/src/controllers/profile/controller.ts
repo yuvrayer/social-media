@@ -7,26 +7,30 @@ import { StatusCodes } from "http-status-codes";
 import socket from "../../io/io";
 import SocketMessages from "socket-enums-shaharsol";
 
-export async function getProfile(req: Request, res: Response, next: NextFunction) {
+export async function getProfile(req: Request<{ userId: string }>, res: Response, next: NextFunction) {
     try {
-        const userId = req.userId
+        const userId = req.params.userId
 
         const user = await User.findByPk(userId, {
-            include: [ {
+            include: [{
                 model: Post,
                 ...postIncludes
-            } ],
+            }],
             order: [['createdAt', 'asc']]
         })
         // console.log(user.get({ plain: true }))
-        res.json(user.posts)
+
+        res.json({
+            posts: user.posts,
+            postsNum: user.posts.length
+        });
 
     } catch (e) {
         next(e)
     }
 }
 
-export async function getPost(req: Request<{id: string}>, res: Response, next: NextFunction) {
+export async function getPost(req: Request<{ id: string }>, res: Response, next: NextFunction) {
     try {
         const post = await Post.findByPk(req.params.id, postIncludes)
         res.json(post)
@@ -35,8 +39,8 @@ export async function getPost(req: Request<{id: string}>, res: Response, next: N
     }
 }
 
-export async function deletePost(req: Request<{id: string}>, res: Response, next: NextFunction) {
-        try {
+export async function deletePost(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+    try {
         // this is how you delete an EXISTING object:
         // const post = await Post.findByPk(req.params.id)
         // await post.destroy() 
@@ -48,7 +52,7 @@ export async function deletePost(req: Request<{id: string}>, res: Response, next
             where: { id }
         })
 
-        if(deletedRows === 0) return next(new AppError(StatusCodes.NOT_FOUND, 'the post you were trying to delete does not exist'))
+        if (deletedRows === 0) return next(new AppError(StatusCodes.NOT_FOUND, 'the post you were trying to delete does not exist'))
 
         res.json({
             success: true
@@ -65,7 +69,7 @@ export async function createPost(req: Request, res: Response, next: NextFunction
 
         let createParams = { ...req.body, userId }
 
-        if(req.imageUrl) {
+        if (req.imageUrl) {
             const { imageUrl } = req
             createParams = { ...createParams, imageUrl }
         }
@@ -82,7 +86,7 @@ export async function createPost(req: Request, res: Response, next: NextFunction
     }
 }
 
-export async function updatePost(req: Request<{id: string}>, res: Response, next: NextFunction) {
+export async function updatePost(req: Request<{ id: string }>, res: Response, next: NextFunction) {
     try {
         const post = await Post.findByPk(req.params.id, postIncludes)
 

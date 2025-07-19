@@ -14,12 +14,15 @@ interface AddStoryResponse {
 
 
 export default class Story extends AuthAware {
-    async getStoriesData(): Promise<StoryModel[]> {
-        const response = await this.axiosInstance.get<StoryModel[]>(`${import.meta.env.VITE_REST_SERVER_URL}/story`)
+    async getStoriesData(currentUserId: string): Promise<StoryModel[]> {
+        const response = await this.axiosInstance.get<StoryModel[]>(`${import.meta.env.VITE_REST_SERVER_URL}/story/getStories/${currentUserId}`)
         return response.data
     }
 
-
+    async deleteStory(userId: string, storyId: string): Promise<StoryModel> {
+        const response = await this.axiosInstance.delete<StoryModel>(`${import.meta.env.VITE_REST_SERVER_URL}/story/delete/${userId}/${storyId}`)
+        return response.data
+    }
 
     async addStory(userId: string, story: File, profileImgUrl: string, name: string): Promise<AddStoryResponse> {
         const formData = new FormData()
@@ -49,7 +52,7 @@ export default class Story extends AuthAware {
 
 
     async markStoryAsViewed(userIdUploaded: string, userIdSaw: string): Promise<SawStoryBy> {
-        const response = await this.axiosInstance.post<SawStoryBy>(`${import.meta.env.VITE_REST_SERVER_URL}/story/addSaw`, {userIdUploaded, userIdSaw})
+        const response = await this.axiosInstance.post<SawStoryBy>(`${import.meta.env.VITE_REST_SERVER_URL}/story/addSaw`, { userIdUploaded, userIdSaw })
         return response.data
     }
 

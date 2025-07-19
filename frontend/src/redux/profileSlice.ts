@@ -20,12 +20,12 @@ export const profileSlice = createSlice({
         newPost: (state, action: PayloadAction<Post>) => {
             state.posts = [action.payload, ...state.posts]
         },
-        remove: (state, action: PayloadAction<{id: string}>) => {
+        remove: (state, action: PayloadAction<{ id: string }>) => {
             state.posts = state.posts.filter(p => p.id !== action.payload.id)
-        }, 
+        },
         update: (state, action: PayloadAction<Post>) => {
             const index = state.posts.findIndex(p => p.id === action.payload.id)
-            if(index > -1) {
+            if (index > -1) {
                 state.posts[index] = action.payload
             }
         },

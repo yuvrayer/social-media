@@ -1,10 +1,14 @@
 import User from "../../models/user/User";
 import AuthAware from "./AuthAware";
 
-export default class Following extends AuthAware {
+export interface FollowingResponse {
+    users: User[],
+    usersNum: number
+}
 
-    async getFollowing(): Promise<User[]> {
-        const response = await this.axiosInstance.get<User[]>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/following`)
+export default class Following extends AuthAware {
+    async getFollowing(): Promise<FollowingResponse> {
+        const response = await this.axiosInstance.get<FollowingResponse>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/following`)
         return response.data
     }
 

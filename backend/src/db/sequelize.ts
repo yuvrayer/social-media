@@ -16,4 +16,18 @@ const sequelize = new Sequelize({
     logging,
 })
 
+User.belongsToMany(User, {
+    through: Follow,
+    as: 'followers',
+    foreignKey: 'followeeId',
+    otherKey: 'followerId',
+})
+
+User.belongsToMany(User, {
+    through: Follow,
+    as: 'following',
+    foreignKey: 'followerId',
+    otherKey: 'followeeId',
+})
+
 export default sequelize

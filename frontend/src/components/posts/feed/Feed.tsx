@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import './Feed.css'
 import Post from '../post/Post'
 import useTitle from '../../../hooks/useTitle'
@@ -7,11 +7,14 @@ import { init, setNewContent } from '../../../redux/feedSlice'
 import Loading from '../../common/loading/Loading'
 import useService from '../../../hooks/useService'
 import FeedService from '../../../services/auth-aware/Feed'
+import useUserId from '../../../hooks/useUserId'
 
 export default function Feed() {
     useTitle('SN - Feed')
+    const userId = useUserId()
+    const postsNumRef = useRef(-1);
 
-    const posts = useAppSelector(state => state.feed.posts)
+    const postsState = useAppSelector(state => state.feed.posts)
     const dispatch = useAppDispatch()
 
     const feedService = useService(FeedService)
@@ -19,20 +22,20 @@ export default function Feed() {
     useEffect(() => {
         (async () => {
             try {
-                if (posts.length === 0) {
-                    const postsFromServer = await feedService.getFeed()
-                    dispatch(init(postsFromServer))
-                }
+                const postsFromServer = await feedService.getFeed(userId)
+                dispatch(init(postsFromServer.posts))
+                postsNumRef.current = postsFromServer?.postsNum ?? 0;
             } catch (e) {
                 alert(e)
             }
         })()
-    }, [])
+    }, [userId])
 
     async function reload() {
         try {
-            const postsFromServer = await feedService.getFeed()
-            dispatch(init(postsFromServer))
+            const postsFromServer = await feedService.getFeed(userId)
+            dispatch(init(postsFromServer.posts))
+            postsNumRef.current = postsFromServer?.postsNum ?? 0;
         } catch (e) {
             alert(e)
         }
@@ -47,9 +50,14 @@ export default function Feed() {
     return (
         <div className='Feed'>
 
-            {posts.length === 0 && <Loading />}
+            {postsState.length === 0 && postsNumRef.current === 0 && <>
+                <br />
+                <h4>Your friends don`t have posts...</h4>
+            </>}
 
-            {posts.length > 0 && <>
+            {postsState.length === 0 && postsNumRef.current === -1 && <Loading />}
+
+            {postsState.length > 0 && <>
 
                 {isNewContent && <>
                     <div className="info">
@@ -57,7 +65,7 @@ export default function Feed() {
                     </div>
                 </>}
 
-                {posts.map(p => <Post
+                {postsState.map(p => <Post
                     key={p.id}
                     post={p}
                 />)}

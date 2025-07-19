@@ -17,3 +17,12 @@ export const addSawValidator = Joi.object({
     userIdUploaded: Joi.string().required(),
     userIdSaw: Joi.string().required()
 })
+
+export const deleteStoryParamsValidator = Joi.object({
+    userId: Joi.string().required(),
+    storyId: Joi.string().required()
+})
+
+export const storyListParams = Joi.object({
+    currentUserId: Joi.string().required()
+})
