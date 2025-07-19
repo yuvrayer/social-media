@@ -20,6 +20,7 @@ export default function Signup(): JSX.Element {
             const jwt = await auth.signup(signup)
             // here i need to code something that will set the JWT in the AuthContext state
             newLogin(jwt)
+            navigate(`/profile`)
         } catch (e) {
             const err = e as AxiosError<{ message?: string }>
 
@@ -30,10 +31,10 @@ export default function Signup(): JSX.Element {
                 if (message === 'Username already taken') {
                     setError('username', { type: 'server', message })
                 }
-                else if (message === 'Name is in use already') {
+                if (message === 'Name already taken') {
                     setError('name', { type: 'server', message })
                 }
-                else {
+                if (message !== 'Username already taken' && message !== 'Name already taken') {
                     alert(message || 'Signup conflict occurred')
                 }
             } else {

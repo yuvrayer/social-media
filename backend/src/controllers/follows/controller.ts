@@ -21,13 +21,13 @@ export async function getFollowers(req: Request, res: Response, next: NextFuncti
         const userId = req.userId
 
         const user = await User.findByPk(userId, {
-            include: [ { 
+            include: [{
                 model: User,
                 as: 'followers',
-            } ],
+            }],
             order: [[col('followers.name'), 'ASC']],
         })
-        res.json(user.followers)
+        res.json({ users: user.followers, usersNum: user.followers.length })
     } catch (e) {
         next(e)
     }
@@ -38,18 +38,18 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
         const userId = req.userId
 
         const user = await User.findByPk(userId, {
-            include: [ { 
+            include: [{
                 model: User,
                 as: 'following'
-            } ]
+            }]
         })
-        res.json(user.following)
+        res.json({ users: user.following, usersNum: user.following.length })
     } catch (e) {
         next(e)
     }
 }
 
-export async function follow(req: Request<{id: string}>, res: Response, next: NextFunction) {
+export async function follow(req: Request<{ id: string }>, res: Response, next: NextFunction) {
 
     try {
         const userId = req.userId
@@ -63,7 +63,7 @@ export async function follow(req: Request<{id: string}>, res: Response, next: Ne
     }
 }
 
-export async function unfollow(req: Request<{id: string}>, res: Response, next: NextFunction) {
+export async function unfollow(req: Request<{ id: string }>, res: Response, next: NextFunction) {
 
     try {
         const userId = req.userId

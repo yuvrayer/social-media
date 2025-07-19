@@ -9,10 +9,13 @@ interface StoryPopupProps {
     name: string;
     profileImgUrl: string,
     currentUserId: string,
-    userId: string
+    userId: string,
+    createdAt: Date[],
+    storyIds: string[],
+    reloadHeader: () => void
 }
 
-export default function StoryPopup({ images, onClose, name, profileImgUrl, userId, currentUserId }: StoryPopupProps) {
+export default function StoryPopup({ images, onClose, name, profileImgUrl, userId, currentUserId, createdAt, storyIds, reloadHeader }: StoryPopupProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const storyService = useService(StoryService)
@@ -57,6 +60,32 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
             setCurrentIndex(currentIndex - 1);
         }
     };
+
+    const formatRelativeTime = (date: Date) => {
+        const now = new Date();
+        const diffMs = now.getTime() - new Date(date).getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+
+        if (diffMins < 60) {
+            return `${diffMins} min ago`;
+        } else if (diffHours < 24) {
+            return `${diffHours} h ago`;
+        } else {
+            const diffDays = Math.floor(diffHours / 24);
+            return `${diffDays}d ago`;
+        }
+    };
+
+    async function deleteStory(): Promise<void> {
+        try {
+            await storyService.deleteStory(currentUserId, storyIds[currentIndex])
+            reloadHeader()
+        } catch (e) {
+            alert(e)
+        }
+    }
+
     return (
         <div className="StoryPopup">
             <div className="StoryPopup-Overlay" onClick={onClose} />
@@ -71,7 +100,11 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
                             />
                         </div>
                         <span className="StoryPopup-Username">{name}</span>
+                        <span className="StoryPopup-Timestamp">
+                            {formatRelativeTime(createdAt[currentIndex])}
+                        </span>
                     </div>
+                    {currentUserId === userId && <button onClick={deleteStory}>delete story</button>}
                     <button className="StoryPopup-Close" onClick={onClose}>✕</button>
                 </div>
 

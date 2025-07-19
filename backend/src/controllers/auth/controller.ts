@@ -51,9 +51,9 @@ export async function signup(req: Request<{}, {}, { username: string, password: 
         if (existingName) {
             res.status(StatusCodes.CONFLICT).json({
                 field: 'username',
-                message: 'Name is in use already'
+                message: 'Name already taken'
             })
-            return next(new AppError(StatusCodes.CONFLICT, 'Name is in use already'));
+            return next(new AppError(StatusCodes.CONFLICT, 'Name already taken'));
         }
 
         if (req.imageUrl) {
@@ -82,7 +82,7 @@ export async function changeDetail(req: Request<{}, {}, { name: string, id: stri
         let profileImgUrl = req.body.alreadyPic
 
         const existingUser = await User.findOne({ where: { name } });
-        if (existingUser.id !== req.body.id) return next(new AppError(StatusCodes.CONFLICT, 'Name is in use already'))
+        if (existingUser.id !== req.body.id) return next(new AppError(StatusCodes.CONFLICT, 'Name already taken'))
 
 
         if (req.imageUrl && !req.body.alreadyPic) {

@@ -14,7 +14,84 @@
 
 .Search .Follow button {
     font-weight: bold;
-    font-size:large;
+    font-size: large;
     width: 150px;
     height: 30px;
+}
+
+.FollowingPeopleSearch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.PaginationControls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.PaginationControls button {
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background-color: #f4f4f4;
+}
+
+.PaginationControls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.animate-left {
+    animation: slideLeft 0.2s ease-in-out;
+}
+
+.animate-right {
+    animation: slideRight 0.2s ease-in-out;
+}
+
+@keyframes slideLeft {
+    from {
+        transform: translateX(-30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideRight {
+    from {
+        transform: translateX(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.SearchInput {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px 12px;
+    margin: 10px 0 20px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: box-shadow 0.2s ease;
+}
+
+.SearchInput:focus {
+    box-shadow: 0 0 4px #888;
+    border-color: #999;
 }

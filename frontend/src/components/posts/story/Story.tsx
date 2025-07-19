@@ -11,25 +11,39 @@ import StoryPopup from '../story-pop/Storypop'
 interface StoryProps {
     userDetails: StoryModel,
     currentUserId: string,
-    viewedIds: string[]
+    viewedIds: string[],
+    reloadHeader: () => void
 }
 
 export default function Story(props: StoryProps) {
 
-    const { userDetails: { name, profileImgUrl, hasStory, userId } } = props
+    const { userDetails: { name, profileImgUrl, hasStory, userId }, currentUserId } = props
     const storyService = useService(StoryService)
     const dispatch = useAppDispatch()
 
     const [showPopup, setShowPopup] = useState(false)
     const [images, setImages] = useState<string[]>([])
     const [ringClass, setRingClass] = useState<string>()
+    const [dates, setDates] = useState<Date[]>([])
+    const [storyIds, setStoryIds] = useState<string[]>([])
 
     const [isViewed, setIsViewed] = useState<boolean>(props.viewedIds.includes(userId))
-    const trueUser = userId === props.currentUserId ? true : false
+    const trueUser = userId === currentUserId ? true : false
 
     // Check if this story's `userId` has been seen
+    const fetchData = async () => {
+        try {
+            const result = await storyService.getViewedStoryIds();
+            const didTheUserSaw = result.find(view =>
+                view.userIdUploaded === userId && view.userIdSaw === currentUserId)
+            setIsViewed(didTheUserSaw ? true : false)
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     useEffect(() => {
+        fetchData();
         setRingClass(hasStory
             ? isViewed ? 'story-ring-viewed' : 'story-ring'
             : 'no-ring');
@@ -42,8 +56,13 @@ export default function Story(props: StoryProps) {
                 `${import.meta.env.VITE_AWS_SERVER_URL}/${userId}/${story.storyImgUrl}`
             )
             setImages(imageUrls)
+            const storyIds = stories.map(story => story.id).filter((id): id is string => !!id);
+            setStoryIds(storyIds);
+            const createdAtArray = stories.map(story => story.createdAt!)
+            setDates(createdAtArray)
             setShowPopup(true)
             setIsViewed(true)
+            setRingClass('story-ring-viewed')
         } catch (e) {
             alert(e)
         }
@@ -100,6 +119,9 @@ export default function Story(props: StoryProps) {
                     profileImgUrl={profileImgUrl ? profileImgUrl : `il.co.yuvalrayer/profile.jpg`}
                     currentUserId={props.currentUserId}
                     userId={userId}
+                    createdAt={dates}
+                    storyIds={storyIds}
+                    reloadHeader={props.reloadHeader}
                 />
             )}
         </div>
