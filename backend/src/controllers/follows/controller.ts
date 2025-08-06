@@ -9,7 +9,12 @@ import { StatusCodes } from "http-status-codes";
 export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
         const users = await User.findAll()
-        res.json(users)
+        const usersMainData = users.map(user => ({
+            id: user.get('id'),
+            name: user.get('name'),
+            profileImgUrl: user.get('profileImgUrl'),
+        }))
+        res.json(usersMainData)
     } catch (e) {
         next(e)
     }
@@ -24,6 +29,8 @@ export async function getFollowers(req: Request, res: Response, next: NextFuncti
             include: [{
                 model: User,
                 as: 'followers',
+                attributes: ['id', 'name', 'profileImgUrl'],
+                through: { attributes: [] } // removes junction table fields
             }],
             order: [[col('followers.name'), 'ASC']],
         })
@@ -40,7 +47,9 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
         const user = await User.findByPk(userId, {
             include: [{
                 model: User,
-                as: 'following'
+                as: 'following',
+                attributes: ['id', 'name', 'profileImgUrl'],
+                through: { attributes: [] }, // removes junction table fields
             }]
         })
         res.json({ users: user.following, usersNum: user.following.length })
@@ -54,8 +63,8 @@ export async function follow(req: Request<{ id: string }>, res: Response, next: 
     try {
         const userId = req.userId
         const follow = await Follow.create({
-            followerId: userId,
-            followeeId: req.params.id
+            followerId: req.params.id,
+            followeeId: userId
         })
         res.json(follow)
     } catch (e) {

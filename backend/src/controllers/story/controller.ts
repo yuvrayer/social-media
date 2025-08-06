@@ -77,8 +77,12 @@ export async function addSaw(req: Request<{}, {}, { userIdUploaded: string, user
             }
         })
         if (!alreadyExist) {
-            const storyAdd = await StoryViews.create({ userIdUploaded, userIdSaw })
-            res.json(storyAdd)
+            try {
+                const storyAdd = await StoryViews.create({ userIdUploaded, userIdSaw })
+                res.json(storyAdd)
+            } catch (e) {
+                alert(e)
+            }
         } else {
             res.json(alreadyExist)
         }

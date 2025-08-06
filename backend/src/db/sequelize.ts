@@ -6,11 +6,12 @@ import Comment from "../models/comment";
 import Follow from "../models/follow";
 import Story from "../models/story";
 import StoryView from "../models/sawStory";
+import PendingFollowRequest from "../models/followRequest";
 
 const logging = config.get<boolean>('sequelize.logging') ? console.log : false
 
 const sequelize = new Sequelize({
-    models: [User, Post, Comment, Follow, Story, StoryView],
+    models: [User, Post, Comment, Follow, Story, StoryView, PendingFollowRequest],
     dialect: 'mysql',
     ...config.get('db'),
     logging,

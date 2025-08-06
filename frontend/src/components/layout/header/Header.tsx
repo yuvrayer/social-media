@@ -17,6 +17,10 @@ import { init as initProfile } from '../../../redux/profileSlice'
 import { init as initFeed } from '../../../redux/feedSlice'
 import { init as initStory } from '../../../redux/storySlice'
 import { init as initFollowers } from '../../../redux/followers'
+import { initISent as initFollowersRequestISent } from '../../../redux/followingRequestSlice'
+import { initIReceived as initFollowersRequestIReceived } from '../../../redux/followingRequestSlice'
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import FollowingRequest from '../../../services/auth-aware/followRequest'
 
 
 export default function Header() {
@@ -32,7 +36,12 @@ export default function Header() {
     const hasStory = whoHasStory.some(story => story.userId === userId);
     const storyImgUrl = whoHasStory.find(user => user.userId === userId)?.storyImgUrl || ``
     const storyService = useService(StoryService)
+    const followingRequest = useService(FollowingRequest)
+
     const [viewedIds, setViewedIds] = useState<string[]>([])
+    const friendRequestNumberIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
+    const count = useAppSelector(state => state.followers.pending)
+
 
     const dispatch = useAppDispatch()
 
@@ -49,7 +58,13 @@ export default function Header() {
         dispatch(initFeed([]))
         dispatch(initStory([]))
         dispatch(initFollowers([]))
+        dispatch(initFollowersRequestISent([]))
+        dispatch(initFollowersRequestIReceived([]))
         navigate(`/login`)
+    }
+
+    function followRequests() {
+        navigate(`/followRequests`)
     }
 
     function navigateToUser() {
@@ -67,6 +82,13 @@ export default function Header() {
                     .map(s => s.userIdUploaded);
                 setViewedIds(viewedUserUploads ? viewedUserUploads : [``])
 
+                const requests = await followingRequest.getAllPendingRequestsIReceived()
+                const requestsIds = requests.users.map(req => req.id)
+                dispatch(initFollowersRequestIReceived(requestsIds))
+
+                const followRequests = await followingRequest.getAllPendingRequestsISent()
+                const followRequestsIdArray = followRequests.users.map(req => req.id)
+                dispatch(initFollowersRequestISent(followRequestsIdArray))
             } catch (e) {
                 alert(e)
             }
@@ -126,7 +148,19 @@ export default function Header() {
                 </nav>
             </div>
             <div className='Right'>
-                Hello {name} | {profileImgUrl && <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${profileImgUrl}`} onClick={navigateToUser} />} {!profileImgUrl && <img src={profilePicSource} onClick={navigateToUser} />}| <button onClick={logMeOut}>logout</button>
+                <div className='RightTop'>
+                    Hello {name} | {profileImgUrl && <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${profileImgUrl}`} onClick={navigateToUser} />}
+                    {!profileImgUrl && <img src={profilePicSource} onClick={navigateToUser} />} |
+                    <i className="bi bi-box-arrow-right" onClick={logMeOut}> </i> |
+                    <div className='personPlus'>
+                        <i className="bi bi-person-plus" onClick={followRequests}></i>
+                        {friendRequestNumberIReceived !== 0 && <span className="notification-badge">{friendRequestNumberIReceived > 10 ? '10+' : friendRequestNumberIReceived}</span>}
+                    </div>
+                </div>
+            </div>
+            <div className='RightBottom'>
+                {!!count && <span className='info'>you have a new friend request!</span>}
+
             </div>
         </div>
     )

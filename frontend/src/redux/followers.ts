@@ -1,24 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import User from "../models/user/User";
+import UserFillData from "../models/user/UserFillData";
 
 interface FollowersState {
-    followers: User[]
+    followers: UserFillData[],
+    pending: number
 }
 
 const initialState: FollowersState = {
-    followers: []
+    followers: [],
+    pending: 0
 }
 
 export const followersSlice = createSlice({
     name: 'followers',
     initialState,
     reducers: {
-        init: (state, action: PayloadAction<User[]>) => {
+        init: (state, action: PayloadAction<UserFillData[]>) => {
             state.followers = action.payload
+        },
+        noLongerFollowUser: (state, action: PayloadAction<{ userId: string }>) => {
+            state.followers = state.followers.filter(f => f.id !== action.payload.userId)
+        },
+        newFollower: (state, action: PayloadAction<UserFillData>) => {
+            state.followers.push(action.payload)
+        },
+        newFollowerAlert: (state, action: PayloadAction<number>) => {
+            state.pending = action.payload
         }
     }
 })
 
-export const { init } = followersSlice.actions
+export const { init, noLongerFollowUser, newFollower, newFollowerAlert } = followersSlice.actions
 
 export default followersSlice.reducer
