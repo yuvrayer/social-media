@@ -12,7 +12,7 @@ import {
 } from "sequelize-typescript";
 import Post from "./post";
 import Comment from "./comment";
-import Follow from "./follow";
+import PendingFollowRequest from "./followRequest";
 
 @Table({
     underscored: true,
@@ -56,4 +56,10 @@ export default class User extends Model {
     // @BelongsToMany(() => User, () => Follow, 'followerId', 'followeeId')
     following: User[]
 
+
+    @HasMany(() => PendingFollowRequest, 'senderId')
+    sentFollowRequests: PendingFollowRequest[];
+
+    @HasMany(() => PendingFollowRequest, 'receiverId')
+    receivedFollowRequests: PendingFollowRequest[];
 }

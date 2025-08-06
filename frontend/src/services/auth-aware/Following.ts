@@ -1,8 +1,8 @@
-import User from "../../models/user/User";
+import UserFillData from "../../models/user/UserFillData";
 import AuthAware from "./AuthAware";
 
 export interface FollowingResponse {
-    users: User[],
+    users: UserFillData[],
     usersNum: number
 }
 
@@ -12,8 +12,8 @@ export default class Following extends AuthAware {
         return response.data
     }
 
-    async getAllUsers(): Promise<User[]> {
-        const response = await this.axiosInstance.get<User[]>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/allUsers`)
+    async getAllUsers(): Promise<UserFillData[]> {
+        const response = await this.axiosInstance.get<UserFillData[]>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/allUsers`)
         return response.data
     }
 

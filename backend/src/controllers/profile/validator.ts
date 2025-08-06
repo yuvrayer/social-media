@@ -1,8 +1,16 @@
 import Joi from "joi";
 
 export const getProfileValidator = Joi.object({
-    userId: Joi.string().required(),
+    userId: Joi.string().required()
 })
+
+export const getPostParamsValidator = Joi.object({
+    id: Joi.string().required()
+})
+
+export const deletePostParamsValidator = getPostParamsValidator
+export const updatePostParamsValidator = getPostParamsValidator
+export const fillUserDataValidator = getPostParamsValidator
 
 export const newPostValidator = Joi.object({
     title: Joi.string().min(10).max(40).required(),

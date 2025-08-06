@@ -44,7 +44,7 @@ export default function Followers() {
                 <div className='FollowingPeople'>
                     {followersState.map(follow => <Follow
                         key={follow.id}
-                        user={follow}
+                        userId={follow.id}
                     ></Follow>)}
                 </div>
             </>}

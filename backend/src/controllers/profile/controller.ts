@@ -103,3 +103,17 @@ export async function updatePost(req: Request<{ id: string }>, res: Response, ne
         next(e)
     }
 }
+
+export async function fillUserData(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+    try {
+        const user = await User.findByPk(req.params.id)
+        const userSplit = {
+            name: user.name,
+            profileImgUrl: user.profileImgUrl,
+            id: user.id
+        }
+        res.json(userSplit)
+    } catch (e) {
+        next(e)
+    }
+}

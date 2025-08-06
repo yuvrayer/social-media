@@ -5,6 +5,7 @@ import profileRouter from "./routers/profile"
 import followsRouter from "./routers/follows"
 import commentsRouter from "./routers/comments"
 import feedRouter from "./routers/feed"
+import followsRequestRouter from "./routers/followRequest"
 import authRouter from "./routers/auth"
 import errorLogger from "./middlewares/error/error-logger"
 import errorResponder from "./middlewares/error/error-responder"
@@ -45,6 +46,7 @@ export async function start() {
     app.use('/auth', authRouter)
     app.use('/profile', profileRouter)
     app.use('/follows', followsRouter)
+    app.use('/request', followsRequestRouter)
     app.use('/comments', commentsRouter)
     app.use('/feed', feedRouter)
     app.use('/story', storyRouter)

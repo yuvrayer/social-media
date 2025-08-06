@@ -4,14 +4,14 @@ import useService from "../../../hooks/useService"
 import Loading from "../../common/loading/Loading"
 import Follow from "../../follows/follow/Follow"
 import FollowingService from '../../../services/auth-aware/Following'
-import User from "../../../models/user/User"
 import { useAppSelector } from '../../../redux/hooks'
 import useUserId from '../../../hooks/useUserId'
+import UserFillData from '../../../models/user/UserFillData'
 
 const USERS_PER_PAGE = 3;
 
 export default function Search(): JSX.Element {
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<UserFillData[]>([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [direction, setDirection] = useState<'left' | 'right'>('right');
     const [searchTerm, setSearchTerm] = useState('');
@@ -77,7 +77,7 @@ export default function Search(): JSX.Element {
 
                     <div className={`FollowingPeopleSearch slide-${direction}`}>
                         {currentUsers.map(user => (
-                            <Follow key={user.id} user={user} />
+                            <Follow key={user.id} userId={user.id} />
                         ))}
                     </div>
                 </>

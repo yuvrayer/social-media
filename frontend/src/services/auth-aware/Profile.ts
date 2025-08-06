@@ -1,5 +1,6 @@
 import Post from "../../models/post/Post";
 import PostDraft from "../../models/post/PostDraft";
+import UserFillData from "../../models/user/UserFillData";
 import AuthAware from "./AuthAware";
 
 export interface ProfileResponse {
@@ -14,7 +15,7 @@ export default class Profile extends AuthAware {
     }
 
     async getPost(id: string): Promise<Post> {
-        const response = await this.axiosInstance.get<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/${id}`)
+        const response = await this.axiosInstance.get<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/post/${id}`)
         return response.data
     }
 
@@ -35,6 +36,11 @@ export default class Profile extends AuthAware {
     async update(id: string, draft: PostDraft): Promise<Post> {
         const { title, body } = draft
         const response = await this.axiosInstance.patch<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/${id}`, { title, body })
+        return response.data
+    }
+
+    async fillUserData(id: string): Promise<UserFillData> {
+        const response = await this.axiosInstance.get<UserFillData>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/fill/${id}`)
         return response.data
     }
 

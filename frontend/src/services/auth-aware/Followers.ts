@@ -1,8 +1,8 @@
-import User from "../../models/user/User";
+import UserFillData from "../../models/user/UserFillData";
 import AuthAware from "./AuthAware";
 
 export interface FollowersResponse {
-    users: User[],
+    users: UserFillData[],
     usersNum: number
 }
 
