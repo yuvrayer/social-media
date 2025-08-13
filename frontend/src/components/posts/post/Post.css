@@ -11,3 +11,19 @@
 .Post img {
     width: 300px;
 }
+
+.Liked .Button {
+    background-color: rgb(251, 122, 100);
+}
+
+.Liked .Button .bi {
+    color: red;
+}
+
+.NotLiked .Button {
+    background-color: gray;
+}
+
+.NotLiked .Button .bi {
+    color: black;
+}

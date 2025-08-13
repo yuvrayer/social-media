@@ -27,6 +27,8 @@
       depends_on:
         database:
           condition: service_healthy
+        localstack:
+          condition: service_healthy
 
     frontend:
       container_name: sn-compose-frontend
@@ -46,4 +48,9 @@
         - 127.0.0.1:4566:4566
         - 127.0.0.1:4510-4559:4510-4559
       build: ./localstack
-
+      healthcheck:
+        test: ["CMD", "test", "-f", "/tmp/localstack-init-done"]
+        interval: 15s
+        timeout: 10s
+        retries: 10
+        start_period: 20s

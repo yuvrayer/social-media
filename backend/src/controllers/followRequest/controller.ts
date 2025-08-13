@@ -3,7 +3,7 @@ import User from "../../models/user";
 import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";
 import PendingFollowRequest from "../../models/followRequest";
-import io from "../../io/io";
+import socket from "../../io/io";
 
 
 export async function getAllPendingRequestsIReceived(req: Request, res: Response, next: NextFunction) {
@@ -69,11 +69,9 @@ export async function sendFollowRequest(req: Request<{ userId: string }>, res: R
         })
         res.json(follow)
 
-        /////////////
-        io.to(req.params.userId).emit('friendRequest:new', {
+        socket.emit('friendRequest:new', {
             to: req.params.userId,
-            from: userId,
-            message: 'You have a new friend request!',
+            from: userId
         })
 
     } catch (e) {

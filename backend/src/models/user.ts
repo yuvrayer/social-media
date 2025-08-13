@@ -13,6 +13,8 @@ import {
 import Post from "./post";
 import Comment from "./comment";
 import PendingFollowRequest from "./followRequest";
+import PostLike from "./postLike";
+import CommentLike from "./commentLike";
 
 @Table({
     underscored: true,
@@ -47,9 +49,15 @@ export default class User extends Model {
     })
     posts: Post[]
 
+    @HasMany(() => PostLike)
+    postLikes: PostLike[]
+
     @HasMany(() => Comment)
     comments: Comment[]
 
+    @HasMany(() => CommentLike)
+    commentLikes: CommentLike[]
+    
     // @BelongsToMany(() => User, () => Follow, 'followeeId', 'followerId')
     followers: User[]
 
