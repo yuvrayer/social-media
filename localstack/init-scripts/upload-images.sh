@@ -22,3 +22,5 @@ for file in /init-resources/*; do
 done
 
 echo "Upload complete!"
+
+touch /tmp/localstack-init-done

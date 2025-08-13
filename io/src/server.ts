@@ -15,20 +15,20 @@ io.on('connection', socket => {
     console.log('got a new connection')
 
     socket.on('friendRequest:new', (data) => {
-        const { to } = data
-        io.to(to).emit('friendRequest:new', data)
-        console.log(`Sent friend request to user room: ${to}`)
+        io.to(data.to).emit('friendRequest:new', data)
+        console.log(`Sent friend request to user room: ${data.to}`)
     })
 
     socket.on('join', (userId: string) => {
-        socket.join(userId);  // socket joins a room named by userId
-    });
-
-
-    socket.onAny((eventName, payload) => {
-        console.log(`received event ${eventName} with payload`, payload)
-        io.emit(eventName, payload)
+        userSocketMap.set(userId, userId)
+        socket.join(userId)
+        console.log(`User ${userId} joined successfully with socket ID ${userId}`)
     })
+
+    // socket.onAny((eventName, payload) => {
+    //     console.log(`received event ${eventName} with payload`, payload)
+    //     io.emit(eventName, payload)
+    // })
 
     socket.on('disconnect', () => {
         // Remove user by socket id

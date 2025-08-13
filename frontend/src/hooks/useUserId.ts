@@ -9,10 +9,11 @@ export default function useUserId() {
     // const { name } = jwtDecode<User>(jwt)
 
     const id = useMemo(() => {
+        if (!jwt || jwt.trim() === "") return "";
         const { id } = jwtDecode<User>(jwt)
         return id
-    }, [ jwt ])
-    
+    }, [jwt])
+
 
     return id
 }

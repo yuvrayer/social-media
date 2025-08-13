@@ -1,8 +1,8 @@
-.Comment div:nth-child(1) {
+.Comment div:nth-child(2) {
     font-size: x-small;
 }
 
-.Comment div:nth-child(2) {
+.Comment div:nth-child(3) {
     font-size: small;
 }
 

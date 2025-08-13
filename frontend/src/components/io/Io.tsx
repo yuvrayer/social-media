@@ -27,11 +27,15 @@ export default function Io(props: PropsWithChildren): JSX.Element {
     const value = { xClientId }
 
     const dispatch = useAppDispatch()
+    const userId = useUserId()
 
     useEffect(() => {
         const socket = io(import.meta.env.VITE_IO_SERVER_URL)
 
-        // socket.emit('join', userId)
+        if (userId) {
+            socket.emit('join', userId);
+            console.log(`User sent emit request to join room: ${userId}`);
+        }
 
         socket.onAny((eventName, payload) => {
             // should we even respond?
@@ -48,7 +52,7 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         // const isFollowing = useAppSelector(state => state.following.following.findIndex(f => f.id === newPostPayload.userId) > -1)
                         // eslint-disable-next-line react-hooks/rules-of-hooks
-                        if (newPostPayload.userId === useUserId()) {
+                        if (newPostPayload.userId === userId) {
                             dispatch(newPost(newPostPayload))
                         }
                         // if (isFollowing) {
@@ -60,10 +64,9 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                         dispatch(addComment(newCommentPayload))
                         break;
                     case 'friendRequest:new':
-                        // eslint-disable-next-line react-hooks/rules-of-hooks
-                        if (payload.to === useUserId()) {
+                        if (payload.to === userId) {
                             // dispatch(newFollower(payload.data))
-                            dispatch(newFollowerAlert(1))
+                            dispatch(newFollowerAlert(true))
                             console.log('You have a new friend request!');
                             // Here you can dispatch or update UI
                         }
@@ -76,7 +79,7 @@ export default function Io(props: PropsWithChildren): JSX.Element {
             socket.disconnect()
         }
 
-    }, [])
+    }, [dispatch, xClientId, userId])
 
     return (
         <SocketContext.Provider value={value}>

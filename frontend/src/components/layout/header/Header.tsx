@@ -16,11 +16,13 @@ import { init as initFollowing } from '../../../redux/followingSlice'
 import { init as initProfile } from '../../../redux/profileSlice'
 import { init as initFeed } from '../../../redux/feedSlice'
 import { init as initStory } from '../../../redux/storySlice'
-import { init as initFollowers } from '../../../redux/followers'
+import { init as initFollowers, newFollowerAlert } from '../../../redux/followers'
 import { initISent as initFollowersRequestISent } from '../../../redux/followingRequestSlice'
 import { initIReceived as initFollowersRequestIReceived } from '../../../redux/followingRequestSlice'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import FollowingRequest from '../../../services/auth-aware/followRequest'
+import LikesService from '../../../services/auth-aware/Likes'
+import { initCommentLikes, initPostsLikes } from '../../../redux/likes'
 
 
 export default function Header() {
@@ -37,9 +39,10 @@ export default function Header() {
     const storyImgUrl = whoHasStory.find(user => user.userId === userId)?.storyImgUrl || ``
     const storyService = useService(StoryService)
     const followingRequest = useService(FollowingRequest)
+    const likesService = useService(LikesService)
 
     const [viewedIds, setViewedIds] = useState<string[]>([])
-    const friendRequestNumberIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
+    let friendRequestNumberIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
     const count = useAppSelector(state => state.followers.pending)
 
 
@@ -60,6 +63,7 @@ export default function Header() {
         dispatch(initFollowers([]))
         dispatch(initFollowersRequestISent([]))
         dispatch(initFollowersRequestIReceived([]))
+        dispatch(newFollowerAlert(false))
         navigate(`/login`)
     }
 
@@ -89,11 +93,20 @@ export default function Header() {
                 const followRequests = await followingRequest.getAllPendingRequestsISent()
                 const followRequestsIdArray = followRequests.users.map(req => req.id)
                 dispatch(initFollowersRequestISent(followRequestsIdArray))
+
+                const allPostsLikes = await likesService.getAllPostsLikes()
+                dispatch(initPostsLikes(allPostsLikes))
+
+                const allCommentsLikes = await likesService.getAllCommentsLikes()
+                dispatch(initCommentLikes(allCommentsLikes))
+                
             } catch (e) {
                 alert(e)
             }
         })()
     }, [userId])
+
+    useEffect(() => { if (count) friendRequestNumberIReceived++; else friendRequestNumberIReceived-- }, [count])
 
     async function reloadHeader(): Promise<void> {
         try {
@@ -104,6 +117,14 @@ export default function Header() {
         }
     }
 
+    function cancelNotification() {
+        dispatch(newFollowerAlert(false))
+    }
+
+    function look() {
+        navigate(`/followRequests`)
+        dispatch(newFollowerAlert(false))
+    }
 
     return (
         <div className='Header'>
@@ -159,8 +180,7 @@ export default function Header() {
                 </div>
             </div>
             <div className='RightBottom'>
-                {!!count && <span className='info'>you have a new friend request!</span>}
-
+                {count && <span className='info'>you have a new friend request!<button onClick={look}>look</button><button onClick={cancelNotification}>x</button></span>}
             </div>
         </div>
     )

@@ -5,6 +5,7 @@ import { feedSlice } from "./feedSlice";
 import { storySlice } from "./storySlice";
 import { followersSlice } from "./followers";
 import { followingRequestSlice } from "./followingRequestSlice";
+import { likesSlice } from "./likes";
 
 const store = configureStore({
     reducer: { // i.e. slices
@@ -13,7 +14,8 @@ const store = configureStore({
         feed: feedSlice.reducer,
         story: storySlice.reducer,
         followers: followersSlice.reducer,
-        followingRequests: followingRequestSlice.reducer
+        followingRequests: followingRequestSlice.reducer,
+        likes: likesSlice.reducer
     }
 })
 

@@ -15,6 +15,7 @@ import fileUpload from "express-fileupload"
 import { createAppBucketIfNotExist } from "./aws/s3"
 import { createAppQueueIfNotExist, queueUrl } from "./aws/sqs"
 import storyRouter from "./routers/story"
+import likesRouter from "./routers/likes"
 
 const force = config.get<boolean>('sequelize.sync.force')
 
@@ -50,6 +51,7 @@ export async function start() {
     app.use('/comments', commentsRouter)
     app.use('/feed', feedRouter)
     app.use('/story', storyRouter)
+    app.use(`/likes`, likesRouter)
 
     // special notFound middleware
     app.use(notFound)

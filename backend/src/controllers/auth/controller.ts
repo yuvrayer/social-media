@@ -5,6 +5,7 @@ import config from 'config'
 import { sign } from "jsonwebtoken";
 import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";
+import socket from "../../io/io";
 
 
 export function hashPassword(password: string): string {
