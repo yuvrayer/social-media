@@ -1,0 +1,7 @@
+
+.chat-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  background-color: #fafafa;
+  padding: 10px;
+}

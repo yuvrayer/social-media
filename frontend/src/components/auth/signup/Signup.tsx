@@ -18,7 +18,7 @@ export default function Signup(): JSX.Element {
 
         try {
             const jwt = await auth.signup(signup)
-            // here i need to code something that will set the JWT in the AuthContext state
+            // here i code something that will set the JWT in the AuthContext state
             newLogin(jwt)
             navigate(`/profile`)
         } catch (e) {

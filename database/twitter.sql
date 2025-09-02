@@ -365,3 +365,62 @@ CREATE TABLE `comment_likes` (
   FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (`comment_id`) REFERENCES `comments`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+
+CREATE TABLE `chats` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `name` varchar(255),
+  `photo_url` varchar(255) NULL,
+  `is_group` boolean DEFAULT false,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `chat_participants` (
+  `chat_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `unread_messages` INT DEFAULT 0,
+  `joined_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`chat_id`, `user_id`),
+  FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `messages` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `chat_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `sender_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `content` text NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- 1. Chats: Bob has 2 chats (one private with Alice, one group with Diana & Charlie)
+INSERT INTO chats (id, name, photo_url, is_group, created_at, updated_at) VALUES
+('chat-1111-1111-1111-111111111111', NULL, NULL, FALSE, '2025-08-12 09:15:00', '2025-08-12 10:45:00'), -- private Bob & Alice
+('chat-2222-2222-2222-222222222222', 'Weekend Plans', 'https://th.bing.com/th/id/OIP.V2U_66gv-S6EbrBv1WsDmgHaFE?w=240&h=180&c=7&r=0&o=7&dpr=2&pid=1.7&rm=3', TRUE, '2025-08-12 11:30:00', '2025-08-12 15:20:00'); -- group chat
+
+-- 2. Participants: link users to chats
+INSERT INTO chat_participants (chat_id, user_id, unread_messages) VALUES
+('chat-1111-1111-1111-111111111111', '1230ae30-dc4f-4752-bd84-092956f5c633', 0), -- Bob
+('chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 0), -- Alice
+('chat-2222-2222-2222-222222222222', '1230ae30-dc4f-4752-bd84-092956f5c633', 0), -- Bob
+('chat-2222-2222-2222-222222222222', '034485be-cfd2-48a7-b80d-f54773eab18c', 0), -- Diana
+('chat-2222-2222-2222-222222222222', '57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 0); -- Charlie
+
+-- 3. Messages for Bob's private chat with Alice
+INSERT INTO messages (id, chat_id, sender_id, content, created_at) VALUES
+('msg-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Hey Bob, ready for the meeting?', '2025-08-12 09:30:00'),
+('msg-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'chat-1111-1111-1111-111111111111', '1230ae30-dc4f-4752-bd84-092956f5c633', 'Yes, I am! See you soon.', '2025-08-12 09:35:00'),
+('msg-cccc-cccc-cccc-cccccccccccc', 'chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Great, looking forward to it.', '2025-08-12 09:40:00');
+
+-- 4. Messages for group chat "Weekend Plans"
+INSERT INTO messages (id, chat_id, sender_id, content, created_at) VALUES
+('msg-dddd-dddd-dddd-dddddddddddd', 'chat-2222-2222-2222-222222222222', '034485be-cfd2-48a7-b80d-f54773eab18c', 'Are we still on for the hiking trip?', '2025-08-12 12:00:00'),
+('msg-eeee-eeee-eeee-eeeeeeeeeeee', 'chat-2222-2222-2222-222222222222', '57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 'Yes, I’m bringing snacks!', '2025-08-12 12:15:00'),
+('msg-ffff-ffff-ffff-ffffffffffff', 'chat-2222-2222-2222-222222222222', '1230ae30-dc4f-4752-bd84-092956f5c633', 'Awesome, can’t wait.', '2025-08-12 12:20:00');

@@ -11,13 +11,15 @@ import { SendMessageCommand } from "@aws-sdk/client-sqs";
 
 export default async function fileUploader(req: Request<{}, {}, { newStory: boolean, userId: string, storyImgUrl: string }>, res: Response, next: NextFunction) {
     try {
-        if (!req.files.postImage && !req.files.profileImg && !req.body.newStory) return next()
+        if (!req.files.postImage && !req.files.profileImg && !req.body.newStory && !req.files.chatFile && !req.files.photoFile) return next()
 
         if (!req.body.newStory) {
             let uploadedImage = null
-            if (!req.files.postImage && req.files.profileImg) {
+            if (req.files?.profileImg) {
                 uploadedImage = req.files.profileImg as UploadedFile
-            } else { uploadedImage = req.files.postImage as UploadedFile }
+            } else if (req.files?.postImage) { uploadedImage = req.files.postImage as UploadedFile }
+            else if (req.files?.chatFile) { uploadedImage = req.files.chatFile as UploadedFile }
+            else if (req.files?.photoFile) { uploadedImage = req.files.photoFile as UploadedFile }
 
             const upload = new Upload({
                 client: s3Client,
@@ -64,7 +66,7 @@ export default async function fileUploader(req: Request<{}, {}, { newStory: bool
         }
     }
     catch (e) {
-        alert(e)
+        next(e)
     }
     next()
 }

@@ -9,11 +9,16 @@ import StoryView from "../models/sawStory";
 import PendingFollowRequest from "../models/followRequest";
 import CommentLike from "../models/commentLike";
 import PostLike from "../models/postLike";
+import ChatParticipant from "../models/chatParticipant";
+import Chat from "../models/chat";
+import Message from "../models/message";
 
 const logging = config.get<boolean>('sequelize.logging') ? console.log : false
 
 const sequelize = new Sequelize({
-    models: [User, Post, Comment, Follow, Story, StoryView, PendingFollowRequest, CommentLike, PostLike],
+    models: [User, Post, Comment, Follow, Story, StoryView, PendingFollowRequest, CommentLike, PostLike,
+        ChatParticipant, Chat, Message
+    ],
     dialect: 'mysql',
     ...config.get('db'),
     logging,

@@ -9,6 +9,8 @@ import SocketMessages from "socket-enums-shaharsol";
 import Comment from "../../models/comment/Comment";
 import useUserId from "../../hooks/useUserId";
 import { newFollowerAlert } from "../../redux/followers";
+import { addMessageForCurrentChat, addUnreadChatMessage, addUserChatsChat, addUserChatsMessage } from "../../redux/chatSlice";
+import { follow as IFollowFromNow } from "../../redux/followingSlice";
 
 interface SocketContextInterface {
     xClientId: string
@@ -51,7 +53,6 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                         const newPostPayload = payload.data as Post
                         // eslint-disable-next-line react-hooks/rules-of-hooks
                         // const isFollowing = useAppSelector(state => state.following.following.findIndex(f => f.id === newPostPayload.userId) > -1)
-                        // eslint-disable-next-line react-hooks/rules-of-hooks
                         if (newPostPayload.userId === userId) {
                             dispatch(newPost(newPostPayload))
                         }
@@ -65,10 +66,30 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                         break;
                     case 'friendRequest:new':
                         if (payload.to === userId) {
-                            // dispatch(newFollower(payload.data))
                             dispatch(newFollowerAlert(true))
                             console.log('You have a new friend request!');
-                            // Here you can dispatch or update UI
+                        }
+                        break;
+                    case 'friendRequest:approved':
+                        if (payload.to === userId) {
+                            dispatch(IFollowFromNow(payload.userFillData))
+                            console.log('Your friend request is approved');
+                            alert("Your friend request is approved")
+                        }
+                        break;
+                    case 'newMessage':
+                        /// payload.to is array
+                        if (Array.isArray(payload.to) && payload.to.includes(userId) && payload.from !== userId) {
+                            dispatch(addUserChatsMessage(payload.message)) //add the new chat
+                            dispatch(addUnreadChatMessage(payload.chatId)) //add a marker for unread message
+                            dispatch(addMessageForCurrentChat(payload.message)) //add the message for display
+                            console.log('You have a new chat message');
+                        }
+                        break;
+                    case `newChat`:
+                        if (Array.isArray(payload.to) && payload.to.includes(userId) && payload.from !== userId) {
+                            dispatch(addUserChatsChat(payload.chat))
+                            console.log(`You were added for a new chat by ${payload.from}`);
                         }
                         break;
                 }

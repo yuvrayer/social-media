@@ -6,6 +6,7 @@ import { storySlice } from "./storySlice";
 import { followersSlice } from "./followers";
 import { followingRequestSlice } from "./followingRequestSlice";
 import { likesSlice } from "./likes";
+import { chatSlice } from "./chatSlice";
 
 const store = configureStore({
     reducer: { // i.e. slices
@@ -15,7 +16,8 @@ const store = configureStore({
         story: storySlice.reducer,
         followers: followersSlice.reducer,
         followingRequests: followingRequestSlice.reducer,
-        likes: likesSlice.reducer
+        likes: likesSlice.reducer,
+        chat: chatSlice.reducer
     }
 })
 

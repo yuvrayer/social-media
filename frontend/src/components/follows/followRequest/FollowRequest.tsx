@@ -2,7 +2,7 @@ import './FollowRequest.css'
 import { useEffect, useState } from "react"
 import useService from "../../../hooks/useService"
 import Loading from "../../common/loading/Loading"
-import Follow from "../../follows/follow/Follow"
+import Follow from "../follow/Follow"
 import FollowingRequestService from '../../../services/auth-aware/followRequest'
 import { useAppSelector } from '../../../redux/hooks'
 import { initIReceived } from '../../../redux/followingRequestSlice'
@@ -47,7 +47,7 @@ export default function FollowRequest(): JSX.Element {
 
     return (
         <div className='Search'>
-            <h2>Welcome to the searching people page...</h2>
+            <h2>Welcome to the page for following requests...</h2>
 
             {usersNum === -1 && <Loading />}{/* fetching data */}
 

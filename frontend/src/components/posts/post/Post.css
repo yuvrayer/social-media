@@ -27,3 +27,12 @@
 .NotLiked .Button .bi {
     color: black;
 }
+
+.LikesNum {
+    color: red;
+    font-weight: bold;
+}
+
+.backgroundGray {
+    background-color: rgb(232, 226, 226);
+}

@@ -5,7 +5,7 @@ import NotFound from "../not-found/NotFound";
 import EditPost from "../../posts/edit/EditPost";
 import User from "../../posts/user/User";
 import Search from "../../posts/search/Search";
-import FollowRequest from "../../posts/followRequest/FollowRequest";
+import FollowRequest from "../../follows/followRequest/FollowRequest";
 
 export default function Routing(): JSX.Element {
     return (

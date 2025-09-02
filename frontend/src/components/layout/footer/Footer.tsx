@@ -1,70 +1,75 @@
-import { useState } from 'react';
-import './Footer.css'
-import ChatListItem from '../../posts/chatListItem/ChatListItem';
+import './Footer.css';
+import { useEffect, useState } from 'react';
+import useService from '../../../hooks/useService';
+import ChatService from '../../../services/auth-aware/Chat';
+import { useAppSelector } from '../../../redux/hooks';
+import { useDispatch } from 'react-redux';
+import { initUserChats, addUserChatsChat, clearUnreadChatMessage, initUnreadChatMessages } from '../../../redux/chatSlice';
+import { Chat } from '../../../models/chat/Chat';
+import ChatWindow from '../../chats/chatWindow/ChatWindow';
 
 export default function Footer() {
-
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+    const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
 
-    const toggleChat = () => {
-        setIsChatOpen(!isChatOpen)
+    const chatsService = useService(ChatService);
+    const dispatch = useDispatch();
+    const unreadCount = useAppSelector(state => state.chat.unreadChatMessages);
+    const totalUnread = Object.values(unreadCount).reduce((sum, count) => sum + count, 0);
+
+    const toggleChat = () => setIsChatOpen(!isChatOpen);
+
+    async function fetchChats() {
+        try {
+            const chatsFromServer = await chatsService.getChats();
+            dispatch(initUserChats(chatsFromServer));
+            const unreadMap: { [chatId: string]: number } = {};
+            chatsFromServer.forEach((chat: Chat) => {
+                unreadMap[chat.id] = chat.unreadMessages ?? 0;
+            });
+            // Dispatch init
+            dispatch(initUnreadChatMessages(unreadMap));
+        } catch (e) {
+            alert(e);
+        }
     }
-    const chats = [
-        {
-            name: 'Alice',
-            lastMessage: 'See you tomorrow!',
-            timestamp: '10:45 AM',
-            unreadCount: 2,
-            avatarUrl: 'https://randomuser.me/api/portraits/women/1.jpg',
-        },
-        {
-            name: 'Study Group',
-            lastMessage: 'Don’t forget the assignment.',
-            timestamp: '09:15 AM',
-            unreadCount: 0,
-            avatarUrl: 'https://via.placeholder.com/40?text=G',
-        },
-        {
-            name: 'Bob',
-            lastMessage: 'Got it, thanks!',
-            timestamp: 'Yesterday',
-            unreadCount: 1,
-            avatarUrl: 'https://randomuser.me/api/portraits/men/2.jpg',
-        },
-    ]
+
+    useEffect(() => {
+        fetchChats();
+    }, [isChatOpen]);
 
     return (
         <>
             <div className='Footer'>
                 <p>server is: {import.meta.env.VITE_REST_SERVER_URL}</p>
             </div>
-            {/* Chat Tab */}
+
             <div className="chat-tab" onClick={toggleChat}>
                 💬 Chat
+                {totalUnread > 0 && (
+                    <span className="chat-unread-badge">{totalUnread}</span>
+                )}
             </div>
 
-            {/* Chat Window */}
             {isChatOpen && (
-                <div className="chat-window">
-                    <div className="chat-header">
-                        <span>My Chats</span>
-                        <button onClick={toggleChat}>✖</button>
-                    </div>
-                    <div className="chat-body">
-                        {chats.map((chat, index) => (
-                            <ChatListItem
-                                key={index}
-                                name={chat.name}
-                                lastMessage={chat.lastMessage}
-                                timestamp={chat.timestamp}
-                                unreadCount={chat.unreadCount}
-                                avatarUrl={chat.avatarUrl}
-                                onClick={() => alert(`Open chat with ${chat.name}`)}
-                            />
-                        ))}                        {/* You can expand this into a full chat UI */}
-                    </div>
-                </div>
+                <ChatWindow
+                    selectedChat={selectedChat}
+                    setSelectedChat={setSelectedChat}
+                    isNewChatModalOpen={isNewChatModalOpen}
+                    setIsNewChatModalOpen={setIsNewChatModalOpen}
+                    onClose={toggleChat}
+                    onChatCreated={(chat: Chat) => {
+                        dispatch(addUserChatsChat(chat));
+                        setSelectedChat(chat);
+                        setIsNewChatModalOpen(false);
+                    }}
+                    onChatSelected={(chat: Chat) => {
+                        setSelectedChat(chat);
+                        dispatch(clearUnreadChatMessage(chat.id));
+                    }}
+                />
             )}
         </>
-    )
+    );
 }
