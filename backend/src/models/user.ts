@@ -15,6 +15,9 @@ import Comment from "./comment";
 import PendingFollowRequest from "./followRequest";
 import PostLike from "./postLike";
 import CommentLike from "./commentLike";
+import Chat from "./chat";
+import Message from "./message";
+import ChatParticipant from "./chatParticipant";
 
 @Table({
     underscored: true,
@@ -57,7 +60,7 @@ export default class User extends Model {
 
     @HasMany(() => CommentLike)
     commentLikes: CommentLike[]
-    
+
     // @BelongsToMany(() => User, () => Follow, 'followeeId', 'followerId')
     followers: User[]
 
@@ -70,4 +73,11 @@ export default class User extends Model {
 
     @HasMany(() => PendingFollowRequest, 'receiverId')
     receivedFollowRequests: PendingFollowRequest[];
+
+    @BelongsToMany(() => Chat, () => ChatParticipant)
+    chats: Chat[];
+
+    // Messages sent by this user
+    @HasMany(() => Message, `senderId`)
+    messages: Message[];
 }

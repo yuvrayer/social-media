@@ -4,6 +4,7 @@ import Follow from "../../models/follow";
 import { col } from "sequelize";
 import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";
+import socket from "../../io/io";
 
 
 export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
@@ -58,7 +59,7 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
     }
 }
 
-export async function follow(req: Request<{ id: string }>, res: Response, next: NextFunction) {
+export async function follow(req: Request<{ id: string }, {}, { name: string, profileImgUrl: string, id: string }>, res: Response, next: NextFunction) {
 
     try {
         const userId = req.userId
@@ -67,6 +68,16 @@ export async function follow(req: Request<{ id: string }>, res: Response, next: 
             followeeId: userId
         })
         res.json(follow)
+
+        socket.emit('friendRequest:approved', {
+            to: req.params.id,
+            userFillData: {
+                name: req.body.name,
+                profileImgUrl: req.body.profileImgUrl,
+                id: req.body.id
+            }
+        })
+
     } catch (e) {
         next(e)
     }

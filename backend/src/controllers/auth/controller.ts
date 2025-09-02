@@ -5,7 +5,6 @@ import config from 'config'
 import { sign } from "jsonwebtoken";
 import AppError from "../../errors/app-error";
 import { StatusCodes } from "http-status-codes";
-import socket from "../../io/io";
 
 
 export function hashPassword(password: string): string {
@@ -24,8 +23,12 @@ export async function login(req: Request<{}, {}, { username: string, password: s
             },
         })
 
-        if (!user) return next(new AppError(StatusCodes.UNAUTHORIZED, 'wrong credentials'))
-
+        if (!user) {
+            res.status(StatusCodes.UNAUTHORIZED).json({
+                message: 'wrong credentials'
+            })
+            return next(new AppError(StatusCodes.UNAUTHORIZED, 'wrong credentials'))
+        }
 
         const jwt = sign(user.get({ plain: true }), config.get<string>('app.jwtSecret'))
         res.json({ jwt })

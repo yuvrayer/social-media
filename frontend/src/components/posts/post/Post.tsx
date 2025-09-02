@@ -92,6 +92,7 @@ export default function Post(props: PostProps): JSX.Element {
             </div>
             {props.isAllowActions &&
                 <div>
+                    <div className='backgroundGray'>Has <span className='LikesNum'> {likesNum}</span> likes </div>
                     <button onClick={editMe}>Edit</button>
                     <button onClick={deleteMe}>Delete</button>
                 </div>

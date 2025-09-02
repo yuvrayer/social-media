@@ -90,7 +90,7 @@ export default function Follow(props: FollowProps): JSX.Element {
     async function follow() {
         try {
             setIsSubmitting(true)
-            await followingService.follow(userId)
+            await followingService.follow(userId, userData)
             dispatch(setNewContent(true))
             dispatch(newFollower(userData))
             await deleteFollowRequest()

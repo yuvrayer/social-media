@@ -19,6 +19,42 @@ io.on('connection', socket => {
         console.log(`Sent friend request to user room: ${data.to}`)
     })
 
+    socket.on('friendRequest:approved', (data) => {
+        io.to(data.to).emit('friendRequest:approved', data)
+        console.log(`Approved friend request to user room: ${data.to}`)
+    })
+
+    socket.on('newMessage', (data) => {
+        const { to, chatId, from, message } = data;
+
+        if (!Array.isArray(to)) return;
+
+        to.forEach(userId => {
+            io.to(userId).emit('newMessage', {
+                to,
+                chatId,
+                from,
+                message
+            });
+            console.log(`Relayed newMessage to user room: ${userId}`);
+        });
+    });
+
+    socket.on('newChat', (data) => {
+        const { to, chat, from } = data;
+
+        if (!Array.isArray(to)) return;
+
+        to.forEach(userId => {
+            io.to(userId).emit('newChat', {
+                to,
+                chat,
+                from
+            });
+            console.log(`Relayed newChat to user room: ${userId}`);
+        });
+    });
+
     socket.on('join', (userId: string) => {
         userSocketMap.set(userId, userId)
         socket.join(userId)
