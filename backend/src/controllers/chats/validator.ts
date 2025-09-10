@@ -4,7 +4,7 @@ export const chatParamsValidator = Joi.object({
     chatId: Joi.string().required()
 })
 
-export const sendChatMessagesValidator = Joi.object({
+export const sendChatMessageValidator = Joi.object({
     content: Joi.alternatives().try(
         Joi.string(),
         Joi.number()
@@ -12,7 +12,8 @@ export const sendChatMessagesValidator = Joi.object({
     participantsIds: Joi.array()
         .items(Joi.string().uuid({ version: 'uuidv4' }))
         .min(1)
-        .required()
+        .required(),
+    fromName: Joi.string().required()
 });
 
 export const createChatValidator = Joi.object({
@@ -36,4 +37,9 @@ export const createChatFilesValidator = Joi.object({
     photoFile: Joi.object({
         mimetype: Joi.string().valid('image/png', 'image/jpg', 'image/jpeg')
     }).unknown(true).optional().allow(null)
+})
+
+export const incrementChatParticipantValidator = Joi.object({
+    chatId: Joi.string().required(),
+    userId: Joi.string().required()
 })

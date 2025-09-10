@@ -1,6 +1,6 @@
 import {
     Table, Column, Model, DataType, PrimaryKey, Default, BelongsToMany, HasMany,
-    CreatedAt
+    CreatedAt,
 } from 'sequelize-typescript';
 import User from './user';
 import Message from './message';
@@ -8,6 +8,7 @@ import ChatParticipant from './chatParticipant';
 
 @Table({
     tableName: 'chats',
+    timestamps: false,
     underscored: true,
 })
 export default class Chat extends Model {
@@ -41,6 +42,12 @@ export default class Chat extends Model {
         defaultValue: DataType.NOW
     })
     createdAt: Date;
+
+    @Column({
+        type: DataType.DATE,
+        allowNull: false
+    })
+    updatedAt: Date;
 
     @BelongsToMany(() => User, () => ChatParticipant)
     participants: User[];

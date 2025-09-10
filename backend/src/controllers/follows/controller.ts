@@ -59,7 +59,9 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
     }
 }
 
-export async function follow(req: Request<{ id: string }, {}, { name: string, profileImgUrl: string, id: string }>, res: Response, next: NextFunction) {
+export async function follow(req: Request<{ id: string }, {}, {
+    name: string, profileImgUrl: string | null, id: string
+}>, res: Response, next: NextFunction) {
 
     try {
         const userId = req.userId
@@ -67,7 +69,6 @@ export async function follow(req: Request<{ id: string }, {}, { name: string, pr
             followerId: req.params.id,
             followeeId: userId
         })
-        res.json(follow)
 
         socket.emit('friendRequest:approved', {
             to: req.params.id,
@@ -78,6 +79,7 @@ export async function follow(req: Request<{ id: string }, {}, { name: string, pr
             }
         })
 
+        res.json(follow)
     } catch (e) {
         next(e)
     }

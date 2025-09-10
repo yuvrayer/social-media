@@ -1,13 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import UserFillData from "../models/user/UserFillData";
 
 interface FollowingRequestState {
     followingRequestISent: string[],
-    followingRequestIReceived: string[]
+    followingRequestIReceived: UserFillData[],
+    newFollowRequest: boolean
 }
 
 const initialState: FollowingRequestState = {
     followingRequestISent: [],
-    followingRequestIReceived: []
+    followingRequestIReceived: [],
+    newFollowRequest: false
 }
 
 export const followingRequestSlice = createSlice({
@@ -17,21 +20,34 @@ export const followingRequestSlice = createSlice({
         initISent: (state, action: PayloadAction<string[]>) => {
             state.followingRequestISent = action.payload
         },
-        initIReceived: (state, action: PayloadAction<string[]>) => {
+        initIReceived: (state, action: PayloadAction<UserFillData[]>) => {
             state.followingRequestIReceived = action.payload
         },
+        addFollowRequestFromSliceIReceived: (state, action: PayloadAction<UserFillData>) => {
+            state.followingRequestIReceived.push(action.payload)
+        },
         deleteFollowRequestFromSliceIReceived: (state, action: PayloadAction<({ userId: string })>) => {
-            state.followingRequestIReceived = state.followingRequestIReceived.filter(userId => userId !== action.payload.userId)
+            state.followingRequestIReceived = state.followingRequestIReceived.filter(user => user.id !== action.payload.userId)
         },
         deleteFollowRequestFromSliceISent: (state, action: PayloadAction<{ userId: string }>) => {
             state.followingRequestISent = state.followingRequestISent.filter(userId => userId !== action.payload.userId)
         },
         followRequestUpdateSliceISent: (state, action: PayloadAction<string>) => {
             state.followingRequestISent.push(action.payload)
+        },
+        newFollowerAlert: (state, action: PayloadAction<boolean>) => {
+            state.newFollowRequest = action.payload
         }
     }
 })
 
-export const { initISent, initIReceived, deleteFollowRequestFromSliceIReceived , deleteFollowRequestFromSliceISent, followRequestUpdateSliceISent } = followingRequestSlice.actions
+export const { initISent,
+    newFollowerAlert,
+    addFollowRequestFromSliceIReceived,
+    initIReceived,
+    deleteFollowRequestFromSliceIReceived,
+    deleteFollowRequestFromSliceISent,
+    followRequestUpdateSliceISent
+} = followingRequestSlice.actions
 
 export default followingRequestSlice.reducer

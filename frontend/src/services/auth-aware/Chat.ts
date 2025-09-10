@@ -3,6 +3,10 @@ import { Message } from "../../models/chat/Message";
 import { SendMessageDraft } from "../../models/chat/MessageDraft";
 import AuthAware from "./AuthAware";
 
+interface incrementChatParticipantDraft {
+    chatId: string,
+    userId: string
+}
 
 export default class Chat extends AuthAware {
 
@@ -27,6 +31,18 @@ export default class Chat extends AuthAware {
     // POST /chats/messages/:chatId
     async sendMessage(chatId: string, payload: SendMessageDraft): Promise<Message> {
         const response = await this.axiosInstance.post<Message>(`${import.meta.env.VITE_REST_SERVER_URL}/chats/messages/${chatId}`, payload);
+        return response.data;
+    }
+
+    // PATCH /chats/chatRead/:chatId
+    async markChatAsRead(chatId: string): Promise<boolean> {
+        const response = await this.axiosInstance.patch<boolean>(`${import.meta.env.VITE_REST_SERVER_URL}/chats/chatRead/${chatId}`);
+        return response.data;
+    }
+
+    // PATCH /chats/chatRead/:chatId
+    async incrementChatParticipant(draft: incrementChatParticipantDraft): Promise<void> {
+        const response = await this.axiosInstance.post<void>(`${import.meta.env.VITE_REST_SERVER_URL}/chats/incrementChatParticipant`, draft);
         return response.data;
     }
 }

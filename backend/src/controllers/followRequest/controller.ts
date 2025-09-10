@@ -60,19 +60,22 @@ export async function getAllPendingRequestsISent(req: Request, res: Response, ne
 }
 
 
-export async function sendFollowRequest(req: Request<{ userId: string }>, res: Response, next: NextFunction) {
+export async function sendFollowRequest(req: Request<{ userId: string }, {}, { name: string, profileImgUrl: string | null }>, res: Response, next: NextFunction) {
     try {
         const userId = req.userId
         const follow = await PendingFollowRequest.create({
             senderId: userId,
             receiverId: req.params.userId
         })
-        res.json(follow)
 
         socket.emit('friendRequest:new', {
             to: req.params.userId,
-            from: userId
+            from: userId,
+            name: req.body.name,
+            profileImgUrl: req.body.profileImgUrl,
         })
+
+        res.json(follow)
 
     } catch (e) {
         next(e)
@@ -88,10 +91,17 @@ export async function deleteFollowRequest(req: Request<{ userId: string }>, res:
                 receiverId: userId
             }
         })
+
         if (isUnfollowed === 0) return next(new AppError(
             StatusCodes.NOT_FOUND,
             'tried to delete unexisting record'
         ))
+
+        socket.emit('friendRequest:deleted', {
+            to: req.params.userId,
+            from: userId
+        })
+
         res.json({ success: true })
     } catch (e) {
         next(e)

@@ -26,7 +26,7 @@ export async function getChats(req: Request, res: Response, next: NextFunction) 
                     through: { attributes: [] },
                 }
             ],
-            order: [['updated_at', 'DESC']],
+            order: [["updated_at", "DESC"]],
         });
 
         const chatsWithDetails = await Promise.all(chats.map(async chat => {
@@ -75,7 +75,8 @@ export async function createChat(req: Request<{}, {}, { name: string, isGroup: b
         const chat = await Chat.create({
             name: isGroup ? name : null,
             isGroup: !!isGroup,
-            photoUrl: isGroup ? photoUrl : null
+            photoUrl: isGroup ? photoUrl : null,
+            updatedAt: new Date()
         });
 
         // Add participants (including creator)
@@ -100,7 +101,7 @@ export async function createChat(req: Request<{}, {}, { name: string, isGroup: b
         socket.emit('newChat', {
             to: req.body.participantIds,
             from: userId,
-            chat
+            chat: fullChat
         })
 
         res.status(201).json(fullChat);
@@ -139,7 +140,7 @@ export async function getChatMessages(req: Request<{ chatId: string }>, res: Res
 }
 
 // POST /messages/:chatId - send a message
-export async function sendChatMessages(req: Request<{ chatId: string }, {}, { content: string | number, participantsIds: string[] }>, res: Response, next: NextFunction) {
+export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fromName: string, content: string | number, participantsIds: string[] }>, res: Response, next: NextFunction) {
     try {
         const userId = req.userId;
         const { chatId } = req.params;
@@ -151,12 +152,36 @@ export async function sendChatMessages(req: Request<{ chatId: string }, {}, { co
         const participant = await ChatParticipant.findOne({ where: { chatId, userId } });
         if (!participant) return res.status(403).json({ error: "Forbidden" });
 
+        await Chat.update(
+            { updatedAt: new Date() },
+            { where: { id: chatId } }
+        );
+
         const message = await Message.create({
             chatId,
             senderId: userId,
             content,
         });
 
+        socket.emit('newMessage', {
+            to: req.body.participantsIds,
+            chatId,
+            from: userId,
+            message,
+            fromName: req.body.fromName
+        })
+
+        res.status(201).json(message);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to send message" });
+    }
+}
+
+// POST /IncrementChatParticipant
+export async function IncrementChatParticipant(req: Request<{}, {}, { chatId: string, userId: string }>, res: Response, next: NextFunction) {
+    try {
+        const { chatId, userId } = req.body
         await ChatParticipant.increment(
             { unreadMessages: 1 },
             {
@@ -166,17 +191,28 @@ export async function sendChatMessages(req: Request<{ chatId: string }, {}, { co
                 }
             }
         );
+        res.status(200)
+    } catch (e) {
+        alert(e)
+    }
+}
 
-        socket.emit('newMessage', {
-            to: req.body.participantsIds,
-            chatId,
-            from: userId,
-            message
-        })
+// PATCH /chatRead/:chatId - mark chat as read
+export async function markChatAsRead(req: Request<{ chatId: string }>, res: Response, next: NextFunction) {
+    try {
+        const { chatId } = req.params;
+        const userId = req.userId;
 
-        res.status(201).json(message);
+        await ChatParticipant.update(
+            { unreadMessages: 0 },
+            {
+                where: { chatId, userId }
+            }
+        );
+
+        res.status(200).json(true);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: "Failed to send message" });
+        res.status(500).json({ error: 'Failed to mark chat as read' });
     }
 }

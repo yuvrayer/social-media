@@ -10,7 +10,6 @@ export const getPostParamsValidator = Joi.object({
 
 export const deletePostParamsValidator = getPostParamsValidator
 export const updatePostParamsValidator = getPostParamsValidator
-export const fillUserDataValidator = getPostParamsValidator
 
 export const newPostValidator = Joi.object({
     title: Joi.string().min(10).max(40).required(),

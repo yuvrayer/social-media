@@ -45,6 +45,11 @@ export default function Followers() {
                     {followersState.map(follow => <Follow
                         key={follow.id}
                         userId={follow.id}
+                        otherUserFillData={{
+                            name: follow.name,
+                            profileImgUrl: follow.profileImgUrl,
+                            id: follow.id,
+                        }}
                     ></Follow>)}
                 </div>
             </>}

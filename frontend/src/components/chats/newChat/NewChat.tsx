@@ -134,7 +134,8 @@ export default function NewChatComponent({ onClose, onChatCreated }: NewChatComp
                                 className={`user-item ${isSelected ? 'selected' : ''}`}
                                 onClick={() => toggleUserSelect(user)}
                             >
-                                <img src={user.profileImgUrl ? user.profileImgUrl : profilePic} alt={user.name} />
+
+                                <img src={user.profileImgUrl ? `${import.meta.env.VITE_AWS_SERVER_URL}/${user.profileImgUrl}` : profilePic} alt={user.name} />
                                 <span>{user.name}</span>
                                 {isSelected && <span className="checkmark">✔</span>}
                             </div>

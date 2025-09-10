@@ -22,8 +22,8 @@ export default class Following extends AuthAware {
         return response.data
     }
 
-    async follow(userId: string, MyUserData: UserFillData): Promise<boolean> {
-        const response = await this.axiosInstance.post<boolean>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/follow/${userId}`, MyUserData)
+    async follow(userId: string, myUserData: UserFillData): Promise<boolean> {
+        const response = await this.axiosInstance.post<boolean>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/follow/${userId}`, myUserData)
         return response.data
     }
 

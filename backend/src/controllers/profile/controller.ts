@@ -76,11 +76,11 @@ export async function createPost(req: Request, res: Response, next: NextFunction
 
         const post = await Post.create(createParams)
         await post.reload(postIncludes)
-        res.json(post)
         socket.emit(SocketMessages.NEW_POST, {
             from: req.headers['x-client-id'], // req.header(), req.get()
             data: post
         })
+        res.json(post)
     } catch (e) {
         next(e)
     }
@@ -99,20 +99,6 @@ export async function updatePost(req: Request<{ id: string }>, res: Response, ne
         await post.save() // <= this command generates the actual SQL UPDATE
         res.json(post)
 
-    } catch (e) {
-        next(e)
-    }
-}
-
-export async function fillUserData(req: Request<{ id: string }>, res: Response, next: NextFunction) {
-    try {
-        const user = await User.findByPk(req.params.id)
-        const userSplit = {
-            name: user.name,
-            profileImgUrl: user.profileImgUrl,
-            id: user.id
-        }
-        res.json(userSplit)
     } catch (e) {
         next(e)
     }

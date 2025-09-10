@@ -53,7 +53,7 @@ export default function ChatMessages({
                     {msgs.map(msg => (
                         <div key={msg.id} className={`message ${msg.senderId === userId ? 'sent' : 'received'}`}>
                             <span className="message-content">{msg.content}</span>
-                            {isGroup && userId !== msg.senderId && <span className="message-sender">{msg.sender?.name}</span>}
+                            {isGroup && userId !== msg.senderId && <span className="message-sender">{msg.sender?.name ?? msg.senderName}</span>}
                             <span className="message-time">
                                 {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
