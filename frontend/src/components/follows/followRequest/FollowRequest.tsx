@@ -1,37 +1,17 @@
 import './FollowRequest.css'
-import { useEffect, useState } from "react"
-import useService from "../../../hooks/useService"
+import { useState } from "react"
 import Loading from "../../common/loading/Loading"
 import Follow from "../follow/Follow"
-import FollowingRequestService from '../../../services/auth-aware/followRequest'
 import { useAppSelector } from '../../../redux/hooks'
-import { initIReceived } from '../../../redux/followingRequestSlice'
-import { useDispatch } from 'react-redux'
 
 const USERS_PER_PAGE = 10;
 
 export default function FollowRequest(): JSX.Element {
     const [currentPage, setCurrentPage] = useState(0);
     const [direction, setDirection] = useState<'left' | 'right'>('right');
-    const [usersNum, setUsersNum] = useState<number>(-1)
-
+    
+    const usersNum = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
     const followingRequestsIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived);
-    const followingRequestService = useService(FollowingRequestService);
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        try {
-            (async () => {
-                const usersDataFromServer = await followingRequestService.getAllPendingRequestsIReceived()
-                //users= users that sent a follow request for the current logged user
-                const usersIdArray = usersDataFromServer.users.map(user => user.id)
-                dispatch(initIReceived(usersIdArray))
-                setUsersNum(usersDataFromServer.usersNum)
-            })()
-        } catch (e) {
-            alert(e)
-        }
-    }, []);
 
     const handlePageChange = (newPage: number, dir: 'left' | 'right') => {
         if (newPage < 0 || newPage >= totalPages) return;
@@ -65,7 +45,14 @@ export default function FollowRequest(): JSX.Element {
 
                     <div className={`FollowingPeopleSearch slide-${direction}`}>
                         {paginatedUsers.map(user => (
-                            <Follow key={user} userId={user} request={true} />
+                            <Follow key={user.id} userId={user.id} request={true}
+                                otherUserFillData={
+                                    {
+                                        name: user.name,
+                                        profileImgUrl: user.profileImgUrl,
+                                        id: user.id
+                                    }
+                                } />
                         ))}
                     </div>
                 </>

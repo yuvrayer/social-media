@@ -77,7 +77,13 @@ export default function Search(): JSX.Element {
 
                     <div className={`FollowingPeopleSearch slide-${direction}`}>
                         {currentUsers.map(user => (
-                            <Follow key={user.id} userId={user.id} />
+                            <Follow key={user.id} userId={user.id}
+                                otherUserFillData={{
+                                    name: user.name,
+                                    profileImgUrl: user.profileImgUrl,
+                                    id: user.id,
+                                }}
+                            />
                         ))}
                     </div>
                 </>

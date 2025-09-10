@@ -1,25 +1,39 @@
 import './Follow.css'
 import profilePicSource from '../../../assets/images/profile.jpg'
 import LoadingButton from '../../common/loading-button/LoadingButton'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { unfollow as unfollowAction } from '../../../redux/followingSlice'
 import FollowingService from '../../../services/auth-aware/Following'
-import ProfileService from '../../../services/auth-aware/Profile'
 import FollowingRequestService from '../../../services/auth-aware/followRequest'
 import useService from '../../../hooks/useService'
 import { setNewContent } from '../../../redux/feedSlice'
 import { newFollower } from '../../../redux/followers'
 import { deleteFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceISent, followRequestUpdateSliceISent } from '../../../redux/followingRequestSlice'
-import UserFillData from '../../../models/user/UserFillData'
+import useProfileImg from '../../../hooks/useProfileImg'
+import useUserId from '../../../hooks/useUserId'
+import useName from '../../../hooks/useName'
 
 interface FollowProps {
     userId: string,
-    request?: boolean
+    request?: boolean,
+    otherUserFillData: {
+        name: string;
+        profileImgUrl: string;
+        id: string;
+    }
 }
 export default function Follow(props: FollowProps): JSX.Element {
 
     const { userId } = props
+
+    const myName = useName()
+    const myProfileImgUrl = useProfileImg()
+    const myId = useUserId()
+
+    const otherName = props.otherUserFillData.name
+    const otherProfileImgUrl = props.otherUserFillData.profileImgUrl
+    const otherId = props.otherUserFillData.id
 
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
@@ -28,24 +42,10 @@ export default function Follow(props: FollowProps): JSX.Element {
     const isFollowRequestSent = useAppSelector(state => state.followingRequests.followingRequestISent.some(Id => Id === userId))
 
     const followingService = useService(FollowingService)
-    const profileService = useService(ProfileService)
     const followingRequestService = useService(FollowingRequestService)
 
-    const [userData, setUserData] = useState<UserFillData>({
-        name: "",
-        profileImgUrl: "",
-        id: ""
-    })
-
-    useEffect(() => {
-        (async () => {
-            const userDataFromServer = await profileService.fillUserData(userId)
-            setUserData(userDataFromServer)
-        })()
-    }, [])
-
     async function unfollow() {
-        if (window.confirm(`are you sure you wanna stop following ${userData.name}?`)) {
+        if (window.confirm(`are you sure you wanna stop following ${otherName}?`)) {
             try {
                 setIsSubmitting(true)
                 await followingService.unfollow(userId)
@@ -80,7 +80,7 @@ export default function Follow(props: FollowProps): JSX.Element {
 
     async function sendFollowRequest() {
         try {
-            await followingRequestService.sendFollowRequest(userId)
+            await followingRequestService.sendFollowRequest(userId, { profileImgUrl: myProfileImgUrl, name: myName })
             dispatch(followRequestUpdateSliceISent(userId))
         } catch (e) {
             alert(e)
@@ -90,9 +90,9 @@ export default function Follow(props: FollowProps): JSX.Element {
     async function follow() {
         try {
             setIsSubmitting(true)
-            await followingService.follow(userId, userData)
+            await followingService.follow(userId, { name: myName, id: myId, profileImgUrl: myProfileImgUrl })
             dispatch(setNewContent(true))
-            dispatch(newFollower(userData))
+            dispatch(newFollower({ name: otherName, id: otherId, profileImgUrl: otherProfileImgUrl }))
             await deleteFollowRequest()
             dispatch(deleteFollowRequestFromSliceIReceived({ userId }))
         } catch (e) {
@@ -104,13 +104,13 @@ export default function Follow(props: FollowProps): JSX.Element {
 
     return (
         <div className='Follow'>
-            <div> {userData.profileImgUrl ?
-                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${userData.profileImgUrl}`} />
+            <div> {otherProfileImgUrl ?
+                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${otherProfileImgUrl}`} />
                 : <img src={profilePicSource} />
             }
             </div>
             <div>
-                {userData.name}
+                {otherName}
             </div>
             <div> {
                 !props.request &&

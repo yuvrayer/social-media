@@ -8,12 +8,16 @@ interface ChatState {
     }
     userChats: Chat[]
     currentChatMessages: Message[]
+    typingUser: string | null
+    currentChatId: string | null;
 }
 
 const initialState: ChatState = {
     unreadChatMessages: {},
     userChats: [],
-    currentChatMessages: []
+    currentChatMessages: [],
+    typingUser: null,
+    currentChatId: null
 }
 
 export const chatSlice = createSlice({
@@ -33,20 +37,15 @@ export const chatSlice = createSlice({
             const chatId = action.payload;
             state.unreadChatMessages[chatId] = 0;
         },
-        //userChats
-        initUserChats: (state, action: PayloadAction<Chat[]>) => {
-            state.userChats = action.payload
-        },
         addUserChatsMessage: (state, action: PayloadAction<Message>) => {
-            const newMessage = action.payload;
 
             // Find the chat that this message belongs to
-            const chatIndex = state.userChats.findIndex(chat => chat.id === newMessage.chatId);
+            const chatIndex = state.userChats.findIndex(chat => chat.id === action.payload.chatId);
 
             if (chatIndex !== -1) {
                 // Update the lastMessage and updatedAt fields
-                state.userChats[chatIndex].lastMessage = newMessage;
-                state.userChats[chatIndex].updatedAt = newMessage.createdAt;
+                state.userChats[chatIndex].lastMessage = action.payload;
+                state.userChats[chatIndex].updatedAt = action.payload.createdAt;
 
                 // Move chat to the top of the list
                 const updatedChat = state.userChats[chatIndex];
@@ -54,19 +53,52 @@ export const chatSlice = createSlice({
                 state.userChats.unshift(updatedChat);
             }
         },
+
+        //userChats
+        initUserChats: (state, action: PayloadAction<Chat[]>) => {
+            state.userChats = action.payload
+        },
         addUserChatsChat: (state, action: PayloadAction<Chat>) => {
             state.userChats.unshift(action.payload)
         },
+
         //currentChatMessages
         initCurrentChatMessages: (state, action: PayloadAction<Message[]>) => {
             state.currentChatMessages = action.payload
         },
-        addMessageForCurrentChat: (state, action: PayloadAction<Message>) => {
-            state.currentChatMessages.push(action.payload)
+        addMessageForCurrentChat: (state, action: PayloadAction<{ message: Message, senderName: string }>) => {
+
+            const { message, senderName } = action.payload;
+
+            // Clone the message to avoid mutating a frozen object
+            const safeMessage = !message.sender
+                ? { ...message, senderName }
+                : message;
+
+            state.currentChatMessages.push(safeMessage)
+        },
+        //typingIndicator
+        setTypingIndicator: (state, action: PayloadAction<string | null>) => {
+            state.typingUser = action.payload
+        },
+        //currentChatId
+        setCurrentChatIdToSlice: (state, action: PayloadAction<string | null>) => {
+            state.currentChatId = action.payload;
         }
     }
 })
 
-export const { initUnreadChatMessages, addUnreadChatMessage, clearUnreadChatMessage, initUserChats, addUserChatsMessage, addUserChatsChat, initCurrentChatMessages, addMessageForCurrentChat } = chatSlice.actions
+export const {
+    initUnreadChatMessages,
+    addUnreadChatMessage,
+    clearUnreadChatMessage,
+    initUserChats,
+    addUserChatsMessage,
+    addUserChatsChat,
+    initCurrentChatMessages,
+    addMessageForCurrentChat,
+    setTypingIndicator,
+    setCurrentChatIdToSlice,
+} = chatSlice.actions
 
 export default chatSlice.reducer

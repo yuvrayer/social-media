@@ -14,8 +14,24 @@ io.on('connection', socket => {
 
     console.log('got a new connection')
 
+    socket.on('writing', (payload) => {
+        const { chatId, from, to, fromName } = payload;
+
+        to.forEach((participantId: string) => {
+            if (participantId !== from) {
+                socket.to(participantId).emit('userTyping', { chatId, from, fromName });
+            }
+        });
+    });
+
+
     socket.on('friendRequest:new', (data) => {
         io.to(data.to).emit('friendRequest:new', data)
+        console.log(`Sent friend request to user room: ${data.to}`)
+    })
+
+    socket.on('friendRequest:deleted', (data) => {
+        io.to(data.to).emit('friendRequest:deleted', data)
         console.log(`Sent friend request to user room: ${data.to}`)
     })
 
@@ -25,7 +41,7 @@ io.on('connection', socket => {
     })
 
     socket.on('newMessage', (data) => {
-        const { to, chatId, from, message } = data;
+        const { to, chatId, from, message, fromName } = data;
 
         if (!Array.isArray(to)) return;
 
@@ -34,7 +50,8 @@ io.on('connection', socket => {
                 to,
                 chatId,
                 from,
-                message
+                message,
+                fromName
             });
             console.log(`Relayed newMessage to user room: ${userId}`);
         });

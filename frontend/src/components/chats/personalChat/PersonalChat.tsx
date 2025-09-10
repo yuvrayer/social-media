@@ -10,6 +10,7 @@ import ChatHeaderPersonal from '../chatHeaderPersonal/ChatHeaderPersonal';
 import ChatMessages from '../chatMessages/chatMessages';
 import ChatInput from '../chatInput/chatInput';
 import './PersonalChat.css';
+import useName from '../../../hooks/useName';
 
 interface PersonalChatProps {
     chat: Chat;
@@ -18,6 +19,7 @@ interface PersonalChatProps {
 
 export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
     const userId = useUserId();
+    const name = useName();
     const chatService = useService(ChatService);
     const dispatch = useDispatch();
 
@@ -27,6 +29,7 @@ export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
 
     const messagesContainerRef = useRef<HTMLDivElement | null>(null);
     const bottomRef = useRef<HTMLDivElement | null>(null);
+    const typingUser = useAppSelector(state => state.chat.typingUser);
 
     // Load messages
     useEffect(() => {
@@ -69,9 +72,10 @@ export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
         try {
             const sentMessage = await chatService.sendMessage(chat.id, {
                 content,
-                participantsIds: chat.participants.map(p => p.id)
+                participantsIds: chat.participants.map(p => p.id),
+                fromName: name
             });
-            dispatch(addMessageForCurrentChat(sentMessage));
+            dispatch(addMessageForCurrentChat({ message: sentMessage, senderName: name }));
             dispatch(addUserChatsMessage(sentMessage));
         } catch (error) {
             console.error('Failed to send message:', error);
@@ -91,7 +95,15 @@ export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
                 bottomRef={bottomRef}
                 isGroup={chat.isGroup}
             />
-            <ChatInput onSend={handleSend} />
+            {typingUser && (
+                <div className="typing-indicator">
+                    {typingUser} is typing...
+                </div>
+            )}
+            <ChatInput
+                onSend={handleSend}
+                chatId={chat.id}
+                chatParticipants={chat.participants?.map(p => p.id)} />
         </div>
     );
 }

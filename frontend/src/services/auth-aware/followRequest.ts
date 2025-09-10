@@ -6,6 +6,11 @@ export interface FollowingRequestResponse {
     usersNum: number
 }
 
+export interface partUserData {
+    name: string,
+    profileImgUrl: string
+}
+
 export default class FollowingRequest extends AuthAware {
     async getAllPendingRequestsIReceived(): Promise<FollowingRequestResponse> {
         const response = await this.axiosInstance.get<FollowingRequestResponse>(`${import.meta.env.VITE_REST_SERVER_URL}/request/getAllPendingRequestsIReceived`)
@@ -17,8 +22,8 @@ export default class FollowingRequest extends AuthAware {
         return response.data
     }
     
-    async sendFollowRequest(userId: string): Promise<boolean> {
-        const response = await this.axiosInstance.post<boolean>(`${import.meta.env.VITE_REST_SERVER_URL}/request/sendFollowRequest/${userId}`)
+    async sendFollowRequest(userId: string, payload: partUserData): Promise<boolean> {
+        const response = await this.axiosInstance.post<boolean>(`${import.meta.env.VITE_REST_SERVER_URL}/request/sendFollowRequest/${userId}`, payload)
         return response.data
     }
 

@@ -8,5 +8,6 @@ export interface Message {
   createdAt: string;
 
   sender?: User;
+  senderName?: string;
 }
 

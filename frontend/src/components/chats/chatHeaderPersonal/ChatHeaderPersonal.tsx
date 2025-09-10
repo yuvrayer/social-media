@@ -10,7 +10,7 @@ interface ChatHeaderPersonalProps {
 }
 
 export default function ChatHeaderPersonal({ chat, userId, onClose }: ChatHeaderPersonalProps) {
-    const otherUser = !chat.isGroup ? chat.participants.find(p => p.id !== userId) : null;
+    const otherUser = chat.isGroup ? null : chat.participants.find(p => p.id !== userId);
     const bucket = "il.co.yuvalrayer";
 
     const avatarUrl = chat.isGroup
@@ -20,7 +20,7 @@ export default function ChatHeaderPersonal({ chat, userId, onClose }: ChatHeader
                 ? chat.photoUrl
                 : groupPicSource)
         : (otherUser?.profileImgUrl
-            ? `${import.meta.env.VITE_AWS_SERVER_URL}/${bucket}/${otherUser.profileImgUrl}`
+            ? `${import.meta.env.VITE_AWS_SERVER_URL}/${otherUser.profileImgUrl}`
             : profilePicSource);
 
     const displayName = chat.isGroup
@@ -35,7 +35,7 @@ export default function ChatHeaderPersonal({ chat, userId, onClose }: ChatHeader
                 <div className="chat-header-text">
                     <span>{displayName}</span>
                     <span className="chat-subtitle">
-                        {chat.participants.map(p => p.name).join(', ')}
+                        {chat.participants?.map(p => p.name).join(', ')}
                     </span>
                 </div>
             )}

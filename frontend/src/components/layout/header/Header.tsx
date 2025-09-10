@@ -16,8 +16,8 @@ import { init as initFollowing } from '../../../redux/followingSlice'
 import { init as initProfile } from '../../../redux/profileSlice'
 import { init as initFeed } from '../../../redux/feedSlice'
 import { init as initStory } from '../../../redux/storySlice'
-import { init as initFollowers, newFollowerAlert } from '../../../redux/followers'
-import { initISent as initFollowersRequestISent } from '../../../redux/followingRequestSlice'
+import { init as initFollowers } from '../../../redux/followers'
+import { initISent as initFollowersRequestISent, newFollowerAlert } from '../../../redux/followingRequestSlice'
 import { initIReceived as initFollowersRequestIReceived } from '../../../redux/followingRequestSlice'
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import FollowingRequest from '../../../services/auth-aware/followRequest'
@@ -42,8 +42,8 @@ export default function Header() {
     const likesService = useService(LikesService)
 
     const [viewedIds, setViewedIds] = useState<string[]>([])
-    let friendRequestNumberIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
-    const count = useAppSelector(state => state.followers.pending)
+    const newFollowingAlert = useAppSelector(state => state.followingRequests.newFollowRequest)
+    const followingRequestsNumberIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
 
 
     const dispatch = useAppDispatch()
@@ -87,8 +87,7 @@ export default function Header() {
                 setViewedIds(viewedUserUploads ? viewedUserUploads : [``])
 
                 const requests = await followingRequest.getAllPendingRequestsIReceived()
-                const requestsIds = requests.users.map(req => req.id)
-                dispatch(initFollowersRequestIReceived(requestsIds))
+                dispatch(initFollowersRequestIReceived(requests.users))
 
                 const followRequests = await followingRequest.getAllPendingRequestsISent()
                 const followRequestsIdArray = followRequests.users.map(req => req.id)
@@ -99,14 +98,12 @@ export default function Header() {
 
                 const allCommentsLikes = await likesService.getAllCommentsLikes()
                 dispatch(initCommentLikes(allCommentsLikes))
-                
+
             } catch (e) {
                 alert(e)
             }
         })()
     }, [userId])
-
-    useEffect(() => { if (count) friendRequestNumberIReceived++; else friendRequestNumberIReceived-- }, [count])
 
     async function reloadHeader(): Promise<void> {
         try {
@@ -175,12 +172,12 @@ export default function Header() {
                     <i className="bi bi-box-arrow-right" onClick={logMeOut}> </i> |
                     <div className='personPlus'>
                         <i className="bi bi-person-plus" onClick={followRequests}></i>
-                        {friendRequestNumberIReceived !== 0 && <span className="notification-badge">{friendRequestNumberIReceived > 10 ? '10+' : friendRequestNumberIReceived}</span>}
+                        {followingRequestsNumberIReceived !== 0 && <span className="notification-badge">{followingRequestsNumberIReceived > 10 ? '10+' : followingRequestsNumberIReceived}</span>}
                     </div>
                 </div>
             </div>
             <div className='RightBottom'>
-                {count && <span className='info'>you have a new friend request!<button onClick={look}>look</button><button onClick={cancelNotification}>x</button></span>}
+                {newFollowingAlert && <span className='info'>you have a new friend request!<button onClick={look}>look</button><button onClick={cancelNotification}>x</button></span>}
             </div>
         </div>
     )
