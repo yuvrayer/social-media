@@ -20,7 +20,7 @@ export async function getProfile(req: Request<{ userId: string }>, res: Response
         })
         // console.log(user.get({ plain: true }))
 
-        res.json({
+        res.status(200).json({
             posts: user.posts,
             postsNum: user.posts.length
         });
@@ -89,6 +89,14 @@ export async function createPost(req: Request, res: Response, next: NextFunction
 export async function updatePost(req: Request<{ id: string }>, res: Response, next: NextFunction) {
     try {
         const post = await Post.findByPk(req.params.id, postIncludes)
+
+        if (!post) {
+            return res.status(404).json({
+                status: 404,
+                error: 'Not Found',
+                message: `Post with ID ${req.params.id} does not exist.`,
+            });
+        }
 
         // an example to findAll
         // const pos2 = await Post.findAll({where: {name: 'Gustav'}})

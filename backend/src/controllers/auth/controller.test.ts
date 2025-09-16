@@ -133,3 +133,11 @@ describe('changeDetail controller', () => {
         expect(mockNext).toHaveBeenCalledWith(expect.any(Error));
     });
 })
+
+afterEach(() => {
+    jest.clearAllMocks();
+});
+
+afterAll(() => {
+    jest.resetAllMocks();
+});

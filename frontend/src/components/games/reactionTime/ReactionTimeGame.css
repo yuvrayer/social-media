@@ -1,0 +1,57 @@
+.reactionTime-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #fff, #e3f2fd);
+}
+
+.reactionTime-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #1565c0;
+}
+
+.reactionTime-info p {
+  margin: 0.5rem 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.reactionTime-message {
+  font-size: 1.3rem;
+  margin: 1.5rem 0;
+  color: #555;
+  text-align: center;
+  min-height: 2rem;
+}
+
+.reactionTime-button {
+  padding: 1rem 2.5rem;
+  font-size: 1.4rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background-color: #42a5f5;
+  color: white;
+  transition: background 0.3s ease;
+}
+
+.reactionTime-button:hover {
+  background-color: #1e88e5;
+}
+
+.reactionTime-button.ready {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.reactionTime-button.now {
+  background-color: #43a047;
+}
+
+.reactionTime-button:disabled {
+  pointer-events: none;
+}

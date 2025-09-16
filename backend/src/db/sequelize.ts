@@ -12,12 +12,13 @@ import PostLike from "../models/postLike";
 import ChatParticipant from "../models/chatParticipant";
 import Chat from "../models/chat";
 import Message from "../models/message";
+import StoryArchive from "../models/storyArchive";
 
 const logging = config.get<boolean>('sequelize.logging') ? console.log : false
 
 const sequelize = new Sequelize({
     models: [User, Post, Comment, Follow, Story, StoryView, PendingFollowRequest, CommentLike, PostLike,
-        ChatParticipant, Chat, Message
+        ChatParticipant, Chat, Message, StoryArchive
     ],
     dialect: 'mysql',
     ...config.get('db'),

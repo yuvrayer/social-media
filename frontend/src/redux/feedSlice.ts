@@ -4,7 +4,7 @@ import Comment from "../models/comment/Comment";
 
 interface FeedState {
     posts: Post[],
-    isNewContent: boolean
+    isNewContent: boolean //for new content flag
 }
 
 const initialState: FeedState = {

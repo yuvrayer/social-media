@@ -5,7 +5,7 @@ import ProfileService from '../../../services/auth-aware/Profile'
 import { useNavigate } from 'react-router-dom'
 import Comments from '../comments/Comments'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import { remove } from '../../../redux/profileSlice'
+import { removePost } from '../../../redux/profileSlice'
 import useService from '../../../hooks/useService'
 import useUserId from '../../../hooks/useUserId'
 import LikesService from '../../../services/auth-aware/Likes'
@@ -45,7 +45,7 @@ export default function Post(props: PostProps): JSX.Element {
         if (confirm(`are you sure you want to delete "${title}"`)) {
             try {
                 await profileService.remove(id)
-                dispatch(remove({ id }))
+                dispatch(removePost({ id }))
             } catch (e) {
                 alert(e)
             }

@@ -1,0 +1,137 @@
+.avoider-container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avoider-title {
+  font-size: 2.5rem;
+  color: #1976d2;
+  margin-bottom: 1rem;
+}
+
+.avoider-stats {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 0.5rem 0.5rem;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  color: #333;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  user-select: none;
+}
+
+.avoider-gameover {
+  color: #d32f2f;
+  font-weight: bold;
+  margin: 0;
+}
+
+.avoider-gameArea {
+  position: relative;
+  width: 80vw;
+  max-width: 800px;
+  height: 60vh;
+  background: white;
+  border: 3px solid #1976d2;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: crosshair;
+  transition: width 0.3s ease, height 0.3s ease;
+  /* Smooth transition */
+}
+
+.avoider-player {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #43a047;
+  border-radius: 8px;
+  transition: left 0.05s linear, top 0.05s linear;
+}
+
+.avoider-block {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #d32f2f;
+  border-radius: 4px;
+  user-select: none;
+}
+
+.avoider-startButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.avoider-startButton:hover {
+  background: #1565c0;
+}
+
+/* Fullscreen buttons container */
+.avoider-controls {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+}
+
+/* Fullscreen button styles */
+.avoider-fullscreenButton,
+.avoider-exitFullscreenButton {
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 8px;
+  border: none;
+  color: white;
+  transition: background-color 0.3s;
+  user-select: none;
+}
+
+/* Enter fullscreen button */
+.avoider-fullscreenButton {
+  background-color: #388e3c;
+}
+
+.avoider-fullscreenButton:hover {
+  background-color: #2e7d32;
+}
+
+/* Exit fullscreen button */
+.avoider-exitFullscreenButton {
+  background-color: #d32f2f;
+}
+
+.avoider-exitFullscreenButton:hover {
+  background-color: #b71c1c;
+}
+
+/* Fullscreen mode styles: expand game area fully */
+:fullscreen .avoider-gameArea,
+:-webkit-full-screen .avoider-gameArea,
+:-moz-full-screen .avoider-gameArea,
+:-ms-fullscreen .avoider-gameArea {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  cursor: crosshair;
+}

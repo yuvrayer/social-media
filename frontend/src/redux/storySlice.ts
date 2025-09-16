@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Story from "../models/story/Story";
 
 interface StoryState {
-    whoHasStory: Story[]
+    whoHasStory: Story[] //all the stories
 }
 
 const initialState: StoryState = {

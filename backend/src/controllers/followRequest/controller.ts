@@ -123,6 +123,12 @@ export async function cancelFollowRequest(req: Request<{ userId: string }>, res:
             StatusCodes.NOT_FOUND,
             'tried to delete unexisting record'
         ))
+
+        socket.emit('friendRequest:canceled', {
+            to: req.params.userId,
+            from: userId
+        })
+
         res.json({ success: true })
     } catch (e) {
         next(e)

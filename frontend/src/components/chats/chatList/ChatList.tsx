@@ -13,6 +13,7 @@ interface ChatListProps {
 export default function ChatList({ onSelectChat }: ChatListProps) {
     const chats = useAppSelector(state => state.chat.userChats);
     const unreadCount = useAppSelector(state => state.chat.unreadChatMessages);
+    console.log(unreadCount)
     const userId = useUserId();
 
     function getChatDisplayName(chat: Chat) {

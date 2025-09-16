@@ -1,0 +1,122 @@
+.whackTheDot-container {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to right, #fff8e1, #ffe082);
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.whackTheDot-title {
+  font-size: 2.5rem;
+  color: #f57f17;
+  margin-bottom: 1rem;
+}
+
+/* Controls (fullscreen buttons) */
+.whackTheDot-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.whackTheDot-fullscreenButton,
+.whackTheDot-exitFullscreenButton {
+  background-color: #f57f17;
+  color: white;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.whackTheDot-fullscreenButton:hover {
+  background-color: #ef6c00;
+}
+
+.whackTheDot-exitFullscreenButton {
+  background-color: #d84315;
+}
+
+.whackTheDot-exitFullscreenButton:hover {
+  background-color: #bf360c;
+}
+
+/* Game area container */
+.whackTheDot-gameArea {
+  position: relative;
+  width: 80vw;
+  height: 60vh;
+  max-width: 800px;
+  background: white;
+  border: 3px dashed #f57f17;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+}
+
+/* Stats inside game area */
+.whackTheDot-stats {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  display: flex;
+  gap: 2rem;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Start button */
+.whackTheDot-startButton {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  background: #f57f17;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s;
+  z-index: 5;
+}
+
+.whackTheDot-startButton:hover {
+  background: #ef6c00;
+}
+
+/* Dot styling */
+.whackTheDot-dot {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: #d84315;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease-in-out;
+}
+
+.whackTheDot-dot:hover {
+  transform: scale(1.2);
+}
+
+/* Fullscreen game area expansion */
+:fullscreen .whackTheDot-gameArea,
+:-webkit-full-screen .whackTheDot-gameArea {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+}

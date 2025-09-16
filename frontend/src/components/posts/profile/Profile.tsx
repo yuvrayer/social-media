@@ -48,6 +48,7 @@ export default function Profile(): JSX.Element {
             {postsState.length === 0 && postsNumRef.current === -1 && <Loading />}
 
             {postsState.length > 0 && <>
+                <NewPost />
                 {postsState.map(p =>
                     <Post
                         key={p.id}

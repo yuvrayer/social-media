@@ -3,7 +3,7 @@ import './Header.css'
 import useName from '../../../hooks/useName'
 import useProfileImg from '../../../hooks/useProfileImg'
 import profilePicSource from '../../../assets/images/profile.jpg'
-import Story from '../../posts/story/Story'
+import Story from '../../story/story/Story'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../../auth/auth/Auth'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
@@ -163,6 +163,7 @@ export default function Header() {
                     <NavLink to="/profile">profile</NavLink>
                     <NavLink to="/feed">feed</NavLink>
                     <NavLink to="/search">search</NavLink>
+                    <NavLink to="/games">games</NavLink>
                 </nav>
             </div>
             <div className='Right'>

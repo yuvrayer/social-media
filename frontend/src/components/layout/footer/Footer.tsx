@@ -75,10 +75,10 @@ export default function Footer() {
                     onChatSelected={async (chat: Chat) => {
                         setSelectedChat(chat);
                         dispatch(setCurrentChatIdToSlice(chat.id))
+                        dispatch(clearUnreadChatMessage(chat.id));
 
                         try {
                             await chatsService.markChatAsRead(chat.id);
-                            dispatch(clearUnreadChatMessage(chat.id));
                         } catch (err) {
                             console.error('Failed to mark chat as read', err);
                         }

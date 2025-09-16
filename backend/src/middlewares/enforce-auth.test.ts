@@ -43,8 +43,7 @@ describe('enforce-auth middleware tests', () => {
         const next = jest.fn((err) => {})
         enforceAuth(request, response, next)
         expect(next.mock.calls.length).toBe(1)
-        expect(next.mock.calls[0][0]).toBeUndefined
-
+        expect(next.mock.calls[0][0]).toBeUndefined();
     })
 
 })

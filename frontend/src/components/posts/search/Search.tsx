@@ -63,7 +63,17 @@ export default function Search(): JSX.Element {
 
             {users.length === 0 && <Loading />}{/* fetching data */}
 
-            {filteredUsers.length === 0 && <>You follow all the users. Impressive!</>}
+            {filteredUsers.length === 0 && !searchTerm && <>You follow all the users. Impressive!</>}
+            {filteredUsers.length === 0 && searchTerm && <>
+                <input
+                    type='text'
+                    placeholder='Search users...'
+                    className='SearchInput'
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                /> <br />
+                There isn`t such user starts with this term
+            </>}
 
             {filteredUsers.length > 0 && (
                 <>

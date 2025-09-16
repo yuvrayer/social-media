@@ -13,7 +13,8 @@ export const sendChatMessageValidator = Joi.object({
         .items(Joi.string().uuid({ version: 'uuidv4' }))
         .min(1)
         .required(),
-    fromName: Joi.string().required()
+    fromName: Joi.string().required(),
+    sentThroughStory: Joi.string().optional()
 });
 
 export const createChatValidator = Joi.object({
