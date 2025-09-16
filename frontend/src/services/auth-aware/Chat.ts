@@ -23,8 +23,8 @@ export default class Chat extends AuthAware {
     }
 
     // GET /chats/messages/:chatId
-    async getMessages(chatId: string): Promise<Message[]> {
-        const response = await this.axiosInstance.get<Message[]>(`${import.meta.env.VITE_REST_SERVER_URL}/chats/messages/${chatId}`);
+    async getMessages(chatId: string, offset: number, limit: number): Promise<Message[]> {
+        const response = await this.axiosInstance.get<Message[]>(`${import.meta.env.VITE_REST_SERVER_URL}/chats/messages/${chatId}`, { params: { offset, limit } });
         return response.data;
     }
 

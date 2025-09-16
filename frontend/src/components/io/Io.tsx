@@ -11,7 +11,7 @@ import useUserId from "../../hooks/useUserId";
 import { addMessageForCurrentChat, addUnreadChatMessage, addUserChatsChat, addUserChatsMessage, setTypingIndicator } from "../../redux/chatSlice";
 import { follow as IFollowFromNow } from "../../redux/followingSlice";
 import { useRef } from 'react';
-import { addFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceISent, newFollowerAlert } from "../../redux/followingRequestSlice";
+import { addFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceISent, newFollowerAlert } from "../../redux/followingRequestSlice";
 import useService from "../../hooks/useService";
 import ChatService from "../../services/auth-aware/Chat"
 
@@ -92,6 +92,13 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                             console.log('Your friend request declined!');
                         }
                         break;
+                    case 'friendRequest:canceled':
+                        if (payload.to === userId) {
+                            dispatch(newFollowerAlert(false))
+                            dispatch(deleteFollowRequestFromSliceIReceived({ userId: payload.from }))
+                            console.log('Your friend request declined!');
+                        }
+                        break;
                     case 'friendRequest:approved':
                         if (payload.to === userId) {
                             //userFillData = the sender data (the user that approved)
@@ -109,9 +116,9 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                             if (payload.chatId === currentChatId)
                                 dispatch(addMessageForCurrentChat({ message: payload.message, senderName: payload.fromName })) //add the message for display (state)
                             else {
+                                dispatch(addUnreadChatMessage(payload.chatId));
                                 try {
                                     await chatService.incrementChatParticipant({ userId: payload.from, chatId: payload.chatId })
-                                    dispatch(addUnreadChatMessage(payload.chatId));
                                 } catch (e) {
                                     alert(e)
                                 }

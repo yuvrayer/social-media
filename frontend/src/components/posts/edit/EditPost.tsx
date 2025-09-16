@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import PostDraft from '../../../models/post/PostDraft'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
-import { update } from '../../../redux/profileSlice'
+import { updatePost } from '../../../redux/profileSlice'
 import useService from '../../../hooks/useService'
 import ProfileService from '../../../services/auth-aware/Profile'
 
@@ -33,7 +33,7 @@ export default function EditPost(): JSX.Element {
         try {
             if (id) {
                 const updatedPost = await profileService.update(id, draft)
-                dispatch(update(updatedPost))
+                dispatch(updatePost(updatedPost))
                 navigate('/profile')
             }
         } catch (e) {

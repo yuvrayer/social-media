@@ -5,15 +5,17 @@ import { Message } from "../models/chat/Message";
 interface ChatState {
     unreadChatMessages: {
         [chatId: string]: number;
-    }
-    userChats: Chat[]
-    currentChatMessages: Message[]
-    typingUser: string | null
-    currentChatId: string | null;
+    } //for the chat lists numbers (in red)
+    unreadChatMessagesForChatMessages: number; //for unread messages flag
+    userChats: Chat[] //for display the personal chats the users is a participant
+    currentChatMessages: Message[] //the chat messages
+    typingUser: string | null //indicator for typing
+    currentChatId: string | null; //the chat id the user opened (for taking its messages)
 }
 
 const initialState: ChatState = {
     unreadChatMessages: {},
+    unreadChatMessagesForChatMessages: 0,
     userChats: [],
     currentChatMessages: [],
     typingUser: null,
@@ -35,6 +37,7 @@ export const chatSlice = createSlice({
         },
         clearUnreadChatMessage: (state, action: PayloadAction<string>) => {
             const chatId = action.payload;
+            state.unreadChatMessagesForChatMessages = state.unreadChatMessages[chatId] //save the number. for unread messages flag
             state.unreadChatMessages[chatId] = 0;
         },
         addUserChatsMessage: (state, action: PayloadAction<Message>) => {

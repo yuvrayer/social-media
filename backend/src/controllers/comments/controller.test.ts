@@ -100,3 +100,11 @@ describe('createComment controller', () => {
         expect(mockNext).toHaveBeenCalledWith(error)
     })
 })
+
+afterEach(() => {
+    jest.clearAllMocks();
+});
+
+afterAll(() => {
+    jest.resetAllMocks();
+});

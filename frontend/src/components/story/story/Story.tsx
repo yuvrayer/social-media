@@ -17,7 +17,7 @@ interface StoryProps {
 
 export default function Story(props: StoryProps) {
 
-    const { userDetails: { name, profileImgUrl, hasStory, userId }, currentUserId } = props
+    const { userDetails: { name, profileImgUrl, hasStory, userId}, currentUserId } = props
     const storyService = useService(StoryService)
     const dispatch = useAppDispatch()
 
@@ -116,7 +116,7 @@ export default function Story(props: StoryProps) {
                     images={images}
                     onClose={() => setShowPopup(false)}
                     name={name}
-                    profileImgUrl={profileImgUrl ? profileImgUrl : `il.co.yuvalrayer/profile.jpg`}
+                    profileImgUrl={profileImgUrl ?? `il.co.yuvalrayer/profile.jpg`}
                     currentUserId={props.currentUserId}
                     userId={userId}
                     createdAt={dates}

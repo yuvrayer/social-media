@@ -32,7 +32,12 @@ io.on('connection', socket => {
 
     socket.on('friendRequest:deleted', (data) => {
         io.to(data.to).emit('friendRequest:deleted', data)
-        console.log(`Sent friend request to user room: ${data.to}`)
+        console.log(`Deleted friend request from user room: ${data.to}`)
+    })
+
+    socket.on('friendRequest:canceled', (data) => {
+        io.to(data.to).emit('friendRequest:canceled', data)
+        console.log(`Canceled friend request from user room: ${data.to}`)
     })
 
     socket.on('friendRequest:approved', (data) => {

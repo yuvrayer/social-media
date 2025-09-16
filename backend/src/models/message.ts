@@ -1,7 +1,6 @@
 import {
     Table, Column, Model, DataType, PrimaryKey, ForeignKey, BelongsTo,
     Default,
-    CreatedAt
 } from 'sequelize-typescript';
 import User from './user';
 import Chat from './chat';
@@ -48,6 +47,12 @@ export default class Message extends Model {
     })
     createdAt: Date;
 
+    @Default(``)
+    @Column({
+        type: DataType.TEXT,
+        allowNull: false,
+    })
+    sentThroughStory: string
 
     @BelongsTo(() => Chat)
     chat: Chat;

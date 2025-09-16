@@ -18,6 +18,8 @@ import CommentLike from "./commentLike";
 import Chat from "./chat";
 import Message from "./message";
 import ChatParticipant from "./chatParticipant";
+import Story from "./story";
+import StoryArchive from "./storyArchive";
 
 @Table({
     underscored: true,
@@ -80,4 +82,16 @@ export default class User extends Model {
     // Messages sent by this user
     @HasMany(() => Message, `senderId`)
     messages: Message[];
+
+    @HasMany(() => Story, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    stories: Story[];
+
+    @HasMany(() => StoryArchive, {
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
+    })
+    storiesArchive: StoryArchive[];
 }

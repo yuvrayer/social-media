@@ -50,7 +50,11 @@ export default function NewPost(): JSX.Element {
                     },
                     minLength: {
                         value: 10,
-                        message: 'title must be 10 chars long'
+                        message: 'title must be at least 10 chars long'
+                    },
+                    maxLength: {
+                        value: 40,
+                        message: 'title must be less than 40 chars long'
                     }
                 })} />
                 <span className='error'>{formState.errors.title?.message}</span>

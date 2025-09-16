@@ -309,6 +309,22 @@ CREATE TABLE `stories` (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+CREATE TABLE `storiesArchive` (
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `user_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `profile_img_url` varchar(255),
+  `name` varchar(255),
+  `story_img_url` varchar(255),
+  `created_at` datetime NOT NULL,
+  `updated_at` datetime NOT NULL,
+
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `story_views` (
   `id` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `user_id_uploaded` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
@@ -395,6 +411,7 @@ CREATE TABLE `messages` (
   `sender_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `content` text NOT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `sent_through_story` text NOT NULL,
   PRIMARY KEY (`id`),
   FOREIGN KEY (`chat_id`) REFERENCES `chats` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
@@ -414,13 +431,13 @@ INSERT INTO chat_participants (chat_id, user_id, unread_messages) VALUES
 ('chat-2222-2222-2222-222222222222', '57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 0); -- Charlie
 
 -- 3. Messages for Bob's private chat with Alice
-INSERT INTO messages (id, chat_id, sender_id, content, created_at) VALUES
-('msg-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Hey Bob, ready for the meeting?', '2025-08-12 09:30:00'),
-('msg-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'chat-1111-1111-1111-111111111111', '1230ae30-dc4f-4752-bd84-092956f5c633', 'Yes, I am! See you soon.', '2025-08-12 09:35:00'),
-('msg-cccc-cccc-cccc-cccccccccccc', 'chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Great, looking forward to it.', '2025-08-12 09:40:00');
+INSERT INTO messages (id, chat_id, sender_id, content, created_at, sent_through_story) VALUES
+('msg-aaaa-aaaa-aaaa-aaaaaaaaaaaa', 'chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Hey Bob, ready for the meeting?', '2025-08-12 09:30:00', ''),
+('msg-bbbb-bbbb-bbbb-bbbbbbbbbbbb', 'chat-1111-1111-1111-111111111111', '1230ae30-dc4f-4752-bd84-092956f5c633', 'Yes, I am! See you soon.', '2025-08-12 09:35:00', ''),
+('msg-cccc-cccc-cccc-cccccccccccc', 'chat-1111-1111-1111-111111111111', '4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Great, looking forward to it.', '2025-08-12 09:40:00', '');
 
 -- 4. Messages for group chat "Weekend Plans"
-INSERT INTO messages (id, chat_id, sender_id, content, created_at) VALUES
-('msg-dddd-dddd-dddd-dddddddddddd', 'chat-2222-2222-2222-222222222222', '034485be-cfd2-48a7-b80d-f54773eab18c', 'Are we still on for the hiking trip?', '2025-08-12 12:00:00'),
-('msg-eeee-eeee-eeee-eeeeeeeeeeee', 'chat-2222-2222-2222-222222222222', '57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 'Yes, I’m bringing snacks!', '2025-08-12 12:15:00'),
-('msg-ffff-ffff-ffff-ffffffffffff', 'chat-2222-2222-2222-222222222222', '1230ae30-dc4f-4752-bd84-092956f5c633', 'Awesome, can’t wait.', '2025-08-12 12:20:00');
+INSERT INTO messages (id, chat_id, sender_id, content, created_at, sent_through_story) VALUES
+('msg-dddd-dddd-dddd-dddddddddddd', 'chat-2222-2222-2222-222222222222', '034485be-cfd2-48a7-b80d-f54773eab18c', 'Are we still on for the hiking trip?', '2025-08-12 12:00:00', ''),
+('msg-eeee-eeee-eeee-eeeeeeeeeeee', 'chat-2222-2222-2222-222222222222', '57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 'Yes, I’m bringing snacks!', '2025-08-12 12:15:00', ''),
+('msg-ffff-ffff-ffff-ffffffffffff', 'chat-2222-2222-2222-222222222222', '1230ae30-dc4f-4752-bd84-092956f5c633', 'Awesome, can’t wait.', '2025-08-12 12:20:00', '');

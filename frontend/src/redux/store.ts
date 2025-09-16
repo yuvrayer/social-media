@@ -7,6 +7,7 @@ import { followersSlice } from "./followers";
 import { followingRequestSlice } from "./followingRequestSlice";
 import { likesSlice } from "./likes";
 import { chatSlice } from "./chatSlice";
+import { gamesSlice } from "./games";
 
 const store = configureStore({
     reducer: { // i.e. slices
@@ -17,7 +18,8 @@ const store = configureStore({
         followers: followersSlice.reducer,
         followingRequests: followingRequestSlice.reducer,
         likes: likesSlice.reducer,
-        chat: chatSlice.reducer
+        chat: chatSlice.reducer,
+        games: gamesSlice.reducer
     }
 })
 

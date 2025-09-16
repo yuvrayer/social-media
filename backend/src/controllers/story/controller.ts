@@ -3,6 +3,7 @@ import Story from "../../models/story";
 import StoryViews from "../../models/sawStory";
 import { UploadedFile } from "express-fileupload";
 import Follow from "../../models/follow";
+import StoryArchive from "../../models/storyArchive";
 
 export async function getStoryList(req: Request<{ currentUserId: string }>, res: Response, next: NextFunction) {
     try {
@@ -31,10 +32,11 @@ export async function getStoryList(req: Request<{ currentUserId: string }>, res:
 
 export async function getUserStories(req: Request<{ userId: string }>, res: Response, next: NextFunction) {
     try {
+        const userId = req.params.userId
         const stories = await Story.findAll({
             where:
             {
-                userId: req.params.userId
+                userId: userId
             }
         })
         res.json(stories)
@@ -95,7 +97,7 @@ export async function addSaw(req: Request<{}, {}, { userIdUploaded: string, user
 export async function addStory(req: Request<{}, {}, { userId: string, profileImgUrl: string, name: string }>, res: Response, next: NextFunction) {
     try {
         const storyImage = req.files.storyImage as UploadedFile
-        const stories = await Story.create({
+        const story = await Story.create({
             userId: req.body.userId,
             storyImgUrl: storyImage.name,
             profileImgUrl: req.body.profileImgUrl,
@@ -104,18 +106,27 @@ export async function addStory(req: Request<{}, {}, { userId: string, profileImg
 
         setTimeout(async () => {
             try {
+                await StoryArchive.create({
+                    id: story.id,
+                    userId: req.body.userId,
+                    storyImgUrl: storyImage.name,
+                    profileImgUrl: req.body.profileImgUrl,
+                    name: req.body.name
+                })
+
                 await Story.destroy({
                     where: {
-                        id: stories.id
+                        id: story.id
                     }
                 });
                 console.log("Story deleted after 5 minutes.");
             } catch (err) {
                 console.error("Failed to delete story after timeout:", err);
             }
-        }, 5 * 60 * 1000); // 5 minutes
+        }, 2 * 60 * 1000 )  // 2 min
+        // }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
-        res.json(stories)
+        res.json(story)
     } catch (e) {
         next(e);
     }

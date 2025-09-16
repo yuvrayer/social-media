@@ -20,10 +20,10 @@ export const profileSlice = createSlice({
         newPost: (state, action: PayloadAction<Post>) => {
             state.posts = [action.payload, ...state.posts]
         },
-        remove: (state, action: PayloadAction<{ id: string }>) => {
+        removePost: (state, action: PayloadAction<{ id: string }>) => {
             state.posts = state.posts.filter(p => p.id !== action.payload.id)
         },
-        update: (state, action: PayloadAction<Post>) => {
+        updatePost: (state, action: PayloadAction<Post>) => {
             const index = state.posts.findIndex(p => p.id === action.payload.id)
             if (index > -1) {
                 state.posts[index] = action.payload
@@ -35,6 +35,6 @@ export const profileSlice = createSlice({
     }
 })
 
-export const { init, newPost, remove, update, addComment } = profileSlice.actions
+export const { init, newPost, removePost, updatePost, addComment } = profileSlice.actions
 
 export default profileSlice.reducer

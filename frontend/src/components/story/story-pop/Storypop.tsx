@@ -2,6 +2,8 @@ import StoryService from "../../../services/auth-aware/Story"
 import { useEffect, useState, useRef } from 'react';
 import './Storypop.css';
 import useService from "../../../hooks/useService";
+import ProgressBar from "../progressBar/ProgressBar";
+import StoryMessageInput from "../storyMessageInput/StoryMessageInput";
 
 interface StoryPopupProps {
     images: string[];
@@ -36,15 +38,20 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
         };
     }, [currentIndex]);
 
-    const startTimer = () => {
+    const startTimeRef = useRef<number | null>(null);
+
+    const startTimer = (timeInMs?: number) => {
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
+
+        startTimeRef.current = Date.now(); // record start time
+
         timeoutRef.current = setTimeout(() => {
             if (currentIndex < images.length - 1) {
                 setCurrentIndex(currentIndex + 1);
             } else {
                 onClose(); // close when all stories are shown
             }
-        }, 8000); // 8 seconds per story
+        }, timeInMs ? timeInMs + 3000 : 8000); // 8 seconds per story
     };
 
     const goToNext = () => {
@@ -86,6 +93,56 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
         }
     }
 
+    //
+    const getElapsedTime = () => {
+        if (!startTimeRef.current) return 0;
+        return Date.now() - startTimeRef.current; // ms elapsed
+    };
+
+    const getRemainingTime = () => {
+        const duration = 8000; // your timer duration in ms
+        return Math.max(duration - getElapsedTime(), 0);
+    };
+
+
+    const [progressBarStop, setProgressBarStop] = useState<boolean>(false);
+    const pauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    function onInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+        const value = event.target.value;
+        const timeForTimer = getRemainingTime();
+
+        if (value.trim() === '') {
+            // Input is empty: resume progress bar immediately
+            setProgressBarStop(false);
+
+            // Clear any existing pause timeout
+            if (pauseTimeoutRef.current) {
+                clearTimeout(pauseTimeoutRef.current);
+                pauseTimeoutRef.current = null;
+            }
+        } else {
+            // Input has text: pause progress bar
+            setProgressBarStop(true);
+
+            // Clear any previous timeout before starting a new one
+            if (pauseTimeoutRef.current) {
+                clearTimeout(pauseTimeoutRef.current);
+            }
+
+            // Start or reset 3-second timer to resume progress bar
+            pauseTimeoutRef.current = setTimeout(() => {
+                setProgressBarStop(false);
+                pauseTimeoutRef.current = null; // clear ref after timeout
+            }, 3000);
+
+            // If you want to restart the main timer with remaining time
+            startTimer(timeForTimer);
+        }
+    }
+
+    const notMyStory = currentUserId !== userId
+
     return (
         <div className="StoryPopup">
             <div className="StoryPopup-Overlay" onClick={onClose} />
@@ -108,16 +165,20 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
                     <button className="StoryPopup-Close" onClick={onClose}>✕</button>
                 </div>
 
-                <div className="StoryPopup-ProgressBar">
-                    {images.map((_, idx) => (
-                        <div
-                            key={idx}
-                            className={`ProgressSegment ${idx < currentIndex ? 'filled' : ''} ${idx === currentIndex ? 'active' : ''}`}
-                        />
-                    ))}
-                </div>
+                <ProgressBar
+                    total={images.length}
+                    currentIndex={currentIndex}
+                    durationMs={8000} // match timer duration in StoryPopup
+                    autoPause={progressBarStop}
+                />
 
                 <img src={images[currentIndex]} className="StoryPopup-Image" alt={`Story ${currentIndex}`} />
+
+                {notMyStory && <StoryMessageInput
+                    onInputChange={onInputChange}
+                    userId={userId}
+                    imgSrc={images[currentIndex]}
+                />}
 
                 <div className="StoryPopup-Nav Left" onClick={goToPrev} />
                 <div className="StoryPopup-Nav Right" onClick={goToNext} />

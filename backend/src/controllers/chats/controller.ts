@@ -117,14 +117,19 @@ export async function getChatMessages(req: Request<{ chatId: string }>, res: Res
         const userId = req.userId;
         const { chatId } = req.params;
 
+        // Parse pagination query params
+        const offset = parseInt(req.query.offset as string) || 0;
+        const limit = parseInt(req.query.limit as string) || 40;
+
         // Check if user is participant
         const participant = await ChatParticipant.findOne({ where: { chatId, userId } });
         if (!participant) return res.status(403).json({ error: "Forbidden" });
 
-
         const messages = await Message.findAll({
             where: { chatId },
             order: [["created_at", "ASC"]],
+            limit,
+            offset,
             include: [{
                 model: User,
                 as: `sender`,
@@ -140,7 +145,7 @@ export async function getChatMessages(req: Request<{ chatId: string }>, res: Res
 }
 
 // POST /messages/:chatId - send a message
-export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fromName: string, content: string | number, participantsIds: string[] }>, res: Response, next: NextFunction) {
+export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fromName: string, content: string | number, participantsIds: string[], sentThroughStory?: string }>, res: Response, next: NextFunction) {
     try {
         const userId = req.userId;
         const { chatId } = req.params;
@@ -161,6 +166,7 @@ export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fro
             chatId,
             senderId: userId,
             content,
+            sentThroughStory: req.body.sentThroughStory ?? false
         });
 
         socket.emit('newMessage', {

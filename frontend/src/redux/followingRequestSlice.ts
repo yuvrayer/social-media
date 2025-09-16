@@ -2,9 +2,9 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import UserFillData from "../models/user/UserFillData";
 
 interface FollowingRequestState {
-    followingRequestISent: string[],
-    followingRequestIReceived: UserFillData[],
-    newFollowRequest: boolean
+    followingRequestISent: string[], //all the requests i sent
+    followingRequestIReceived: UserFillData[], //all the requests i received (with the data to display name, img)
+    newFollowRequest: boolean //for new follower flag
 }
 
 const initialState: FollowingRequestState = {

@@ -1,0 +1,130 @@
+/* Container and layout */
+.buttonClick-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 2rem;
+  background: linear-gradient(to right, #f9f9f9, #e0f7fa);
+  min-height: 100vh;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.buttonClick-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #00796b;
+}
+
+/* Info area - score & timer */
+.buttonClick-info {
+  display: flex;
+  gap: 2rem;
+  font-size: 1.2rem;
+  margin: 10px 0 1rem 10px;
+}
+
+.buttonClick-score,
+.buttonClick-timer {
+  background: #ffffffdd;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+/* Game area */
+.buttonClick-gameArea {
+  position: relative;
+  width: 80vw;
+  max-width: 800px;
+  height: 60vh;
+  background: #ffffff;
+  border: 3px dashed #00796b;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Fullscreen styles for game area */
+.buttonClick-gameArea:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  border: none;
+  background-color: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 1rem;
+  color: white;
+}
+
+/* Clickable button */
+.buttonClick-button {
+  width: 80px;
+  height: 80px;
+  font-size: 16px;
+  border-radius: 50%;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  padding: 1rem;
+  transition: transform 0.1s;
+  position: absolute;
+}
+
+.buttonClick-button:hover {
+  transform: scale(1.1);
+}
+
+/* Start game button */
+.buttonClick-startButton {
+  padding: 1rem 2rem;
+  background: #009688;
+  color: white;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: background 0.3s;
+}
+
+.buttonClick-startButton:hover {
+  background: #00796b;
+}
+
+/* Fullscreen control buttons */
+.buttonClick-controls {
+  margin-bottom: 10px;
+}
+
+.buttonClick-fullscreenButton,
+.buttonClick-exitFullscreenButton {
+  padding: 8px 16px;
+  margin: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: none;
+}
+
+.buttonClick-fullscreenButton {
+  background-color: #28a745;
+  color: white;
+}
+
+.buttonClick-exitFullscreenButton {
+  background-color: #dc3545;
+  color: white;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
