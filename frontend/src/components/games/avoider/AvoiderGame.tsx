@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './AvoiderGame.css';
+import TopThreeScores from '../topThreeScores/TopThreeScores';
+import { useAppSelector } from '../../../redux/hooks';
+import useUserId from '../../../hooks/useUserId';
+import useService from '../../../hooks/useService';
+import GameService from "../../../services/auth-aware/Games"
 
 type Block = {
   id: number;
@@ -226,65 +231,96 @@ const AvoiderGame: React.FC = () => {
     }
   };
 
+  const scores = useAppSelector(state => state.games.scores)
+  const userId = useUserId()
+  const gamesService = useService(GameService)
+
+  useEffect(() => {
+    const maybeUpdateScore = async () => {
+      const myScore = scores.find(score => score.userId === userId)
+      const myBestScore = myScore?.bestScore ?? 0
+
+      if (timeSurvived > myBestScore) {
+        try {
+          await gamesService.newGameBestScore("Avoider", timeSurvived)
+          alert(`new best score!!`)
+        } catch (e) {
+          alert(e)
+        }
+      }
+    }
+
+    maybeUpdateScore()
+  }, [gameOver])
+
+
   return (
-    <div className="avoider-container">
-      <h1 className="avoider-title">Avoider Game</h1>
+    <>
+      <div className="avoider-container">
+        <h1 className="avoider-title">Avoider Game</h1>
 
-      <div
-        className="avoider-gameArea"
-        ref={gameAreaRef}
-        onMouseMove={handleMouseMove}
-      >
+        <div
+          className="avoider-gameArea"
+          ref={gameAreaRef}
+          onMouseMove={handleMouseMove}
+        >
 
-        <div className="avoider-stats">
-          {(isPlaying || gameOver) && <p>Time: {timeSurvived}s</p>}
-          {gameOver && (
-            <p className="avoider-gameover">
-              Game Over! You survived {timeSurvived}s
-            </p>
+          <div className="avoider-stats">
+            {(isPlaying || gameOver) && <p>Time: {timeSurvived}s</p>}
+            {gameOver && (
+              <p className="avoider-gameover">
+                Game Over! You survived {timeSurvived}s
+              </p>
+            )}
+          </div>
+
+          {isPlaying && (
+            <div
+              className="avoider-player"
+              style={{ left: playerPos.x, top: playerPos.y }}
+            />
+          )}
+
+          {blocks.map((block) => (
+            <div
+              key={block.id}
+              className="avoider-block"
+              style={{ left: block.x, top: block.y }}
+            />
+          ))}
+
+          {!isPlaying && (
+            <button className="avoider-startButton" onClick={startGame}>
+              {gameOver ? 'Play Again' : 'Start Game'}
+            </button>
           )}
         </div>
 
-        {isPlaying && (
-          <div
-            className="avoider-player"
-            style={{ left: playerPos.x, top: playerPos.y }}
-          />
-        )}
-
-        {blocks.map((block) => (
-          <div
-            key={block.id}
-            className="avoider-block"
-            style={{ left: block.x, top: block.y }}
-          />
-        ))}
-
-        {!isPlaying && (
-          <button className="avoider-startButton" onClick={startGame}>
-            {gameOver ? 'Play Again' : 'Start Game'}
-          </button>
-        )}
+        <div className="avoider-controls">
+          {!isFullscreen ? (
+            <button
+              className="avoider-fullscreenButton"
+              onClick={enterFullscreen}
+            >
+              Enter Fullscreen
+            </button>
+          ) : (
+            <button
+              className="avoider-exitFullscreenButton"
+              onClick={exitFullscreen}
+            >
+              Exit Fullscreen
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="avoider-controls">
-        {!isFullscreen ? (
-          <button
-            className="avoider-fullscreenButton"
-            onClick={enterFullscreen}
-          >
-            Enter Fullscreen
-          </button>
-        ) : (
-          <button
-            className="avoider-exitFullscreenButton"
-            onClick={exitFullscreen}
-          >
-            Exit Fullscreen
-          </button>
-        )}
-      </div>
-    </div>
+      <h1>My followers best scores</h1>
+      <TopThreeScores
+        scores={scores}
+      />
+
+    </>
   );
 };
 

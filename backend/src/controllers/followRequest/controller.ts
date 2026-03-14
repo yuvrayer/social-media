@@ -17,7 +17,7 @@ export async function getAllPendingRequestsIReceived(req: Request, res: Response
                 {
                     model: User,
                     as: 'sender',
-                    attributes: ['id', 'name', 'username'], // Limit returned fields
+                    attributes: ['id', 'name', `profileImgUrl`, 'username'], // Limit returned fields
                 }
             ],
             order: [[{ model: User, as: 'sender' }, 'name', 'ASC']],

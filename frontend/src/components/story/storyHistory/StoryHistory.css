@@ -1,0 +1,59 @@
+.HistoryStory {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+    justify-content: center;
+}
+
+/* Each story as a cube */
+.story-thumbnail {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.story-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+/* Centered image */
+.story-thumbnail img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Name at the bottom */
+.story-thumbnail p {
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    color: #333;
+    margin: 0;
+}
+
+/* Date in top-left corner */
+.story-thumbnail .story-date {
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-size: 12px;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+}

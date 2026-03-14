@@ -9,7 +9,6 @@ import { AuthContext } from '../../auth/auth/Auth'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import useService from '../../../hooks/useService'
 import StoryService from "../../../services/auth-aware/Story"
-import { init } from '../../../redux/storySlice'
 import useUserId from '../../../hooks/useUserId'
 import { v4 } from 'uuid'
 import { init as initFollowing } from '../../../redux/followingSlice'
@@ -79,7 +78,8 @@ export default function Header() {
         (async () => {
             try {
                 const stories = await storyService.getStoriesData(userId)
-                dispatch(init(stories))
+                dispatch(initStory(stories))
+
                 const viewedStories = await storyService.getViewedStoryIds()
                 const viewedUserUploads = viewedStories
                     .filter(s => s.userIdSaw === userId)
@@ -108,7 +108,7 @@ export default function Header() {
     async function reloadHeader(): Promise<void> {
         try {
             const stories = await storyService.getStoriesData(userId)
-            dispatch(init(stories))
+            dispatch(initStory(stories))
         } catch (e) {
             alert(e)
         }
@@ -164,6 +164,7 @@ export default function Header() {
                     <NavLink to="/feed">feed</NavLink>
                     <NavLink to="/search">search</NavLink>
                     <NavLink to="/games">games</NavLink>
+                    <NavLink to="/storyHistory">my story history</NavLink>
                 </nav>
             </div>
             <div className='Right'>

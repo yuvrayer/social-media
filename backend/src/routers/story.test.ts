@@ -5,17 +5,20 @@ import {
     getUserStoriesSeenData,
     deleteStory,
     addSaw,
-    addStory
+    addStory,
+    getUserStoriesHistory,
 } from '../controllers/story/controller'
 
 import Story from '../models/story'
 import StoryViews from '../models/sawStory'
 import Follow from '../models/follow'
+import StoryArchive from '../models/storyArchive'
 
 // Mock the Sequelize models
 jest.mock('../models/story')
 jest.mock('../models/sawStory')
 jest.mock('../models/follow')
+jest.mock('../models/storyArchive')
 
 const mockRes = () => {
     const res = {} as Response
@@ -144,9 +147,9 @@ describe('Story Controller Tests', () => {
         test('should create a story and schedule deletion', async () => {
             const req = {
                 body: {
-                    userId: '1',
+                    userId: '1230ae30-dc4f-4752-bd84-092956f5c633',
                     profileImgUrl: 'url',
-                    name: 'John'
+                    name: 'Bob'
                 },
                 files: {
                     storyImage: { name: 'story.jpg' }
@@ -162,11 +165,44 @@ describe('Story Controller Tests', () => {
             expect(res.json).toHaveBeenCalledWith(createdStory)
 
             // Fast-forward 5 minutes
-            jest.runAllTimers()
+            jest.advanceTimersByTime(5 * 60 * 1000)
+
+            //wait for callbacks to resolved
+            await Promise.resolve()
+            await Promise.resolve()
 
             expect(Story.destroy).toHaveBeenCalledWith({
                 where: { id: 'abc' }
             })
+        })
+    })
+
+    describe('getUserStoriesHistory', () => {
+        test('should return story history for authenticated user', async () => {
+            const req = { userId: '1230ae30-dc4f-4752-bd84-092956f5c633' } as Request
+            const res = mockRes()
+            const stories = [{ id: 's1' }, { id: 's2' }]
+
+                ; (StoryArchive.findAll as jest.Mock).mockResolvedValue(stories)
+
+            await getUserStoriesHistory(req, res, mockNext)
+
+            expect(StoryArchive.findAll).toHaveBeenCalledWith({
+                where: { userId: '1230ae30-dc4f-4752-bd84-092956f5c633' }
+            })
+            expect(res.json).toHaveBeenCalledWith(stories)
+        })
+
+        test('should call next with error on failure', async () => {
+            const req = { userId: 'user-123' } as Request
+            const res = mockRes()
+            const error = new Error('DB error')
+
+                ; (StoryArchive.findAll as jest.Mock).mockRejectedValue(error)
+
+            await getUserStoriesHistory(req, res, mockNext)
+
+            expect(mockNext).toHaveBeenCalledWith(error)
         })
     })
 })

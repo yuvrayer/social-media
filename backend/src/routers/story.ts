@@ -1,6 +1,6 @@
 import { Router } from "express"
 import enforceAuth from "../middlewares/enforce-auth"
-import { addSaw, addStory, deleteStory, getStoryList, getUserStories, getUserStoriesSeenData } from "../controllers/story/controller"
+import { addSaw, addStory, deleteStory, getStoryList, getUserStories, getUserStoriesHistory, getUserStoriesSeenData } from "../controllers/story/controller"
 import validation from "../middlewares/validation"
 import { addSawValidator, deleteStoryParamsValidator, newStoryFilesValidator, storyListParams, storyValidator } from "../controllers/story/validator"
 import filesValidation from "../middlewares/files-validation"
@@ -13,6 +13,7 @@ storyRouter.use(enforceAuth)
 
 storyRouter.get('/get/:userId', getUserStories)
 storyRouter.get('/getStories/:currentUserId', paramsValidation(storyListParams), getStoryList)
+storyRouter.get('/getUserStoriesHistory', getUserStoriesHistory)
 storyRouter.get('/getSeenStories', getUserStoriesSeenData)
 storyRouter.post('/addSaw', validation(addSawValidator), addSaw)
 storyRouter.post('/addStory', validation(storyValidator), filesValidation(newStoryFilesValidator), fileUploader, addStory)

@@ -17,27 +17,27 @@ export default class Message extends Model {
         type: DataType.CHAR(36),
         allowNull: false,
     })
-    id: string;
+    id!: string;
 
     @ForeignKey(() => Chat)
     @Column({
         type: DataType.CHAR(36),
         allowNull: false,
     })
-    chatId: string;
+    chatId!: string;
 
     @ForeignKey(() => User)
     @Column({
-        type: DataType.CHAR(36),
+        type: DataType.UUID,
         allowNull: false,
     })
-    senderId: string;
+    senderId!: string;
 
     @Column({
         type: DataType.TEXT,
         allowNull: false,
     })
-    content: string;
+    content!: string;
 
     @Column({
         type: DataType.DATE,
@@ -45,19 +45,19 @@ export default class Message extends Model {
         field: `created_at`,
         defaultValue: DataType.NOW
     })
-    createdAt: Date;
+    createdAt!: Date;
 
     @Default(``)
     @Column({
         type: DataType.TEXT,
         allowNull: false,
     })
-    sentThroughStory: string
+    sentThroughStory!: string;
 
     @BelongsTo(() => Chat)
-    chat: Chat;
+    chat!: Chat;
 
     @BelongsTo(() => User, { foreignKey: 'senderId', as: 'sender' })
-    sender: User;
+    sender!: User;
 
 }

@@ -18,10 +18,10 @@ export default class Chat extends Model {
         type: DataType.CHAR(36),
         allowNull: false,
     })
-    id: string;
+    id!: string;
 
     @Column(DataType.STRING)
-    name: string;
+    name!: string;
 
     @Default(null)
     @Column({
@@ -29,11 +29,11 @@ export default class Chat extends Model {
         allowNull: true,
         field: 'photo_url',
     })
-    photoUrl: string | null;
+    photoUrl!: string | null;
 
     @Default(false)
     @Column(DataType.BOOLEAN)
-    isGroup: boolean;
+    isGroup!: boolean;
 
     @CreatedAt
     @Column({
@@ -41,20 +41,20 @@ export default class Chat extends Model {
         allowNull: false,
         defaultValue: DataType.NOW
     })
-    createdAt: Date;
+    createdAt!: Date;
 
     @Column({
         type: DataType.DATE,
         allowNull: false
     })
-    updatedAt: Date;
+    updatedAt!: Date;
 
     @BelongsToMany(() => User, () => ChatParticipant)
-    participants: User[];
+    participants!: User[];
 
     @HasMany(() => Message)
-    messages: Message[];
+    messages!: Message[];
 
     @HasMany(() => ChatParticipant)
-    ChatParticipants: ChatParticipant[]; // 👈 Add this for type safety
+    ChatParticipants!: ChatParticipant[]; // 👈 Add this for type safety
 }

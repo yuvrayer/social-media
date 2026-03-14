@@ -22,21 +22,21 @@ export default class StoryView extends Model {
     @Default(DataType.UUIDV4)
     @AllowNull(false)
     @Column(DataType.UUID)
-    id: string;
+    id!: string;
 
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column({ field: "user_id_uploaded", type: DataType.UUID })
-    userIdUploaded: string;
+    userIdUploaded!: string;
 
     @BelongsTo(() => User, "userIdUploaded")
-    uploader: User;
+    uploader!: User;
 
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column({ field: "user_id_saw", type: DataType.UUID })
-    userIdSaw: string;
+    userIdSaw!: string;
 
     @BelongsTo(() => User, "userIdSaw")
-    viewer: User;
+    viewer!: User;
 }

@@ -86,7 +86,7 @@ export async function changeDetail(req: Request<{}, {}, { name: string, id: stri
         let profileImgUrl = req.body.alreadyPic
 
         const existingUser = await User.findOne({ where: { name } });
-        if (existingUser.id !== req.body.id) return next(new AppError(StatusCodes.CONFLICT, 'Name already taken'))
+        if (existingUser?.id !== req.body.id) return next(new AppError(StatusCodes.CONFLICT, 'Name already taken'))
 
 
         if (req.imageUrl && !req.body.alreadyPic) {
@@ -104,7 +104,7 @@ export async function changeDetail(req: Request<{}, {}, { name: string, id: stri
 
         const updatedUser = await User.findOne({ where: { id: req.body.id } });
 
-        const jwt = sign(updatedUser.get({ plain: true }), config.get<string>('app.jwtSecret'))
+        const jwt = sign(updatedUser?.get({ plain: true }), config.get<string>('app.jwtSecret'))
         res.json({ jwt })
 
     } catch (e) {

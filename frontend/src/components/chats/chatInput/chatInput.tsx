@@ -3,24 +3,44 @@ import "./chatInput.css"
 import useSocket from '../../../hooks/useSocket';
 import useName from '../../../hooks/useName';
 import useUserId from '../../../hooks/useUserId';
+import { addMessageForCurrentChat, addUserChatsMessage, clearUnreadChatMessage } from '../../../redux/chatSlice';
+import useService from '../../../hooks/useService';
+import ChatService from '../../../services/auth-aware/Chat';
+import { useDispatch } from 'react-redux';
 
 interface ChatInputProps {
-    onSend: (message: string) => void;
     chatId: string,
     chatParticipants: string[]
 }
 
-export default function ChatInput({ onSend, chatId, chatParticipants }: ChatInputProps) {
+export default function ChatInput({ chatId, chatParticipants }: ChatInputProps) {
+
     const [message, setMessage] = useState('');
     const { socket } = useSocket()
-    const userName = useName()
+    const name = useName()
     const userId = useUserId()
+    const chatService = useService(ChatService);
+    const dispatch = useDispatch();
 
-    const handleSend = () => {
+    // Handle sending a new message
+    const handleSend = async () => {
         if (!message.trim()) return;
-        onSend(message);
-        setMessage('');
+        try {
+            const sentMessage = await chatService.sendMessage(chatId, {
+                content: message,
+                participantsIds: chatParticipants,
+                fromName: name,
+            });
+
+            dispatch(addMessageForCurrentChat({ message: sentMessage, senderName: name }));
+            dispatch(addUserChatsMessage(sentMessage));
+            dispatch(clearUnreadChatMessage(chatId))
+            setMessage('');
+        } catch (error) {
+            console.error('Failed to send message:', error);
+        }
     };
+
 
     const handleTyping = (text: string) => {
         setMessage(text);
@@ -29,9 +49,16 @@ export default function ChatInput({ onSend, chatId, chatParticipants }: ChatInpu
         socket?.emit('writing', {
             chatId,
             from: userId,
-            fromName: userName,
+            fromName: name,
             to: chatParticipants ?? []
         });
+    };
+
+     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSend();
+        }
     };
 
     return (
@@ -41,7 +68,7 @@ export default function ChatInput({ onSend, chatId, chatParticipants }: ChatInpu
                 placeholder="Type a message..."
                 value={message}
                 onChange={e => handleTyping(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                onKeyDown={handleKeyDown}
             />
             <button onClick={handleSend}>Send</button>
         </div>

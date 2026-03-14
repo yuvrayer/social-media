@@ -8,10 +8,10 @@ import s3Client, { createBucketIfNotExist } from "../aws/s3";
 import sqsClient, { queueUrl } from "../aws/sqs";
 import { SendMessageCommand } from "@aws-sdk/client-sqs";
 
-
-export default async function fileUploader(req: Request<{}, {}, { newStory: boolean, userId: string, storyImgUrl: string }>, res: Response, next: NextFunction) {
+export default async function fileUploader<T extends Record<string,any>>(req: Request<{}, {}, T>, res: Response, next: NextFunction) {
+//newStory: boolean, userId: string, storyImgUrl: string
     try {
-        if (!req.files.postImage && !req.files.profileImg && !req.body.newStory && !req.files.chatFile && !req.files.photoFile) return next()
+        if (!req?.files?.postImage && !req?.files?.profileImg && !req.body.newStory && !req?.files?.chatFile && !req?.files?.photoFile) return next()
 
         if (!req.body.newStory) {
             let uploadedImage = null
@@ -25,9 +25,9 @@ export default async function fileUploader(req: Request<{}, {}, { newStory: bool
                 client: s3Client,
                 params: {
                     Bucket: config.get<string>('s3.bucket'),
-                    Key: `${v4()}${path.extname(uploadedImage.name)}`,
-                    Body: uploadedImage.data,
-                    ContentType: uploadedImage.mimetype
+                    Key: `${v4()}${path.extname(uploadedImage?.name? uploadedImage?.name : ``)}`,
+                    Body: uploadedImage?.data,
+                    ContentType: uploadedImage?.mimetype
                 }
             })
 
@@ -46,9 +46,9 @@ export default async function fileUploader(req: Request<{}, {}, { newStory: bool
             // req.imageUrl = response.Location
             req.imageUrl = `${response.Bucket}/${response.Key}`
         } else {
-            const uploadedFile = req.files.storyImage as UploadedFile
+            const uploadedFile = req?.files?.storyImage as UploadedFile
 
-            createBucketIfNotExist(req.body.userId)
+            createBucketIfNotExist(req?.body?.userId ? req?.body?.userId : `a`)
 
             const upload = new Upload({
                 client: s3Client,

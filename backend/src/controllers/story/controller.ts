@@ -96,7 +96,7 @@ export async function addSaw(req: Request<{}, {}, { userIdUploaded: string, user
 
 export async function addStory(req: Request<{}, {}, { userId: string, profileImgUrl: string, name: string }>, res: Response, next: NextFunction) {
     try {
-        const storyImage = req.files.storyImage as UploadedFile
+        const storyImage = req?.files?.storyImage as UploadedFile
         const story = await Story.create({
             userId: req.body.userId,
             storyImgUrl: storyImage.name,
@@ -123,10 +123,24 @@ export async function addStory(req: Request<{}, {}, { userId: string, profileImg
             } catch (err) {
                 console.error("Failed to delete story after timeout:", err);
             }
-        }, 2 * 60 * 1000 )  // 2 min
+        }, 5 * 60 * 1000)  // 5 min
         // }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
         res.json(story)
+    } catch (e) {
+        next(e);
+    }
+}
+
+
+export async function getUserStoriesHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+        const stories = await StoryArchive.findAll({
+            where: {
+                userId: req.userId
+            }
+        })
+        res.json(stories)
     } catch (e) {
         next(e);
     }

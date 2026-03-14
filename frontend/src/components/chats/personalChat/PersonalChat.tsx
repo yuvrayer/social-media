@@ -5,12 +5,11 @@ import ChatService from '../../../services/auth-aware/Chat';
 import useService from '../../../hooks/useService';
 import useUserId from '../../../hooks/useUserId';
 import { useAppSelector } from '../../../redux/hooks';
-import { addMessageForCurrentChat, addUserChatsMessage, clearUnreadChatMessage, initCurrentChatMessages } from '../../../redux/chatSlice';
+import { initCurrentChatMessages } from '../../../redux/chatSlice';
 import ChatHeaderPersonal from '../chatHeaderPersonal/ChatHeaderPersonal';
 import ChatMessages from '../chatMessages/chatMessages';
 import ChatInput from '../chatInput/chatInput';
 import './PersonalChat.css';
-import useName from '../../../hooks/useName';
 
 interface PersonalChatProps {
     chat: Chat;
@@ -19,7 +18,6 @@ interface PersonalChatProps {
 
 export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
     const userId = useUserId();
-    const name = useName();
     const chatService = useService(ChatService);
     const dispatch = useDispatch();
 
@@ -96,23 +94,6 @@ export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
         return () => container.removeEventListener('scroll', handleScroll);
     }, [hasMore, loadingMore]);
 
-    // Handle sending a new message
-    const handleSend = async (content: string) => {
-        try {
-            const sentMessage = await chatService.sendMessage(chat.id, {
-                content,
-                participantsIds: chat.participants.map(p => p.id),
-                fromName: name,
-            });
-
-            dispatch(addMessageForCurrentChat({ message: sentMessage, senderName: name }));
-            dispatch(addUserChatsMessage(sentMessage));
-            dispatch(clearUnreadChatMessage(chat.id))
-
-        } catch (error) {
-            console.error('Failed to send message:', error);
-        }
-    };
 
     return (
         <div className="personal-chat">
@@ -153,7 +134,6 @@ export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
             {typingUser && <div className="typing-indicator">{typingUser} is typing...</div>}
 
             <ChatInput
-                onSend={handleSend}
                 chatId={chat.id}
                 chatParticipants={chat.participants?.map(p => p.id)}
             />

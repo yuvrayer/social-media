@@ -17,6 +17,7 @@ import { createAppQueueIfNotExist, queueUrl } from "./aws/sqs"
 import storyRouter from "./routers/story"
 import likesRouter from "./routers/likes"
 import chatsRouter from "./routers/chats"
+import gamesRouter from "./routers/games"
 
 const force = config.get<boolean>('sequelize.sync.force')
 
@@ -54,6 +55,7 @@ export async function start() {
     app.use('/story', storyRouter)
     app.use(`/likes`, likesRouter)
     app.use(`/chats`, chatsRouter)
+    app.use(`/games`, gamesRouter)
 
     // special notFound middleware
     app.use(notFound)

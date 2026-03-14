@@ -74,7 +74,7 @@ export default function Post(props: PostProps): JSX.Element {
         }
     }
 
-    const bucket = "il.co.yuvalrayer"
+    // const bucket = "il.co.yuvalrayer"
 
     return (
         <div className='Post'>
@@ -85,7 +85,7 @@ export default function Post(props: PostProps): JSX.Element {
                 by {username} at {createdAt}
             </div>
             {imageUrl && <div>
-                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${bucket}/${imageUrl}`} />
+                <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${imageUrl}`} />
             </div>}
             <div>
                 {body}

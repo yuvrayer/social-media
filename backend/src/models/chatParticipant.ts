@@ -17,22 +17,22 @@ export default class ChatParticipant extends Model {
         type: 'char(36)',
         allowNull: false,
     })
-    chatId: string;
+    chatId!: string;
 
     @ForeignKey(() => User)
     @Column({
         type: 'char(36)',
         allowNull: false,
     })
-    userId: string;
+    userId!: string;
 
     @Default(0)
-    @Column(DataType.NUMBER)
-    unreadMessages: Number;
+    @Column(DataType.INTEGER)
+    unreadMessages!: number;
 
     @BelongsTo(() => Chat)
-    chat: Chat;
+    chat!: Chat;
 
     @BelongsTo(() => User)
-    user: User;
+    user!: User;
 }

@@ -33,7 +33,7 @@ export default function Profile(): JSX.Element {
                 alert(e)
             }
         })()
-    }, [userId])
+    }, [userId,postsState.length])
 
     return (
         <div className='Profile'>

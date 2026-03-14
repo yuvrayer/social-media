@@ -22,25 +22,25 @@ export default class Story extends Model {
     @Default(DataType.UUIDV4)
     @AllowNull(false)
     @Column(DataType.UUID)
-    id: string;
+    id!: string;
 
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column(DataType.UUID)
-    userId: string;
+    userId!: string;
 
     @AllowNull(false)
     @Column(DataType.STRING(255))
-    storyImgUrl: string;
+    storyImgUrl!: string;
 
     @AllowNull(false)
     @Column(DataType.STRING(255))
-    profileImgUrl: string;
+    profileImgUrl!: string;
 
     @AllowNull(false)
     @Column(DataType.STRING(255))
-    name: string;
+    name!: string;
 
     @BelongsTo(() => User)
-    user: User;
+    user!: User;
 }

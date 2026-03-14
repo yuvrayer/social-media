@@ -9,8 +9,8 @@ export default function filesValidation(validator: ObjectSchema) {
             req.files = await validator.validateAsync(req.files || {})
             next()
         } catch (e) {
-            next(new AppError(StatusCodes.UNPROCESSABLE_ENTITY, e.message))
+            if (e instanceof Error)
+                next(new AppError(StatusCodes.UNPROCESSABLE_ENTITY, e.message))
         }
     }
 }
-        

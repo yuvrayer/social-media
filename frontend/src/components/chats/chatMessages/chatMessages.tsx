@@ -78,7 +78,7 @@ export default function ChatMessages({
                                 <div className={`message ${msg.senderId === userId ? 'sent' : 'received'}`}>
                                     {/* ✅ Image if sent through story */}
                                     {msg.sentThroughStory && (
-                                        <> replayed on your story: <br />
+                                        <> {msg.senderId === userId ? 'replayed on their story:' : 'replayed on your story:'} <br />
                                             <img
                                                 src={msg.sentThroughStory}
                                                 alt="Story"

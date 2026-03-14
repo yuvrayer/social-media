@@ -35,7 +35,7 @@ export async function getFollowers(req: Request, res: Response, next: NextFuncti
             }],
             order: [[col('followers.name'), 'ASC']],
         })
-        res.json({ users: user.followers, usersNum: user.followers.length })
+        res.json({ users: user?.followers, usersNum: user?.followers.length })
     } catch (e) {
         next(e)
     }
@@ -53,7 +53,7 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
                 through: { attributes: [] }, // removes junction table fields
             }]
         })
-        res.json({ users: user.following, usersNum: user.following.length })
+        res.json({ users: user?.following, usersNum: user?.following.length })
     } catch (e) {
         next(e)
     }

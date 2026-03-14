@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './MemoryMatchGame.css';
+import TopThreeScores from '../topThreeScores/TopThreeScores';
+import { useAppSelector } from '../../../redux/hooks';
+import useUserId from '../../../hooks/useUserId';
+import useService from '../../../hooks/useService';
+import GameService from "../../../services/auth-aware/Games"
 
 type CardType = {
   id: number;
@@ -107,45 +112,78 @@ const MemoryMatchGame: React.FC = () => {
     }
   };
 
+
+  const scores = useAppSelector(state => state.games.scores)
+  const userId = useUserId()
+  const gamesService = useService(GameService)
+
+  useEffect(() => {
+    if (matchedCount == 8) {
+      const maybeUpdateScore = async () => {
+        const myScore = scores.find(score => score.userId === userId)
+        const myBestScore = myScore?.bestScore ?? 0
+
+        if (moves < myBestScore) {
+          try {
+            await gamesService.newGameBestScore("MemoryMatch", moves)
+            alert(`new best score!!`)
+          } catch (e) {
+            alert(e)
+          }
+        }
+      }
+
+      maybeUpdateScore()
+    }
+  }, [matchedCount])
+
+
   return (
-    <div className="memoryMatch-container">
-      <h1 className="memoryMatch-title">MemoryMatch Game</h1>
+    <>
+      <div className="memoryMatch-container">
+        <h1 className="memoryMatch-title">MemoryMatch Game</h1>
 
-      <div className="memoryMatch-controls">
-        {!isFullscreen ? (
-          <button onClick={enterFullscreen} className="memoryMatch-fullscreenButton">
-            Enter Fullscreen
-          </button>
-        ) : (
-          <button onClick={exitFullscreen} className="memoryMatch-exitFullscreenButton">
-            Exit Fullscreen
-          </button>
-        )}
-      </div>
+        <div className="memoryMatch-controls">
+          {!isFullscreen ? (
+            <button onClick={enterFullscreen} className="memoryMatch-fullscreenButton">
+              Enter Fullscreen
+            </button>
+          ) : (
+            <button onClick={exitFullscreen} className="memoryMatch-exitFullscreenButton">
+              Exit Fullscreen
+            </button>
+          )}
+        </div>
 
-      <div className="memoryMatch-gameArea" ref={gameAreaRef}>
-        <div className="memoryMatch-grid">
-          {cards.map(card => (
-            <div
-              key={card.id}
-              className={`memoryMatch-card ${card.isFlipped || card.isMatched ? 'flipped' : ''}`}
-              onClick={() => handleCardClick(card)}
-            >
-              <div className="memoryMatch-inner">
-                <div className="memoryMatch-front">❓</div>
-                <div className="memoryMatch-back">{card.value}</div>
+        <div className="memoryMatch-gameArea" ref={gameAreaRef}>
+          <div className="memoryMatch-grid">
+            {cards.map(card => (
+              <div
+                key={card.id}
+                className={`memoryMatch-card ${card.isFlipped || card.isMatched ? 'flipped' : ''}`}
+                onClick={() => handleCardClick(card)}
+              >
+                <div className="memoryMatch-inner">
+                  <div className="memoryMatch-front">❓</div>
+                  <div className="memoryMatch-back">{card.value}</div>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
 
-        <div className="memoryMatch-stats">
-          <p>Moves: {moves}</p>
-          {matchedCount === 8 && <p className="memoryMatch-win">You won! 🎉</p>}
-          <button onClick={resetGame} className="memoryMatch-reset">Restart</button>
+          <div className="memoryMatch-stats">
+            <p>Moves: {moves}</p>
+            {matchedCount === 8 && <p className="memoryMatch-win">You won! 🎉</p>}
+            <button onClick={resetGame} className="memoryMatch-reset">Restart</button>
+          </div>
         </div>
       </div>
-    </div>
+      <h1>My followers best scores</h1>
+      <TopThreeScores
+        scores={scores}
+      />
+
+    </>
   );
 };
 

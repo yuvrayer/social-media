@@ -20,6 +20,8 @@ import Message from "./message";
 import ChatParticipant from "./chatParticipant";
 import Story from "./story";
 import StoryArchive from "./storyArchive";
+import Follow from "./follow";
+import GamesBestScores from "./gamesBestScore";
 
 @Table({
     underscored: true,
@@ -29,69 +31,72 @@ export default class User extends Model {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id: string
+    id!: string;
 
     @AllowNull(false)
     @Column(DataType.STRING(40))
-    name: string
+    name!: string;
 
     @Index({ unique: true })
     @AllowNull(false)
     @Column(DataType.STRING(40))
-    username: string
+    username!: string;
 
     @AllowNull(false)
     @Column(DataType.STRING(64))
-    password: string
+    password!: string;
 
     @AllowNull(true)
     @Column(DataType.STRING(255))
-    profileImgUrl: string
+    profileImgUrl!: string;
 
     @HasMany(() => Post, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     })
-    posts: Post[]
+    posts!: Post[];
 
     @HasMany(() => PostLike)
-    postLikes: PostLike[]
+    postLikes!: PostLike[];
 
     @HasMany(() => Comment)
-    comments: Comment[]
+    comments!: Comment[];
 
     @HasMany(() => CommentLike)
-    commentLikes: CommentLike[]
+    commentLikes!: CommentLike[];
 
-    // @BelongsToMany(() => User, () => Follow, 'followeeId', 'followerId')
-    followers: User[]
+    @HasMany(() => GamesBestScores)
+    gamesBestScores!: GamesBestScores[];
 
-    // @BelongsToMany(() => User, () => Follow, 'followerId', 'followeeId')
-    following: User[]
+    @BelongsToMany(() => User, () => Follow, 'followeeId', 'followerId')
+    followers!: User[];
+
+    @BelongsToMany(() => User, () => Follow, 'followerId', 'followeeId')
+    following!: User[];
 
 
     @HasMany(() => PendingFollowRequest, 'senderId')
-    sentFollowRequests: PendingFollowRequest[];
+    sentFollowRequests!: PendingFollowRequest[];
 
     @HasMany(() => PendingFollowRequest, 'receiverId')
-    receivedFollowRequests: PendingFollowRequest[];
+    receivedFollowRequests!: PendingFollowRequest[];
 
     @BelongsToMany(() => Chat, () => ChatParticipant)
-    chats: Chat[];
+    chats!: Chat[];
 
     // Messages sent by this user
-    @HasMany(() => Message, `senderId`)
-    messages: Message[];
+    @HasMany(() => Message)
+    messages!: Message[];
 
     @HasMany(() => Story, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     })
-    stories: Story[];
+    stories!: Story[];
 
     @HasMany(() => StoryArchive, {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
     })
-    storiesArchive: StoryArchive[];
+    storiesArchive!: StoryArchive[];
 }

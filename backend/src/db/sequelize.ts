@@ -13,30 +13,18 @@ import ChatParticipant from "../models/chatParticipant";
 import Chat from "../models/chat";
 import Message from "../models/message";
 import StoryArchive from "../models/storyArchive";
+import GamesBestScores from "../models/gamesBestScore";
 
 const logging = config.get<boolean>('sequelize.logging') ? console.log : false
 
 const sequelize = new Sequelize({
     models: [User, Post, Comment, Follow, Story, StoryView, PendingFollowRequest, CommentLike, PostLike,
-        ChatParticipant, Chat, Message, StoryArchive
+        ChatParticipant, Chat, Message, StoryArchive, GamesBestScores
     ],
     dialect: 'mysql',
     ...config.get('db'),
     logging,
 })
 
-User.belongsToMany(User, {
-    through: Follow,
-    as: 'followers',
-    foreignKey: 'followeeId',
-    otherKey: 'followerId',
-})
-
-User.belongsToMany(User, {
-    through: Follow,
-    as: 'following',
-    foreignKey: 'followerId',
-    otherKey: 'followeeId',
-})
 
 export default sequelize

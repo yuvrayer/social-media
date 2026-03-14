@@ -21,8 +21,8 @@ export async function getProfile(req: Request<{ userId: string }>, res: Response
         // console.log(user.get({ plain: true }))
 
         res.status(200).json({
-            posts: user.posts,
-            postsNum: user.posts.length
+            posts: user?.posts,
+            postsNum: user?.posts.length
         });
 
     } catch (e) {
