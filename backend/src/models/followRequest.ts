@@ -19,26 +19,26 @@ export default class PendingFollowRequest extends Model {
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id: string
+    id!: string;
 
     @ForeignKey(() => User)
     @Column({
         type: DataType.UUID,
         allowNull: false,
     })
-    senderId: string
+    senderId!: string;
 
     @ForeignKey(() => User)
     @Column({
         type: DataType.UUID,
         allowNull: false,
     })
-    receiverId: string
+    receiverId!: string;
 
     @BelongsTo(() => User, 'senderId')
-    sender: User;
+    sender!: User;
 
     @BelongsTo(() => User, 'receiverId')
-    receiver: User;
+    receiver!: User;
 
 }

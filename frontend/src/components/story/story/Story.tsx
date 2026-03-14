@@ -117,7 +117,7 @@ export default function Story(props: StoryProps) {
                     onClose={() => setShowPopup(false)}
                     name={name}
                     profileImgUrl={profileImgUrl ?? `il.co.yuvalrayer/profile.jpg`}
-                    currentUserId={props.currentUserId}
+                    archiveStory={false}
                     userId={userId}
                     createdAt={dates}
                     storyIds={storyIds}

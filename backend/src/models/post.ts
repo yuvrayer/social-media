@@ -21,29 +21,29 @@ export default class Post extends Model{
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id: string
+    id!: string;
     
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column(DataType.UUID)
-    userId: string
+    userId!: string;
     
     @AllowNull(false)
     @Column(DataType.STRING(40))
-    title: string
+    title!: string;
     
     @AllowNull(false)
     @Column(DataType.TEXT)
-    body: string
+    body!: string;
 
     @AllowNull(true)
     @Column(DataType.STRING(255))
-    imageUrl: string
+    imageUrl!: string;
 
     @BelongsTo(() => User)
-    user: User
+    user!: User;
 
     @HasMany(() => Comment)
-    comments: Comment[]
+    comments!: Comment[];
 
 }

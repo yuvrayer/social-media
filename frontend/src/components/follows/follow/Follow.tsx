@@ -104,15 +104,14 @@ export default function Follow(props: FollowProps): JSX.Element {
 
     return (
         <div className='Follow'>
-            <div> {otherProfileImgUrl ?
+            {otherProfileImgUrl ?
                 <img src={`${import.meta.env.VITE_AWS_SERVER_URL}/${otherProfileImgUrl}`} />
                 : <img src={profilePicSource} />
             }
-            </div>
-            <div>
+            <div className='Name'>
                 {otherName}
             </div>
-            <div> {
+            {
                 !props.request &&
                 <>
                     {isFollowingAlready && <LoadingButton
@@ -137,13 +136,12 @@ export default function Follow(props: FollowProps): JSX.Element {
                     />}
                 </>}
 
-                {
-                    props.request && <>
-                        <button className="v" onClick={follow}>V</button>
-                        <button className="x" onClick={deleteFollowRequest}>X</button>
-                    </>
-                }
-            </div>
+            {
+                props.request && <>
+                    <button className="v" onClick={follow}>V</button>
+                    <button className="x" onClick={deleteFollowRequest}>X</button>
+                </>
+            }
         </div>
     )
 }

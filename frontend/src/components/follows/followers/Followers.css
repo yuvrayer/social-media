@@ -7,3 +7,11 @@
 .Follow {
     text-align: center;
 }
+
+.Followers {
+    position: relative;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}

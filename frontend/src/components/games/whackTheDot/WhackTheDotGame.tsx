@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './WhackTheDotGame.css';
+import TopThreeScores from '../topThreeScores/TopThreeScores';
+import { useAppSelector } from '../../../redux/hooks';
+import useUserId from '../../../hooks/useUserId';
+import useService from '../../../hooks/useService';
+import GameService from "../../../services/auth-aware/Games"
 
 type Dot = {
   id: number;
@@ -92,44 +97,75 @@ const WhackTheDotGame: React.FC = () => {
     }
   };
 
+
+  const scores = useAppSelector(state => state.games.scores)
+  const userId = useUserId()
+  const gamesService = useService(GameService)
+
+  useEffect(() => {
+    if (!isPlaying) {
+      const maybeUpdateScore = async () => {
+        const myScore = scores.find(score => score.userId === userId)
+        const myBestScore = myScore?.bestScore ?? 0
+
+        if (score > myBestScore) {
+          try {
+            await gamesService.newGameBestScore("WhackTheDot", score)
+            alert(`new best score!!`)
+          } catch (e) {
+            alert(e)
+          }
+        }
+      }
+
+      maybeUpdateScore()
+    }
+  }, [isPlaying])
+
   return (
-    <div className="whackTheDot-container">
-      <h1 className="whackTheDot-title">WhackTheDot Game</h1>
+    <>
+      <div className="whackTheDot-container">
+        <h1 className="whackTheDot-title">WhackTheDot Game</h1>
 
-      <div className="whackTheDot-controls">
-        {!isFullscreen ? (
-          <button onClick={enterFullscreen} className="whackTheDot-fullscreenButton">
-            Enter Fullscreen
-          </button>
-        ) : (
-          <button onClick={exitFullscreen} className="whackTheDot-exitFullscreenButton">
-            Exit Fullscreen
-          </button>
-        )}
-      </div>
-
-      <div className="whackTheDot-gameArea" ref={gameAreaRef}>
-        <div className="whackTheDot-stats">
-          <span>Score: {score}</span>
-          <span>Time: {timeLeft}s</span>
+        <div className="whackTheDot-controls">
+          {!isFullscreen ? (
+            <button onClick={enterFullscreen} className="whackTheDot-fullscreenButton">
+              Enter Fullscreen
+            </button>
+          ) : (
+            <button onClick={exitFullscreen} className="whackTheDot-exitFullscreenButton">
+              Exit Fullscreen
+            </button>
+          )}
         </div>
 
-        {isPlaying ? (
-          dots.map(dot => (
-            <div
-              key={dot.id}
-              className="whackTheDot-dot"
-              style={{ top: dot.y, left: dot.x }}
-              onClick={() => handleDotClick(dot.id)}
-            />
-          ))
-        ) : (
-          <button className="whackTheDot-startButton" onClick={startGame}>
-            Start Game
-          </button>
-        )}
+        <div className="whackTheDot-gameArea" ref={gameAreaRef}>
+          <div className="whackTheDot-stats">
+            <span>Score: {score}</span>
+            <span>Time: {timeLeft}s</span>
+          </div>
+
+          {isPlaying ? (
+            dots.map(dot => (
+              <div
+                key={dot.id}
+                className="whackTheDot-dot"
+                style={{ top: dot.y, left: dot.x }}
+                onClick={() => handleDotClick(dot.id)}
+              />
+            ))
+          ) : (
+            <button className="whackTheDot-startButton" onClick={startGame}>
+              Start Game
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+      <h1>My followers best scores</h1>
+      <TopThreeScores
+        scores={scores}
+      />
+    </>
   );
 };
 

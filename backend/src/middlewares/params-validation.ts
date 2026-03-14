@@ -9,7 +9,8 @@ export default function paramsValidation(validator: ObjectSchema) {
             req.params = await validator.validateAsync(req.params)
             next()
         } catch (e) {
-            next(new AppError(StatusCodes.UNPROCESSABLE_ENTITY, e.message))
+            if (e instanceof Error)
+                next(new AppError(StatusCodes.UNPROCESSABLE_ENTITY, e.message))
         }
     }
 }

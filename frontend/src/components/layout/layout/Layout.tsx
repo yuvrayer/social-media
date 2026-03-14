@@ -22,38 +22,46 @@ export default function Layout() {
     }
 
     return (
-        <div className={isGameOpen ? `LayoutGame` : `Layout`}>
+        <div className={`LayoutWrapper ${isGameOpen ? 'game-open' : ''}`}>
+            <div className="LayoutContent">
+                {isLoggedIn && <>
+                    <header>
+                        <Header />
+                    </header>
+                    {!isGameOpen &&
+                        <>
+                            <aside>
+                                <i
+                                    className={`arrow bi bi-arrow-left-circle`}
+                                    onClick={toggleChange}
+                                />
+                                <Following />
+                            </aside>
+                            <aside>
+                                <Followers />
+                            </aside>
+                        </>
+                    }
 
-            {isGameOpen && <div></div>}
-            {isLoggedIn && <>
-                <header>
-                    <Header />
-                </header>
-                {!isGameOpen &&
-                    <>
-                        <aside>
-                            <Following />
-                        </aside>
-                        <aside>
-                            <Followers />
-                        </aside>
-                    </>
-                }
-                {isGameOpen &&
-                    <i className="bi bi-arrow-right-circle" onClick={toggleChange}></i>
-                }
-                <main>
-                    <Routing />
-                </main>
-                <footer>
-                    <Footer />
-                </footer>
-            </>}
+                    {isGameOpen &&
+                        <i
+                            className={`arrow bi bi-arrow-left-circle`}
+                            onClick={toggleChange}
+                        />}
 
-            {!isLoggedIn && <>
-                <RoutingNotSigned />
-            </>}
+                    <main>
+                        <Routing />
+                    </main>
+                    {!isGameOpen && <footer>
+                        <Footer />
+                    </footer>}
+                </>}
 
+                {!isLoggedIn && <>
+                    <RoutingNotSigned />
+                </>}
+
+            </div>
         </div>
     )
 }

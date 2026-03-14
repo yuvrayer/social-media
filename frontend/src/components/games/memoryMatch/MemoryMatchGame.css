@@ -1,3 +1,10 @@
+/* Global reset for fullscreen sizing */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .memoryMatch-container {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(to bottom, #fff3e0, #ffe0b2);
@@ -6,6 +13,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .memoryMatch-title {
@@ -45,7 +53,7 @@
   background-color: #b71c1c;
 }
 
-/* Game area: grid + side stats */
+/* Game area layout */
 .memoryMatch-gameArea {
   display: flex;
   justify-content: center;
@@ -53,9 +61,11 @@
   gap: 2rem;
   margin-top: 1rem;
   flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Stats on the side */
+/* Stats block */
 .memoryMatch-stats {
   display: flex;
   flex-direction: column;
@@ -64,7 +74,7 @@
   min-width: 150px;
 }
 
-/* Float stats inside the grid in fullscreen */
+/* Position stats as floating panel in fullscreen */
 :fullscreen .memoryMatch-stats,
 :-webkit-full-screen .memoryMatch-stats {
   position: absolute;
@@ -77,7 +87,19 @@
   z-index: 10;
 }
 
-/* Grid for the cards */
+/* ✅ Make game area take full screen in fullscreen */
+:fullscreen .memoryMatch-gameArea,
+:-webkit-full-screen .memoryMatch-gameArea {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  padding: 2rem 0;
+  background-color: #fffde7;
+}
+
+/* Card grid */
 .memoryMatch-grid {
   display: grid;
   grid-template-columns: repeat(4, 80px);
@@ -134,11 +156,14 @@
   transform: rotateY(180deg);
 }
 
+/* Win message */
 .memoryMatch-win {
   color: #2e7d32;
   font-weight: bold;
+  font-size: 1.2rem;
 }
 
+/* Reset button */
 .memoryMatch-reset {
   background: #ef6c00;
   color: white;

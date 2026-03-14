@@ -7,6 +7,7 @@ import User from "../../posts/user/User";
 import Search from "../../posts/search/Search";
 import FollowRequest from "../../follows/followRequest/FollowRequest";
 import GameMenu from "../../games/gamesMenu/GamesMenu";
+import StoryHistory from "../../story/storyHistory/StoryHistory";
 
 export default function Routing(): JSX.Element {
     return (
@@ -20,6 +21,8 @@ export default function Routing(): JSX.Element {
             <Route path="/user" element={<User />} />
             <Route path="/search" element={<Search />} />
             <Route path="/games" element={<GameMenu />} />
+            <Route path="/storyHistory" element={<StoryHistory />} />
+            
             <Route path="*" element={<NotFound />} />
         </Routes>
     )

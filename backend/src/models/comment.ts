@@ -20,26 +20,26 @@ export default class Comment extends Model{
     @PrimaryKey
     @Default(DataType.UUIDV4)
     @Column(DataType.UUID)
-    id: string
+    id!: string;
     
     @ForeignKey(() => Post)
     @AllowNull(false)
     @Column(DataType.UUID)
-    postId: string
+    postId!: string;
 
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column(DataType.UUID)
-    userId: string
+    userId!: string;
 
     @AllowNull(false)
     @Column(DataType.TEXT)
-    body: string
+    body!: string;
 
     @BelongsTo(() => Post)
-    post: Post
+    post!: Post;
 
     @BelongsTo(() => User)
-    user: User
+    user!: User;
 
 }

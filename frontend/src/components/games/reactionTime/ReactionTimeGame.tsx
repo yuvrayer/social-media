@@ -1,5 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './ReactionTimeGame.css';
+import TopThreeScores from '../topThreeScores/TopThreeScores';
+import { useAppSelector } from '../../../redux/hooks';
+import useUserId from '../../../hooks/useUserId';
+import useService from '../../../hooks/useService';
+import GameService from "../../../services/auth-aware/Games"
 
 const ReactionTimeGame: React.FC = () => {
   const [gameState, setGameState] = useState<'waiting' | 'ready' | 'now' | 'done'>('waiting');
@@ -41,23 +46,55 @@ const ReactionTimeGame: React.FC = () => {
     }
   };
 
-  return (
-    <div className="reactionTime-container">
-      <h1 className="reactionTime-title">ReactionTime Game</h1>
-      <div className="reactionTime-info">
-        {reactionTime !== null && <p>Your time: <strong>{reactionTime} ms</strong></p>}
-        {bestTime !== null && <p>Best time: <strong>{bestTime} ms</strong></p>}
-      </div>
-      <div className="reactionTime-message">{message}</div>
+  const scores = useAppSelector(state => state.games.scores)
+  const userId = useUserId()
+  const gamesService = useService(GameService)
 
-      <button
-        className={`reactionTime-button ${gameState}`}
-        onClick={handleClick}
-        disabled={gameState === 'ready'}
-      >
-        {gameState === 'waiting' || gameState === 'done' ? 'Start' : 'Click!'}
-      </button>
-    </div>
+  useEffect(() => {
+    if (gameState === 'done') {
+      const maybeUpdateScore = async () => {
+        const myScore = scores.find(score => score.userId === userId)
+        const myBestScore = myScore?.bestScore ?? 0
+
+        if (reactionTime! < myBestScore) {
+          try {
+            await gamesService.newGameBestScore("ReactionTime", reactionTime!)
+            alert(`new best score!!`)
+          } catch (e) {
+            alert(e)
+          }
+        }
+      }
+
+      maybeUpdateScore()
+    }
+  }, [gameState])
+
+  return (
+    <>
+      <div className="reactionTime-container">
+        <h1 className="reactionTime-title">ReactionTime Game</h1>
+        <div className="reactionTime-info">
+          {reactionTime !== null && <p>Your time: <strong>{reactionTime} ms</strong></p>}
+          {bestTime !== null && <p>Best time: <strong>{bestTime} ms</strong></p>}
+        </div>
+        <div className="reactionTime-message">{message}</div>
+
+        <button
+          className={`reactionTime-button ${gameState}`}
+          onClick={handleClick}
+          disabled={gameState === 'ready'}
+        >
+          {gameState === 'waiting' || gameState === 'done' ? 'Start' : 'Click!'}
+        </button>
+      </div>
+
+      <h1>My followers best scores</h1>
+      <TopThreeScores
+        scores={scores}
+      />
+
+    </>
   );
 };
 

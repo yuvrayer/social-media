@@ -19,12 +19,12 @@ export default class PostLikes extends Model {
   @PrimaryKey
   @ForeignKey(() => User)
   @Column(DataType.UUID)
-  userId: string;
+  userId!: string;
 
   @PrimaryKey
   @ForeignKey(() => Post)
   @Column(DataType.UUID)
-  postId: string;
+  postId!: string;
 
   @CreatedAt
   @Column({
@@ -32,5 +32,5 @@ export default class PostLikes extends Model {
     allowNull: false,
     defaultValue: DataType.NOW
   })
-  createdAt: Date;
+  createdAt!: Date;
 }

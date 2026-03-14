@@ -1,8 +1,6 @@
 .Header {
     display: grid;
-    flex-direction: row;
     justify-content: space-between;
-    margin-top: 8px;
     grid-template-rows: 2;
     grid-template-columns: 1fr 8fr 2.2fr;
 }
@@ -57,10 +55,10 @@
 }
 
 .RightTop {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
 }
 
 
@@ -90,7 +88,42 @@
     line-height: 1;
 }
 
-.RightBottom{
+.RightBottom {
     grid-row-start: 2;
     grid-column: 3;
+}
+
+/* Navigation layout */
+.Header .Navigation nav {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin-top: 10px;
+    gap: 12px;
+}
+
+/* NavLink buttons */
+.Header .Navigation nav a {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect */
+.Header .Navigation nav a:hover {
+    background-color: #e0e0e0;
+    color: #111;
+    transform: scale(1.03);
+}
+
+/* Active link */
+.Header .Navigation nav .active {
+    background-color: #4CAF50;
+    /* Green active background */
+    color: white;
 }

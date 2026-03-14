@@ -4,21 +4,23 @@ import './Storypop.css';
 import useService from "../../../hooks/useService";
 import ProgressBar from "../progressBar/ProgressBar";
 import StoryMessageInput from "../storyMessageInput/StoryMessageInput";
+import useUserId from "../../../hooks/useUserId";
 
 interface StoryPopupProps {
     images: string[];
     onClose: () => void;
     name: string;
     profileImgUrl: string,
-    currentUserId: string,
+    archiveStory: boolean,
     userId: string,
     createdAt: Date[],
     storyIds: string[],
     reloadHeader: () => void
 }
 
-export default function StoryPopup({ images, onClose, name, profileImgUrl, userId, currentUserId, createdAt, storyIds, reloadHeader }: StoryPopupProps) {
+export default function StoryPopup({ images, onClose, name, profileImgUrl, userId, createdAt, archiveStory, storyIds, reloadHeader }: StoryPopupProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const currentUserId = useUserId()
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const storyService = useService(StoryService)
 
@@ -161,7 +163,9 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
                             {formatRelativeTime(createdAt[currentIndex])}
                         </span>
                     </div>
-                    {currentUserId === userId && <button onClick={deleteStory}>delete story</button>}
+                    {!archiveStory && currentUserId === userId &&
+                        <button className="StoryPopup-DeleteButton" onClick={deleteStory}>delete story</button>
+                    }
                     <button className="StoryPopup-Close" onClick={onClose}>✕</button>
                 </div>
 

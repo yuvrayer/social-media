@@ -9,7 +9,8 @@ export default function validation(validator: ObjectSchema) {
             req.body = await validator.validateAsync(req.body)
             next()
         } catch (e) {
-            next(new AppError(StatusCodes.UNPROCESSABLE_ENTITY, e.message))
+            if (e instanceof Error)
+                next(new AppError(StatusCodes.UNPROCESSABLE_ENTITY, e.message))
         }
     }
 }

@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { init } from '../../../redux/followingSlice'
 import useService from '../../../hooks/useService'
 import FollowingService from '../../../services/auth-aware/Following'
-import { setIsGameOpen } from '../../../redux/games'
 
 export default function Following() {
     const followingState = useAppSelector(state => state.following.following)
@@ -30,16 +29,8 @@ export default function Following() {
         })()
     }, [])
 
-
-    const state = useAppSelector(state => state.games.isGameOpen)
-    function toggleChange() {
-        dispatch(setIsGameOpen(!state))
-    }
-
     return (
         <div className='Following'>
-
-            <i className="bi bi-arrow-left-circle" onClick={toggleChange}></i>
 
             {followingState.length === 0 && followingNumRef.current === 0 && <>
                 <h3>People I follow:</h3>

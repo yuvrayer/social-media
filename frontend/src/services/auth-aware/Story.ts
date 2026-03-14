@@ -56,4 +56,8 @@ export default class Story extends AuthAware {
         return response.data
     }
 
+    async getUserStoriesHistory(): Promise<StoryModel[]> {
+        const response = await this.axiosInstance.get<StoryModel[]>(`${import.meta.env.VITE_REST_SERVER_URL}/story/getUserStoriesHistory`)
+        return response.data
+    }    
 }

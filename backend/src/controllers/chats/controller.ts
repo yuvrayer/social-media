@@ -166,7 +166,7 @@ export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fro
             chatId,
             senderId: userId,
             content,
-            sentThroughStory: req.body.sentThroughStory ?? false
+            sentThroughStory: req.body.sentThroughStory ?? ``
         });
 
         socket.emit('newMessage', {

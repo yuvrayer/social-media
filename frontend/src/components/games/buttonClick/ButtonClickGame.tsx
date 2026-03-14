@@ -1,5 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './ButtonClickGame.css';
+import { useAppSelector } from '../../../redux/hooks';
+import useUserId from '../../../hooks/useUserId';
+import useService from '../../../hooks/useService';
+import GameService from "../../../services/auth-aware/Games"
+import TopThreeScores from '../topThreeScores/TopThreeScores';
 
 const GAME_DURATION = 30;
 
@@ -84,53 +89,86 @@ const ButtonClickGame: React.FC = () => {
     }
   };
 
+
+  const scores = useAppSelector(state => state.games.scores)
+  const userId = useUserId()
+  const gamesService = useService(GameService)
+
+  useEffect(() => {
+    if (!isPlaying) {
+      const maybeUpdateScore = async () => {
+        const myScore = scores.find(score => score.userId === userId)
+        const myBestScore = myScore?.bestScore ?? 0
+
+        if (score > myBestScore) {
+          try {
+            await gamesService.newGameBestScore("ButtonClick", score)
+            alert(`new best score!!`)
+          } catch (e) {
+            alert(e)
+          }
+        }
+      }
+
+      maybeUpdateScore()
+    }
+  }, [isPlaying])
+
+
   return (
-    <div className="buttonClick-container">
-      <h1 className="buttonClick-title">ButtonClick Game</h1>
+    <>
+      <div className="buttonClick-container">
+        <h1 className="buttonClick-title">ButtonClick Game</h1>
 
-      {/* Fullscreen Toggle Buttons */}
-      <div className="buttonClick-controls">
-        {!isFullscreen && (
-          <button className="buttonClick-fullscreenButton" onClick={enterFullscreen}>
-            Enter Fullscreen
-          </button>
-        )}
-        {isFullscreen && (
-          <button className="buttonClick-exitFullscreenButton" onClick={exitFullscreen}>
-            Exit Fullscreen
-          </button>
-        )}
-      </div>
-
-      {/* Game Area (can go fullscreen) */}
-      <div className="buttonClick-gameArea" ref={gameAreaRef}>
-        {/* Score & Time shown inside fullscreen */}
-        <div className="buttonClick-info">
-          <span className="buttonClick-score">Score: {score}</span>
-          <span className="buttonClick-timer">Time: {timeLeft}s</span>
+        {/* Fullscreen Toggle Buttons */}
+        <div className="buttonClick-controls">
+          {!isFullscreen && (
+            <button className="buttonClick-fullscreenButton" onClick={enterFullscreen}>
+              Enter Fullscreen
+            </button>
+          )}
+          {isFullscreen && (
+            <button className="buttonClick-exitFullscreenButton" onClick={exitFullscreen}>
+              Exit Fullscreen
+            </button>
+          )}
         </div>
 
-        {isPlaying && (
-          <button
-            className="buttonClick-button"
-            onClick={handleClick}
-            style={{
-              position: 'absolute',
-              top: buttonPosition.top,
-              left: buttonPosition.left,
-            }}
-          >
-            Click Me!
-          </button>
-        )}
+        {/* Game Area (can go fullscreen) */}
+        <div className="buttonClick-gameArea" ref={gameAreaRef}>
+          {/* Score & Time shown inside fullscreen */}
+          <div className="buttonClick-info">
+            <span className="buttonClick-score">Score: {score}</span>
+            <span className="buttonClick-timer">Time: {timeLeft}s</span>
+          </div>
 
-        {!isPlaying && (
-          <button className="buttonClick-startButton" onClick={startGame}>
-            Start Game
-          </button>
-        )}
+          {isPlaying && (
+            <button
+              className="buttonClick-button"
+              onClick={handleClick}
+              style={{
+                position: 'absolute',
+                top: buttonPosition.top,
+                left: buttonPosition.left,
+              }}
+            >
+              Click Me!
+            </button>
+          )}
+
+          {!isPlaying && (
+            <button className="buttonClick-startButton" onClick={startGame}>
+              Start Game
+            </button>
+          )}
+        </div>
       </div>
-    </div>
+
+      <h1>My followers best scores</h1>
+      <TopThreeScores
+        scores={scores}
+      />
+    </>
   );
 };
 

@@ -44,6 +44,7 @@ export default function StoryMessageInput(props: StoryMessageInputProps) {
                 participantIds.forEach(id => formData.append('participantIds', id));
                 try {
                     chatIdCreated = await chatService.createChat(formData)
+                    alert("success.")
                 } catch (e) {
                     alert(e)
                 }
@@ -56,6 +57,8 @@ export default function StoryMessageInput(props: StoryMessageInputProps) {
                 fromName: myName,
                 sentThroughStory: imgSrc
             });
+
+            alert("sent message.")
 
             setMessage(``)
 

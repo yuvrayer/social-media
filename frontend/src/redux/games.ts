@@ -1,11 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { GamesResponse } from "../models/games/Games";
 
 interface GamesSlice {
-    isGameOpen: boolean
+    isGameOpen: boolean,
+    scores: GamesResponse[]
 }
 
 const initialState: GamesSlice = {
-    isGameOpen: false
+    isGameOpen: false,
+    scores: []
 }
 
 export const gamesSlice = createSlice({
@@ -14,10 +17,13 @@ export const gamesSlice = createSlice({
     reducers: {
         setIsGameOpen: (state, action: PayloadAction<boolean>) => {
             state.isGameOpen = action.payload
+        },
+        setScores: (state, action: PayloadAction<GamesResponse[]>) => {
+            state.scores = action.payload
         }
     }
 })
 
-export const { setIsGameOpen } = gamesSlice.actions
+export const { setIsGameOpen, setScores } = gamesSlice.actions
 
 export default gamesSlice.reducer
