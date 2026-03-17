@@ -93,6 +93,7 @@ export default function Search(): JSX.Element {
                                     profileImgUrl: user.profileImgUrl,
                                     id: user.id,
                                 }}
+                                stopFollowIndex={false}
                             />
                         ))}
                     </div>

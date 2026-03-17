@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import Followers from '../../follows/followers/Followers'
 import Following from '../../follows/following/Following'
 import Footer from '../footer/Footer'
@@ -9,6 +9,8 @@ import { AuthContext } from '../../auth/auth/Auth'
 import RoutingNotSigned from '../routing/RoutingNotSigned'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { setIsGameOpen } from '../../../redux/games'
+import FollowersModal from '../../follows/followersModel/FollowersModal'
+import FollowingModal from '../../follows/followingModal/FollowingModal'
 
 export default function Layout() {
 
@@ -21,9 +23,14 @@ export default function Layout() {
         dispatch(setIsGameOpen(!isGameOpen))
     }
 
+    const [showFollowersPopup, setShowFollowersPopup] = useState(false)
+    const [showFollowingPopup, setShowFollowingPopup] = useState(false)
+
     return (
         <div className={`LayoutWrapper ${isGameOpen ? 'game-open' : ''}`}>
             <div className="LayoutContent">
+                {showFollowersPopup && <FollowersModal onClose={() => setShowFollowersPopup(false)} />}
+                {showFollowingPopup && <FollowingModal onClose={() => setShowFollowingPopup(false)} />}
                 {isLoggedIn && <>
                     <header>
                         <Header />
@@ -31,14 +38,16 @@ export default function Layout() {
                     {!isGameOpen &&
                         <>
                             <aside>
-                                <i
-                                    className={`arrow bi bi-arrow-left-circle`}
-                                    onClick={toggleChange}
-                                />
-                                <Following />
+                                <>
+                                    <i
+                                        className={`arrow bi bi-arrow-left-circle`}
+                                        onClick={toggleChange}
+                                    />
+                                    <Following startPopUp={() => setShowFollowingPopup(true)} />
+                                </>
                             </aside>
                             <aside>
-                                <Followers />
+                                <Followers startPopUp={() => setShowFollowersPopup(true)} />
                             </aside>
                         </>
                     }

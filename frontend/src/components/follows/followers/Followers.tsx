@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import './Followers.css'
 import Follow from '../follow/Follow'
 import useService from '../../../hooks/useService'
@@ -7,12 +7,16 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { init } from '../../../redux/followers'
 import Loading from '../../common/loading/Loading'
 
-export default function Followers() {
+interface FollowersProps {
+    startPopUp: () => void
+}
+
+export default function Followers(props: FollowersProps) {
     const followersState = useAppSelector(state => state.followers.followers)
     const dispatch = useAppDispatch()
 
     const followersService = useService(FollowersService)
-    const followersNumRef = useRef(-1)
+    const [followersNum, setFollowersNum] = useState(-1)
 
     useEffect(() => {
         (async () => {
@@ -20,7 +24,7 @@ export default function Followers() {
                 if (followersState.length === 0) {
                     const followers = await followersService.getFollowers()
                     dispatch(init(followers?.users ?? []))
-                    followersNumRef.current = followers?.usersNum ?? 0
+                    setFollowersNum(followers?.usersNum ?? 0)
                 }
             } catch (e) {
                 alert(e)
@@ -29,18 +33,23 @@ export default function Followers() {
 
     }, [])
 
+
     return (
         <div className='Followers'>
 
-            {followersState.length === 0 && followersNumRef.current === 0 && <>
+            {followersState.length === 0 && followersNum === 0 && <>
                 <h3>People who follow me:</h3>
                 <h4>You don`t have anyone that follow you</h4>
             </>}
 
-            {followersState.length === 0 && followersNumRef.current === -1 && <Loading />}
+            {followersState.length === 0 && followersNum === -1 && <Loading />}
 
             {followersState.length > 0 && <>
                 <h3>People who follow me:</h3>
+                <button onClick={() => props.startPopUp()}>
+                    Show All Followers
+                </button>
+
                 <div className='FollowingPeople'>
                     {followersState.map(follow => <Follow
                         key={follow.id}
@@ -50,6 +59,7 @@ export default function Followers() {
                             profileImgUrl: follow.profileImgUrl,
                             id: follow.id,
                         }}
+                        stopFollowIndex={false}
                     ></Follow>)}
                 </div>
             </>}
