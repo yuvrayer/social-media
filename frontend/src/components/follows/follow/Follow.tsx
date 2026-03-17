@@ -8,7 +8,7 @@ import FollowingService from '../../../services/auth-aware/Following'
 import FollowingRequestService from '../../../services/auth-aware/followRequest'
 import useService from '../../../hooks/useService'
 import { setNewContent } from '../../../redux/feedSlice'
-import { newFollower } from '../../../redux/followers'
+import { newFollower, noLongerFollowUser } from '../../../redux/followers'
 import { deleteFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceISent, followRequestUpdateSliceISent } from '../../../redux/followingRequestSlice'
 import useProfileImg from '../../../hooks/useProfileImg'
 import useUserId from '../../../hooks/useUserId'
@@ -18,10 +18,11 @@ interface FollowProps {
     userId: string,
     request?: boolean,
     otherUserFillData: {
-        name: string;
-        profileImgUrl: string;
-        id: string;
+        name: string
+        profileImgUrl: string
+        id: string
     }
+    stopFollowIndex: boolean
 }
 export default function Follow(props: FollowProps): JSX.Element {
 
@@ -58,6 +59,23 @@ export default function Follow(props: FollowProps): JSX.Element {
             }
         }
     }
+
+    async function removeFollower() {
+        if (window.confirm(`are you sure you wanna stop the permission from ${otherName} to follow you?`)) {
+            try {
+                setIsSubmitting(true)
+                await followingService.removeFromMyFollowers(userId)
+                dispatch(noLongerFollowUser({ userId }))
+                dispatch(setNewContent(true))
+            } catch (e) {
+                alert(e)
+            } finally {
+                setIsSubmitting(false)
+                alert("success")
+            }
+        }
+    }
+
 
     async function deleteFollowRequest() {
         try {
@@ -134,13 +152,21 @@ export default function Follow(props: FollowProps): JSX.Element {
                         buttonText='Request sent'
                         loadingText='Cancel...'
                     />}
+
+                    {props.stopFollowIndex && <LoadingButton
+                        onClick={removeFollower}
+                        isSubmitting={isSubmitting}
+                        buttonText='remove follower permission'
+                        loadingText='Removing...'
+                    />}
+
                 </>}
 
-            {
-                props.request && <>
-                    <button className="v" onClick={follow}>V</button>
-                    <button className="x" onClick={deleteFollowRequest}>X</button>
-                </>
+            {props.request &&
+                <div className='actions'>
+                    <button className="v" onClick={follow}>✓</button>
+                    <button className="x" onClick={deleteFollowRequest}>✕</button>
+                </div>
             }
         </div>
     )

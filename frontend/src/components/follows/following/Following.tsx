@@ -7,7 +7,11 @@ import { init } from '../../../redux/followingSlice'
 import useService from '../../../hooks/useService'
 import FollowingService from '../../../services/auth-aware/Following'
 
-export default function Following() {
+interface FollowingProps {
+    startPopUp: () => void
+}
+
+export default function Following(props: FollowingProps) {
     const followingState = useAppSelector(state => state.following.following)
 
     const dispatch = useAppDispatch()
@@ -42,6 +46,9 @@ export default function Following() {
 
             {followingState.length > 0 && <>
                 <h3>People I follow:</h3>
+                <button onClick={() => props.startPopUp()}>
+                    Show All Followings:
+                </button>
                 <div className='FollowingPeople'>
                     {followingState.map(follow => <Follow
                         key={follow.id}
@@ -51,6 +58,7 @@ export default function Following() {
                             profileImgUrl: follow.profileImgUrl,
                             id: follow.id,
                         }}
+                        stopFollowIndex={false}
                     ></Follow>)}
                 </div>
             </>}

@@ -27,4 +27,8 @@ export default class Following extends AuthAware {
         return response.data
     }
 
+    async removeFromMyFollowers(userId: string): Promise<boolean> {
+        const response = await this.axiosInstance.post<boolean>(`${import.meta.env.VITE_REST_SERVER_URL}/follows/removeFromMyFollowers/${userId}`)
+        return response.data
+    }
 }

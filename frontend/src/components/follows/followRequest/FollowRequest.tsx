@@ -9,7 +9,7 @@ const USERS_PER_PAGE = 10;
 export default function FollowRequest(): JSX.Element {
     const [currentPage, setCurrentPage] = useState(0);
     const [direction, setDirection] = useState<'left' | 'right'>('right');
-    
+
     const usersNum = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
     const followingRequestsIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived);
 
@@ -52,7 +52,9 @@ export default function FollowRequest(): JSX.Element {
                                         profileImgUrl: user.profileImgUrl,
                                         id: user.id
                                     }
-                                } />
+                                }
+                                stopFollowIndex={false}
+                            />
                         ))}
                     </div>
                 </>
