@@ -6,6 +6,7 @@ import { StatusCodes } from "http-status-codes";
 export default function paramsValidation(validator: ObjectSchema) {
     return async function (req: Request, res: Response, next: NextFunction) {
         try {
+            //send the params into the joi validation
             req.params = await validator.validateAsync(req.params)
             next()
         } catch (e) {

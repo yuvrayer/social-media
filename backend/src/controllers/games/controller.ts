@@ -25,9 +25,10 @@ export async function getGamesBestScores(req: Request<{ gameCode: string }>, res
 
         const followedUsers = currentUser.following || [];
 
+        //take only their user Id
         const followedUserIds = [...followedUsers.map(user => user.id), userId]
 
-        // Fetch best scores for followed users
+        // get best scores for followed users
         const scores = await GamesBestScores.findAll({
             where: {
                 gameCode,
@@ -73,14 +74,14 @@ export async function newGameBestScore(req: Request<{ gameCode: string }, {}, { 
             attributes: ['id', `bestScore`]
         });
 
-        // create if doesn`t exist
+        // create if doesn`t exist old score (first time)
         if (!myOldScore) {
             await GamesBestScores.create({
                 gameCode,
                 userId,
                 bestScore: newBestScore
             })
-        } else {
+        } else { //there is an old score
             await GamesBestScores.update(
                 { bestScore: newBestScore },
                 { where: { id: myOldScore.id } }

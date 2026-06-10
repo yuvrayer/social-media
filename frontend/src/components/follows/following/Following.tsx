@@ -46,7 +46,7 @@ export default function Following(props: FollowingProps) {
 
             {followingState.length > 0 && <>
                 <h3>People I follow:</h3>
-                <button onClick={() => props.startPopUp()}>
+                <button className='following-btn' onClick={() => props.startPopUp()}>
                     Show All Followings:
                 </button>
                 <div className='FollowingPeople'>

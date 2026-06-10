@@ -68,6 +68,7 @@ export async function sendFollowRequest(req: Request<{ userId: string }, {}, { n
             receiverId: req.params.userId
         })
 
+        //send through the socket to the user- a new follow request got in
         socket.emit('friendRequest:new', {
             to: req.params.userId,
             from: userId,
@@ -85,6 +86,8 @@ export async function sendFollowRequest(req: Request<{ userId: string }, {}, { n
 export async function deleteFollowRequest(req: Request<{ userId: string }>, res: Response, next: NextFunction) {
     try {
         const userId = req.userId
+
+        //delete the follow request in the database
         const isUnfollowed = await PendingFollowRequest.destroy({
             where: {
                 senderId: req.params.userId,

@@ -26,12 +26,14 @@ export default function ChatInput({ chatId, chatParticipants }: ChatInputProps) 
     const handleSend = async () => {
         if (!message.trim()) return;
         try {
+            //send the message to the database
             const sentMessage = await chatService.sendMessage(chatId, {
                 content: message,
                 participantsIds: chatParticipants,
                 fromName: name,
             });
 
+            //UI calls for the redux
             dispatch(addMessageForCurrentChat({ message: sentMessage, senderName: name }));
             dispatch(addUserChatsMessage(sentMessage));
             dispatch(clearUnreadChatMessage(chatId))
@@ -45,7 +47,7 @@ export default function ChatInput({ chatId, chatParticipants }: ChatInputProps) 
     const handleTyping = (text: string) => {
         setMessage(text);
 
-        // Emit "writing" event
+        // Emit "writing" event through the socket
         socket?.emit('writing', {
             chatId,
             from: userId,

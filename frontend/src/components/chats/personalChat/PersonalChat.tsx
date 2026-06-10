@@ -31,7 +31,7 @@ export default function PersonalChat({ chat, onClose }: PersonalChatProps) {
     const messagesContainerRef = useRef<HTMLDivElement | null>(null);
     const bottomRef = useRef<HTMLDivElement | null>(null);
     const typingUser = useAppSelector(state => state.chat.typingUser);
-    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Load messages when offset changes or a new chat is opened
     useEffect(() => {

@@ -18,7 +18,6 @@ export async function getProfile(req: Request<{ userId: string }>, res: Response
             }],
             order: [['createdAt', 'asc']]
         })
-        // console.log(user.get({ plain: true }))
 
         res.status(200).json({
             posts: user?.posts,
@@ -41,12 +40,6 @@ export async function getPost(req: Request<{ id: string }>, res: Response, next:
 
 export async function deletePost(req: Request<{ id: string }>, res: Response, next: NextFunction) {
     try {
-        // this is how you delete an EXISTING object:
-        // const post = await Post.findByPk(req.params.id)
-        // await post.destroy() 
-
-        // this is how you delete, using a static function,
-        // when you don't already have a sequelize object:
         const id = req.params.id
         const deletedRows = await Post.destroy({
             where: { id }
@@ -98,8 +91,9 @@ export async function updatePost(req: Request<{ id: string }>, res: Response, ne
             });
         }
 
-        // an example to findAll
-        // const pos2 = await Post.findAll({where: {name: 'Gustav'}})
+        if (req.imageUrl) {
+            post.imageUrl = req.imageUrl
+        }
 
         const { title, body } = req.body
         post.title = title

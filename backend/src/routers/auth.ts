@@ -7,8 +7,13 @@ import fileUploader from "../middlewares/file-uploader";
 
 const router = Router()
 
+//try to login
 router.post('/login', validation(loginValidator), login)
+
+//try to signup
 router.post('/signup', validation(signupValidator), filesValidation(signupFilesValidator), fileUploader, signup)
+
+//change a user detail- username/password
 router.patch('/signup', validation(changeDetailValidator), filesValidation(signupFilesValidator), fileUploader, changeDetail)
 
 export default router

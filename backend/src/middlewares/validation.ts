@@ -6,6 +6,7 @@ import { StatusCodes } from "http-status-codes";
 export default function validation(validator: ObjectSchema) {
     return async function (req: Request, res: Response, next: NextFunction) {
         try {
+            //send the body into the joi validation
             req.body = await validator.validateAsync(req.body)
             next()
         } catch (e) {

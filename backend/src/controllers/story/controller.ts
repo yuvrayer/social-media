@@ -124,7 +124,6 @@ export async function addStory(req: Request<{}, {}, { userId: string, profileImg
                 console.error("Failed to delete story after timeout:", err);
             }
         }, 5 * 60 * 1000)  // 5 min
-        // }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
         res.json(story)
     } catch (e) {

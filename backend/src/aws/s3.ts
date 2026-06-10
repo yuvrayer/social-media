@@ -12,6 +12,7 @@ if (!config.get<boolean>('s3.isLocalstack')) delete s3Config.endpoint
 // init the client
 const s3Client = new S3Client(s3Config)
 
+//creates the app bucket if not exist
 export async function createAppBucketIfNotExist() {
     try {
         async function setCorsRules() {
@@ -39,6 +40,7 @@ export async function createAppBucketIfNotExist() {
     }
 }
 
+//creates the specific bucket if not exist
 export async function createBucketIfNotExist(name: string) {
     try {
         await s3Client.send(

@@ -26,8 +26,10 @@ const app = express();
 export async function start() {
     await sequelize.sync({ force })
 
+    //create the app bucket
     await createAppBucketIfNotExist();
 
+    //create a queue
     await createAppQueueIfNotExist();
     console.log(`queue url is ${queueUrl}`)
 
@@ -46,6 +48,7 @@ export async function start() {
     app.use(json()) // a middleware to extract the post/put/patch data and save it to the request object in case the content type of the request is application/json
     app.use(fileUpload())
 
+    //define the routs
     app.use('/auth', authRouter)
     app.use('/profile', profileRouter)
     app.use('/follows', followsRouter)

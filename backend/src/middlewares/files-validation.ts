@@ -6,6 +6,7 @@ import { StatusCodes } from "http-status-codes";
 export default function filesValidation(validator: ObjectSchema) {
     return async function (req: Request, res: Response, next: NextFunction) {
         try {
+            //send the files into the joi validation. if there are not files- sends empty object
             req.files = await validator.validateAsync(req.files || {})
             next()
         } catch (e) {

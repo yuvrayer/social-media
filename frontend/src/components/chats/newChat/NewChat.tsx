@@ -32,6 +32,7 @@ export default function NewChatComponent({ onClose, onChatCreated }: NewChatComp
 
     const { register, handleSubmit, reset } = useForm<{ name?: string }>();
 
+    //on the upload of the component- run this:
     useEffect(() => {
         (async () => {
             try {

@@ -4,6 +4,7 @@ import AppError from "../errors/app-error"
 import { StatusCodes } from "http-status-codes"
 import { sign } from "jsonwebtoken"
 import config from 'config'
+import { describe, test, expect, jest } from '@jest/globals';
 
 describe('enforce-auth middleware tests', () => {
     test('calls next with a 401 error when no authorization header is provided', () => {
