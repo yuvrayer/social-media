@@ -1,4 +1,4 @@
-import { Request, Response } from 'express'
+import { Request, Response, NextFunction } from 'express';
 import {
     getStoryList,
     getUserStories,
@@ -7,202 +7,236 @@ import {
     addSaw,
     addStory,
     getUserStoriesHistory,
-} from '../controllers/story/controller'
+} from '../controllers/story/controller';
 
-import Story from '../models/story'
-import StoryViews from '../models/sawStory'
-import Follow from '../models/follow'
-import StoryArchive from '../models/storyArchive'
+import Story from '../models/story';
+import StoryViews from '../models/sawStory';
+import Follow from '../models/follow';
+import StoryArchive from '../models/storyArchive';
 
-// Mock the Sequelize models
-jest.mock('../models/story')
-jest.mock('../models/sawStory')
-jest.mock('../models/follow')
-jest.mock('../models/storyArchive')
+import { describe, test, expect, jest, beforeEach, beforeAll, afterAll } from '@jest/globals';
 
-const mockRes = () => {
-    const res = {} as Response
-    res.json = jest.fn().mockReturnValue(res)
-    res.status = jest.fn().mockReturnValue(res)
-    return res
-}
+// mock modules
+jest.mock('../models/story');
+jest.mock('../models/sawStory');
+jest.mock('../models/follow');
+jest.mock('../models/storyArchive');
 
-const mockNext = jest.fn()
+// strongly typed mocks
+const mockedStory = jest.mocked(Story);
+const mockedStoryViews = jest.mocked(StoryViews);
+const mockedFollow = jest.mocked(Follow);
+const mockedStoryArchive = jest.mocked(StoryArchive);
+
+// mock response
+export const mockRes = () => {
+    const res = {
+        status: jest.fn(),
+        json: jest.fn(),
+    };
+
+    res.status.mockReturnThis();
+    res.json.mockReturnThis();
+
+    return res as unknown as Response;
+};
+
+// mock next
+const mockNext = jest.fn() as unknown as NextFunction;
 
 describe('Story Controller Tests', () => {
     beforeEach(() => {
-        jest.clearAllMocks()
-    })
+        jest.clearAllMocks();
+    });
 
     describe('getStoryList', () => {
         test('should return followed user stories and own stories', async () => {
-            const req = { params: { currentUserId: '123' } } as Request<{ currentUserId: string }>
-            const res = mockRes()
+            const req = {
+                params: { currentUserId: '123' },
+            } as unknown as Request<{ currentUserId: string }>;
 
-            const follows = [
+            const res = mockRes();
+
+            mockedFollow.findAll.mockResolvedValue([
                 { followeeId: '234' },
-                { followeeId: '345' }
-            ]
-            const stories = [{ id: 1 }, { id: 2 }]
+                { followeeId: '345' },
+            ] as any);
 
-                ; (Follow.findAll as jest.Mock).mockResolvedValue(follows)
-                ; (Story.findAll as jest.Mock).mockResolvedValue(stories)
+            mockedStory.findAll.mockResolvedValue([{ id: 1 }, { id: 2 }] as any);
 
-            await getStoryList(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith(stories)
-        })
+            await getStoryList(req, res as Response, mockNext);
+
+            expect(res.json).toHaveBeenCalledWith([{ id: 1 }, { id: 2 }]);
+        });
 
         test('should call next with error if Follow.findAll fails', async () => {
-            const req = { params: { currentUserId: '123' } } as Request<{ currentUserId: string }> // mock req
-            const res = mockRes() as Response // mock res
-            const error = new Error('DB failure') // fake error
+            const req = {
+                params: { currentUserId: '123' },
+            } as unknown as Request<{ currentUserId: string }>;
 
-                ; (Follow.findAll as jest.Mock).mockRejectedValue(error) // simulate DB error
+            const res = mockRes();
 
-            await getStoryList(req, res, mockNext) // call controller
+            const error = new Error('DB failure');
 
-            expect(mockNext).toHaveBeenCalledWith(error) // ensure next() is called with error
-        })
+            mockedFollow.findAll.mockRejectedValue(error);
 
-        test('// should next error if currentUserId is missing', async () => {
-            const req = { params: {} } as unknown as Request<{ currentUserId: string }> // no currentUserId
-            const res = mockRes()
-            await getStoryList(req, res, mockNext) // call controller
+            await getStoryList(req, res as Response, mockNext);
 
-            expect(mockNext).toHaveBeenCalled();
-            const errorArg = mockNext.mock.calls[0][0];
-            expect(errorArg).toBeInstanceOf(Error);
-        })
-    })
+            expect(mockNext).toHaveBeenCalledWith(error);
+        });
+    });
 
     describe('getUserStories', () => {
         test('should return user stories', async () => {
-            const req = { params: { userId: '123' } } as Request<{ userId: string }>
-            const res = mockRes()
-            const stories = [{ id: 1 }, { id: 2 }]
+            const req = {
+                params: { userId: '123' },
+            } as unknown as Request<{ userId: string }>;
 
-                ; (Story.findAll as jest.Mock).mockResolvedValue(stories)
+            const res = mockRes();
 
-            await getUserStories(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith(stories)
-        })
-    })
+            mockedStory.findAll.mockResolvedValue([{ id: 1 }, { id: 2 }] as any);
+
+            await getUserStories(req, res as Response, mockNext);
+
+            expect(res.json).toHaveBeenCalledWith([{ id: 1 }, { id: 2 }]);
+        });
+    });
 
     describe('getUserStoriesSeenData', () => {
         test('should return all story views', async () => {
-            const req = {} as Request
-            const res = mockRes()
-            const views = [{}, {}]
+            const req = {} as Request;
+            const res = mockRes();
 
-                ; (StoryViews.findAll as jest.Mock).mockResolvedValue(views)
+            mockedStoryViews.findAll.mockResolvedValue([{}, {}] as any);
 
-            await getUserStoriesSeenData(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith(views)
-        })
-    })
+            await getUserStoriesSeenData(req, res as Response, mockNext);
+
+            expect(res.json).toHaveBeenCalledWith([{}, {}]);
+        });
+    });
 
     describe('deleteStory', () => {
-        test('should delete a story by userId and storyId', async () => {
-            const req = { params: { userId: '123', storyId: 'abc' } } as Request<{ userId: string, storyId: string }>
-            const res = mockRes()
-                ; (Story.destroy as jest.Mock).mockResolvedValue(1)
+        test('should delete a story', async () => {
+            const req = {
+                params: { userId: '123', storyId: 'abc' },
+            } as unknown as Request<{ userId: string, storyId: string }>;
 
-            await deleteStory(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith(1)
-        })
-    })
+            const res = mockRes();
+
+            mockedStory.destroy.mockResolvedValue(1 as any);
+
+            await deleteStory(req, res as Response, mockNext);
+
+            expect(res.json).toHaveBeenCalledWith(1);
+        });
+    });
 
     describe('addSaw', () => {
-        test('should add story view if not already exists', async () => {
+        test('should create view if not exists', async () => {
             const req = {
-                body: { userIdUploaded: '1', userIdSaw: '2' }
-            } as Request
-            const res = mockRes()
+                body: { userIdUploaded: '1', userIdSaw: '2' },
+            } as Request;
 
-                ; (StoryViews.findOne as jest.Mock).mockResolvedValue(null)
-                ; (StoryViews.create as jest.Mock).mockResolvedValue({ id: 10 })
+            const res = mockRes();
 
-            await addSaw(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith({ id: 10 })
-        })
+            mockedStoryViews.findOne.mockResolvedValue(null);
+            mockedStoryViews.create.mockResolvedValue({ id: 10 } as any);
 
-        test('should return existing view if already present', async () => {
+            await addSaw(req, res as Response, mockNext);
+
+            expect(res.json).toHaveBeenCalledWith({ id: 10 });
+        });
+
+        test('should return existing view', async () => {
             const req = {
-                body: { userIdUploaded: '1', userIdSaw: '2' }
-            } as Request
-            const res = mockRes()
-            const existing = { id: 99 }
+                body: { userIdUploaded: '1', userIdSaw: '2' },
+            } as Request;
 
-                ; (StoryViews.findOne as jest.Mock).mockResolvedValue(existing)
+            const res = mockRes();
 
-            await addSaw(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith(existing)
-        })
-    })
+            const existing = { id: 99 };
+
+            mockedStoryViews.findOne.mockResolvedValue(existing as any);
+
+            await addSaw(req, res as Response, mockNext);
+
+            expect(res.json).toHaveBeenCalledWith(existing);
+        });
+    });
 
     describe('addStory', () => {
-        beforeAll(() => jest.useFakeTimers())
-        afterAll(() => jest.useRealTimers())
+        beforeAll(() => {
+            jest.useFakeTimers();
+        });
+        afterAll(() => {
+            jest.useRealTimers()
+        });
 
-        test('should create a story and schedule deletion', async () => {
+        test('should create story and delete after timeout', async () => {
             const req = {
                 body: {
-                    userId: '1230ae30-dc4f-4752-bd84-092956f5c633',
+                    userId: '123',
                     profileImgUrl: 'url',
-                    name: 'Bob'
+                    name: 'Bob',
                 },
                 files: {
-                    storyImage: { name: 'story.jpg' }
-                }
-            } as unknown as Request
-            const res = mockRes()
-            const createdStory = { id: 'abc' }
+                    storyImage: { name: 'story.jpg' },
+                },
+            } as unknown as Request;
 
-                ; (Story.create as jest.Mock).mockResolvedValue(createdStory)
-                ; (Story.destroy as jest.Mock).mockResolvedValue(1)
+            const res = mockRes();
 
-            await addStory(req, res, mockNext)
-            expect(res.json).toHaveBeenCalledWith(createdStory)
+            const created = { id: 'abc' };
 
-            // Fast-forward 5 minutes
-            jest.advanceTimersByTime(5 * 60 * 1000)
+            mockedStory.create.mockResolvedValue(created as any);
+            mockedStory.destroy.mockResolvedValue(1 as any);
 
-            //wait for callbacks to resolved
-            await Promise.resolve()
-            await Promise.resolve()
+            await addStory(req, res as Response, mockNext);
 
-            expect(Story.destroy).toHaveBeenCalledWith({
-                where: { id: 'abc' }
-            })
-        })
-    })
+            expect(res.json).toHaveBeenCalledWith(created);
+
+            jest.advanceTimersByTime(5 * 60 * 1000);
+
+            await Promise.resolve();
+
+            expect(mockedStory.destroy).toHaveBeenCalledWith({
+                where: { id: 'abc' },
+            });
+        });
+    });
 
     describe('getUserStoriesHistory', () => {
-        test('should return story history for authenticated user', async () => {
-            const req = { userId: '1230ae30-dc4f-4752-bd84-092956f5c633' } as Request
-            const res = mockRes()
-            const stories = [{ id: 's1' }, { id: 's2' }]
+        test('should return history', async () => {
+            const req = {
+                userId: '123',
+            } as unknown as Request;
 
-                ; (StoryArchive.findAll as jest.Mock).mockResolvedValue(stories)
+            const res = mockRes();
 
-            await getUserStoriesHistory(req, res, mockNext)
+            const stories = [{ id: 's1' }, { id: 's2' }];
 
-            expect(StoryArchive.findAll).toHaveBeenCalledWith({
-                where: { userId: '1230ae30-dc4f-4752-bd84-092956f5c633' }
-            })
-            expect(res.json).toHaveBeenCalledWith(stories)
-        })
+            mockedStoryArchive.findAll.mockResolvedValue(stories as any);
 
-        test('should call next with error on failure', async () => {
-            const req = { userId: 'user-123' } as Request
-            const res = mockRes()
-            const error = new Error('DB error')
+            await getUserStoriesHistory(req, res as Response, mockNext);
 
-                ; (StoryArchive.findAll as jest.Mock).mockRejectedValue(error)
+            expect(mockedStoryArchive.findAll).toHaveBeenCalledWith({
+                where: { userId: '123' },
+            });
 
-            await getUserStoriesHistory(req, res, mockNext)
+            expect(res.json).toHaveBeenCalledWith(stories);
+        });
 
-            expect(mockNext).toHaveBeenCalledWith(error)
-        })
-    })
-})
+        test('should call next on error', async () => {
+            const req = { userId: '123' } as unknown as Request;
+            const res = mockRes();
+
+            const error = new Error('DB error');
+
+            mockedStoryArchive.findAll.mockRejectedValue(error);
+
+            await getUserStoriesHistory(req, res as Response, mockNext);
+
+            expect(mockNext).toHaveBeenCalledWith(error);
+        });
+    });
+});

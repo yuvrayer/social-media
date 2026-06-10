@@ -33,8 +33,8 @@ export default class Profile extends AuthAware {
     }
 
     async update(id: string, draft: PostDraft): Promise<Post> {
-        const { title, body } = draft
-        const response = await this.axiosInstance.patch<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/${id}`, { title, body })
+        const { title, body, postImage } = draft
+        const response = await this.axiosInstance.patch<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/${id}`, { title, body, postImage })
         return response.data
     }
 }

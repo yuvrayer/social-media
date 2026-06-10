@@ -11,6 +11,7 @@ export async function getChats(req: Request, res: Response, next: NextFunction) 
     try {
         const userId = req.userId;
 
+        //get all the user chats from the database
         const chats = await Chat.findAll({
             include: [
                 {
@@ -29,6 +30,7 @@ export async function getChats(req: Request, res: Response, next: NextFunction) 
             order: [["updated_at", "DESC"]],
         });
 
+        //takes the last message of each chat
         const chatsWithDetails = await Promise.all(chats.map(async chat => {
             const latestMessage = await Message.findOne({
                 where: { chatId: chat.id },
@@ -40,7 +42,10 @@ export async function getChats(req: Request, res: Response, next: NextFunction) 
                 }]
             });
 
+            //takes the participants of the chat
             const participant = chat.ChatParticipants?.[0];
+
+            //takes the unread messages number of the chat
             const unreadMessages = participant?.unreadMessages ?? 0;
 
             return {
@@ -50,6 +55,7 @@ export async function getChats(req: Request, res: Response, next: NextFunction) 
             };
         }));
 
+        //sends the data to the user
         res.json(chatsWithDetails);
     } catch (error) {
         console.error("Failed to get chats:", error);
@@ -67,6 +73,7 @@ export async function createChat(req: Request<{}, {}, { name: string, isGroup: b
 
         const photoUrl = req.imageUrl ?? null
 
+        //in case the user didn`t chose any participant for the new chat
         if (!participantIds || !Array.isArray(participantIds) || participantIds.length === 0) {
             return res.status(400).json({ error: 'participantIds array is required' });
         }
@@ -87,6 +94,7 @@ export async function createChat(req: Request<{}, {}, { name: string, isGroup: b
             userId: pid,
         }));
 
+        //saves it in the database
         await ChatParticipant.bulkCreate(chatParticipants);
 
         const fullChat = await Chat.findByPk(chat.id, {
@@ -98,6 +106,7 @@ export async function createChat(req: Request<{}, {}, { name: string, isGroup: b
             }]
         });
 
+        //sends through socket to the participants- on the new chat
         socket.emit('newChat', {
             to: req.body.participantIds,
             from: userId,
@@ -157,11 +166,13 @@ export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fro
         const participant = await ChatParticipant.findOne({ where: { chatId, userId } });
         if (!participant) return res.status(403).json({ error: "Forbidden" });
 
+        //update the chat update time
         await Chat.update(
             { updatedAt: new Date() },
             { where: { id: chatId } }
         );
 
+        //saves the message
         const message = await Message.create({
             chatId,
             senderId: userId,
@@ -169,6 +180,7 @@ export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fro
             sentThroughStory: req.body.sentThroughStory ?? ``
         });
 
+        //sends through socket to the participants- on the new message
         socket.emit('newMessage', {
             to: req.body.participantsIds,
             chatId,
@@ -188,6 +200,8 @@ export async function sendChatMessage(req: Request<{ chatId: string }, {}, { fro
 export async function IncrementChatParticipant(req: Request<{}, {}, { chatId: string, userId: string }>, res: Response, next: NextFunction) {
     try {
         const { chatId, userId } = req.body
+
+        //increase the unreadMessages field of the chat, by 1
         await ChatParticipant.increment(
             { unreadMessages: 1 },
             {
@@ -209,6 +223,7 @@ export async function markChatAsRead(req: Request<{ chatId: string }>, res: Resp
         const { chatId } = req.params;
         const userId = req.userId;
 
+        //reset the unreadMessages amount
         await ChatParticipant.update(
             { unreadMessages: 0 },
             {

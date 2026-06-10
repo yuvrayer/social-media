@@ -46,7 +46,7 @@ export default function Followers(props: FollowersProps) {
 
             {followersState.length > 0 && <>
                 <h3>People who follow me:</h3>
-                <button onClick={() => props.startPopUp()}>
+                <button className='followers-btn' onClick={() => props.startPopUp()}>
                     Show All Followers
                 </button>
 

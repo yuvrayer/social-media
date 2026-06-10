@@ -14,6 +14,7 @@ declare global {
     }
 }
 
+//auth
 export default function enforceAuth(req: Request, res: Response, next: NextFunction) {
     const authorizationHeader = req.headers.authorization
 

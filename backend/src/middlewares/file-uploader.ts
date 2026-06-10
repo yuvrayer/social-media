@@ -11,16 +11,24 @@ import { SendMessageCommand } from "@aws-sdk/client-sqs";
 export default async function fileUploader<T extends Record<string,any>>(req: Request<{}, {}, T>, res: Response, next: NextFunction) {
 //newStory: boolean, userId: string, storyImgUrl: string
     try {
+        //req.files.postImage- through post image
+        //req.files.profileImg- through profile image
+        //req.body.newStory- through new story image
+        //req.files.chatFile- through image that sent in chat
+        //req.files.photoFile- through
         if (!req?.files?.postImage && !req?.files?.profileImg && !req.body.newStory && !req?.files?.chatFile && !req?.files?.photoFile) return next()
 
+        //not story
         if (!req.body.newStory) {
             let uploadedImage = null
+            //if it is a profile image
             if (req.files?.profileImg) {
                 uploadedImage = req.files.profileImg as UploadedFile
-            } else if (req.files?.postImage) { uploadedImage = req.files.postImage as UploadedFile }
-            else if (req.files?.chatFile) { uploadedImage = req.files.chatFile as UploadedFile }
-            else if (req.files?.photoFile) { uploadedImage = req.files.photoFile as UploadedFile }
+            } else if (req.files?.postImage) { uploadedImage = req.files.postImage as UploadedFile } //post image
+            else if (req.files?.chatFile) { uploadedImage = req.files.chatFile as UploadedFile } //chat image
+            else if (req.files?.photoFile) { uploadedImage = req.files.photoFile as UploadedFile } //photo file
 
+            //sets the appropriate image through the source 
             const upload = new Upload({
                 client: s3Client,
                 params: {
@@ -31,9 +39,11 @@ export default async function fileUploader<T extends Record<string,any>>(req: Re
                 }
             })
 
+            //upload to the database
             const response = await upload.done()
             console.log(response)
 
+            //sends it to the sqs
             const sqsResponse = await sqsClient.send(new SendMessageCommand({
                 QueueUrl: queueUrl,
                 MessageBody: JSON.stringify({
@@ -45,7 +55,9 @@ export default async function fileUploader<T extends Record<string,any>>(req: Re
 
             // req.imageUrl = response.Location
             req.imageUrl = `${response.Bucket}/${response.Key}`
-        } else {
+        } 
+        //if it is a story
+        else {
             const uploadedFile = req?.files?.storyImage as UploadedFile
 
             createBucketIfNotExist(req?.body?.userId ? req?.body?.userId : `a`)
@@ -60,7 +72,7 @@ export default async function fileUploader<T extends Record<string,any>>(req: Re
                 }
             })
 
-
+            //upload to the database
             const response = await upload.done()
             console.log(response)
         }

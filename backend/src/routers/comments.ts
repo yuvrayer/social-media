@@ -7,7 +7,9 @@ import enforceAuth from "../middlewares/enforce-auth";
 
 const router = Router()
 
+//checks if the user identified properly (runs on every call to the router)
 router.use(enforceAuth)
 
+//create new comment
 router.post('/:postId', validation(newCommentValidator), paramsValidation(newCommentParamsValidator), createComment)
 export default router

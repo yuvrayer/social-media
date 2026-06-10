@@ -12,8 +12,10 @@ export async function getFeed(req: Request<{ userId: string }>, res: Response, n
             attributes: ['followeeId']
         })
 
+        //get the followeeId in array
         const followeeIds = following.map(f => f.followeeId)
 
+        //get all their posts
         const posts = await Post.findAll({
             where: {
                 userId: followeeIds

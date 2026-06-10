@@ -19,6 +19,8 @@ export async function createComment(req: Request<{postId: string}>, res: Respons
             include: [ User ]
         })
         res.json(comment)
+
+        //sends through socket to the user- on the new comment
         socket.emit(SocketMessages.NEW_COMMENT, {
             from: req.headers['x-client-id'], // req.header(), req.get()
             data: comment

@@ -9,12 +9,17 @@ import socket from "../../io/io";
 
 export async function getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
+        //get all the users from the database
         const users = await User.findAll()
+
+        //map them, take just the id, name, profileImgUrl from each
         const usersMainData = users.map(user => ({
             id: user.get('id'),
             name: user.get('name'),
             profileImgUrl: user.get('profileImgUrl'),
         }))
+
+        //send it to the user
         res.json(usersMainData)
     } catch (e) {
         next(e)
@@ -26,6 +31,7 @@ export async function getFollowers(req: Request, res: Response, next: NextFuncti
     try {
         const userId = req.userId
 
+        //find the specific user by it`s Id, get his followers, but just their id, name, profileImgUrl
         const user = await User.findByPk(userId, {
             include: [{
                 model: User,
@@ -35,6 +41,8 @@ export async function getFollowers(req: Request, res: Response, next: NextFuncti
             }],
             order: [[col('followers.name'), 'ASC']],
         })
+
+        //send them to the user
         res.json({ users: user?.followers, usersNum: user?.followers.length })
     } catch (e) {
         next(e)
@@ -45,6 +53,7 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
     try {
         const userId = req.userId
 
+        //find the user in the database
         const user = await User.findByPk(userId, {
             include: [{
                 model: User,
@@ -53,6 +62,8 @@ export async function getFollowing(req: Request, res: Response, next: NextFuncti
                 through: { attributes: [] }, // removes junction table fields
             }]
         })
+
+        //send the followings of the user
         res.json({ users: user?.following, usersNum: user?.following.length })
     } catch (e) {
         next(e)
@@ -65,11 +76,14 @@ export async function follow(req: Request<{ id: string }, {}, {
 
     try {
         const userId = req.userId
+
+        //create them as follower, followee in the database
         const follow = await Follow.create({
             followerId: req.params.id,
             followeeId: userId
         })
 
+        //send through socket to the user- your follow request has been approved
         socket.emit('friendRequest:approved', {
             to: req.params.id,
             userFillData: {
@@ -89,6 +103,8 @@ export async function unfollow(req: Request<{ id: string }>, res: Response, next
 
     try {
         const userId = req.userId
+
+        //delete the follow line from the database
         const isUnfollowed = await Follow.destroy({
             where: {
                 followerId: userId,
@@ -97,7 +113,7 @@ export async function unfollow(req: Request<{ id: string }>, res: Response, next
         })
         if (!isUnfollowed) return next(new AppError(
             StatusCodes.NOT_FOUND,
-            'tried to delete unexisting record'
+            'tried to delete missing record'
         ))
         res.json({ success: true })
     } catch (e) {
@@ -109,6 +125,8 @@ export async function removeFromMyFollowers(req: Request<{ id: string }>, res: R
 
     try {
         const userId = req.userId
+
+        //remove the follow line from the database (stop allow someone from following me)
         const isUnfollowed = await Follow.destroy({
             where: {
                 followerId: req.params.id,
@@ -117,7 +135,7 @@ export async function removeFromMyFollowers(req: Request<{ id: string }>, res: R
         })
         if (!isUnfollowed) return next(new AppError(
             StatusCodes.NOT_FOUND,
-            'tried to delete unexisting record'
+            'tried to delete missing record'
         ))
         res.json({ success: true })
     } catch (e) {

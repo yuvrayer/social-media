@@ -1,23 +1,28 @@
-import { createComment } from './controller'
-import { Request, Response, NextFunction } from 'express'
-import Comment from '../../models/comment'
-import User from '../../models/user'
-import socket from '../../io/io'
-import SocketMessages from 'socket-enums-shaharsol'
+import { createComment } from './controller';
+import { Request, Response, NextFunction } from 'express';
+import Comment from '../../models/comment';
+import User from '../../models/user';
+import socket from '../../io/io';
+import SocketMessages from 'socket-enums-shaharsol';
+import { jest, describe, test, expect, afterEach, afterAll, beforeEach } from '@jest/globals';
 
-jest.mock('../../models/comment')
-jest.mock('../../models/user')
+jest.mock('../../models/comment');
+jest.mock('../../models/user');
 jest.mock('../../io/io', () => ({
     __esModule: true,
     default: {
-        emit: jest.fn()
-    }
-}))
+        emit: jest.fn(),
+    },
+}));
+
+const mockedComment = Comment as jest.Mocked<typeof Comment>;
+const mockedSocket = socket as jest.Mocked<typeof socket>;
 
 describe('createComment controller', () => {
-    let mockReq: Request<{ postId: string }>
-    let mockRes: Response
-    let mockNext: NextFunction
+    let mockReq: Request<{ postId: string }>;
+    let mockRes: Response;
+    let mockNext: NextFunction;
+
     const mockCommentInstance = {
         reload: jest.fn(),
         toJSON: () => ({
@@ -25,81 +30,92 @@ describe('createComment controller', () => {
             content: 'Hello world',
             userId: 'user-123',
             postId: 'post-456',
-            User: { id: 'user-123', name: 'Test User' }
-        })
-    }
+            User: { id: 'user-123', name: 'Test User' },
+        }),
+    };
 
     beforeEach(() => {
         mockReq = {
             userId: 'user-123',
             params: { postId: 'post-456' },
             body: { content: 'Hello world' },
-            headers: { 'x-client-id': 'test-client-id' }
-        } as unknown as Request<{ postId: string }>
+            headers: { 'x-client-id': 'test-client-id' },
+        } as unknown as Request<{ postId: string }>;
 
         mockRes = {
-            json: jest.fn()
-        } as unknown as Response
+            json: jest.fn(),
+        } as unknown as Response;
 
-        mockNext = jest.fn()
+        mockNext = jest.fn();
 
-        jest.clearAllMocks()
-    })
+        jest.clearAllMocks();
+    });
 
     test('creates the comment with correct fields', async () => {
-        (Comment.create as jest.Mock).mockResolvedValue(mockCommentInstance)
-        mockCommentInstance.reload.mockResolvedValue(undefined)
+        const mockCommentInstance = {
+            reload: jest.fn(() => Promise.resolve()),
+            toJSON: jest.fn().mockReturnValue({
+                id: 'comment-456',
+                content: 'Hello world',
+                userId: 'user-123',
+                postId: 'post-456',
+                User: { id: 'user-123', name: 'Test User' }
+            })
+        };
 
-        await createComment(mockReq, mockRes, mockNext)
+        await createComment(mockReq, mockRes, mockNext);
 
         expect(Comment.create).toHaveBeenCalledWith({
             userId: 'user-123',
             postId: 'post-456',
-            content: 'Hello world'
-        })
-    })
+            content: 'Hello world',
+        });
+
+        expect(mockCommentInstance.reload).toHaveBeenCalled();
+    });
 
     test('reloads the comment with User relation', async () => {
-        (Comment.create as jest.Mock).mockResolvedValue(mockCommentInstance)
-        mockCommentInstance.reload.mockResolvedValue(undefined)
+        mockedComment.create.mockResolvedValue(mockCommentInstance as any);
 
-        await createComment(mockReq, mockRes, mockNext)
+        await createComment(mockReq, mockRes, mockNext);
 
         expect(mockCommentInstance.reload).toHaveBeenCalledWith({
-            include: [User]
-        })
-    })
+            include: [User],
+        });
+    });
 
     test('sends the comment as JSON response', async () => {
-        (Comment.create as jest.Mock).mockResolvedValue(mockCommentInstance)
-        mockCommentInstance.reload.mockResolvedValue(undefined)
+        mockedComment.create.mockResolvedValue(mockCommentInstance as any);
 
-        await createComment(mockReq, mockRes, mockNext)
+        await createComment(mockReq, mockRes, mockNext);
 
-        expect(mockRes.json).toHaveBeenCalledWith(mockCommentInstance)
-    })
+        expect(mockRes.json).toHaveBeenCalledWith(mockCommentInstance);
+    });
 
-    test('emits NEW_COMMENT event with correct payload', async () => {
-        (Comment.create as jest.Mock).mockResolvedValue(mockCommentInstance)
-        mockCommentInstance.reload.mockResolvedValue(undefined)
+    test('emits NEW_COMMENT event', async () => {
+        mockedComment.create.mockResolvedValue(mockCommentInstance as any);
 
-        await createComment(mockReq, mockRes, mockNext)
+        await createComment(mockReq, mockRes, mockNext);
 
-        expect(socket.emit).toHaveBeenCalledWith(SocketMessages.NEW_COMMENT, {
-            from: 'test-client-id',
-            data: mockCommentInstance
-        })
-    })
+        expect(mockedSocket.emit).toHaveBeenCalledWith(
+            SocketMessages.NEW_COMMENT,
+            {
+                from: 'test-client-id',
+                data: mockCommentInstance,
+            }
+        );
+    });
 
     test('calls next with error if something fails', async () => {
-        const error = new Error('Create failed')
-            ; (Comment.create as jest.Mock).mockRejectedValue(error)
+        const error = new Error('Create failed');
 
-        await createComment(mockReq, mockRes, mockNext)
+        mockedComment.create.mockRejectedValue(error);
 
-        expect(mockNext).toHaveBeenCalledWith(error)
-    })
-})
+        await createComment(mockReq, mockRes, mockNext);
+
+        expect(mockNext).toHaveBeenCalledWith(error);
+    });
+});
 
 afterEach(() => {
     jest.clearAllMocks();
