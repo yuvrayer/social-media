@@ -8,43 +8,87 @@ import { describe, test, expect, jest } from '@jest/globals';
 
 describe('enforce-auth middleware tests', () => {
     test('calls next with a 401 error when no authorization header is provided', () => {
-        const request = { headers: {}} as Request
+        const request = { headers: {} } as Request
         const response = {} as Response
-        const next = jest.fn((err) => {})
+        const next = jest.fn((err) => { })
         enforceAuth(request, response, next)
         expect(next.mock.calls.length).toBe(1)
         expect(next.mock.calls[0][0]).toEqual(new AppError(StatusCodes.UNAUTHORIZED, 'missing authorization header'))
     })
     test('calls next with a 401 error when no space between Bearer and token', () => {
-        const request = { headers: {
-            authorization: 'Bearer123'
-        }} as Request
+        const request = {
+            headers: {
+                authorization: 'Bearer123'
+            }
+        } as Request
         const response = {} as Response
-        const next = jest.fn((err) => {})
+        const next = jest.fn((err) => { })
         enforceAuth(request, response, next)
         expect(next.mock.calls.length).toBe(1)
         expect(next.mock.calls[0][0]).toEqual(new AppError(StatusCodes.UNAUTHORIZED, 'bad authorization header'))
     })
     test('calls next with a 401 error when Bearer keyword is misspelled', () => {
-        const request = { headers: {
-            authorization: 'Beaerer 123'
-        }} as Request
+        const request = {
+            headers: {
+                authorization: 'Beaerer 123'
+            }
+        } as Request
         const response = {} as Response
-        const next = jest.fn((err) => {})
+        const next = jest.fn((err) => { })
         enforceAuth(request, response, next)
         expect(next.mock.calls.length).toBe(1)
         expect(next.mock.calls[0][0]).toEqual(new AppError(StatusCodes.UNAUTHORIZED, 'bad authorization header'))
     })
     test('success when all is valid', () => {
         const jwt = sign({}, config.get<string>('app.jwtSecret'))
-        const request = { headers: {
-            authorization: `Bearer ${jwt}`
-        }} as Request
+        const request = {
+            headers: {
+                authorization: `Bearer ${jwt}`
+            }
+        } as Request
         const response = {} as Response
-        const next = jest.fn((err) => {})
+        const next = jest.fn((err) => { })
         enforceAuth(request, response, next)
         expect(next.mock.calls.length).toBe(1)
         expect(next.mock.calls[0][0]).toBeUndefined();
     })
+    test('calls next with 401 when JWT is invalid', () => {
+        const request = {
+            headers: {
+                authorization: 'Bearer invalid-token'
+            }
+        } as Request
 
+        const response = {} as Response
+        const next = jest.fn()
+
+        enforceAuth(request, response, next)
+
+        expect(next).toHaveBeenCalledTimes(1)
+        expect(next.mock.calls[0][0]).toEqual(
+            new AppError(StatusCodes.UNAUTHORIZED, 'invalid JWT')
+        )
+    })
+    test('sets userId on request when token is valid', () => {
+        const user = {
+            id: '123'
+        }
+
+        const jwt = sign(user, config.get<string>('app.jwtSecret'))
+
+        const request = {
+            headers: {
+                authorization: `Bearer ${jwt}`
+            }
+        } as Request
+
+        const response = {} as Response
+        const next = jest.fn()
+
+        enforceAuth(request, response, next)
+
+        expect(request.userId).toBe('123')
+        expect(next).toHaveBeenCalledWith()
+    })
+    
 })

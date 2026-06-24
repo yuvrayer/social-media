@@ -24,13 +24,16 @@ describe('createComment controller', () => {
     let mockNext: NextFunction;
 
     const mockCommentInstance = {
-        reload: jest.fn(),
-        toJSON: () => ({
+        reload: jest.fn().mockImplementation(() => Promise.resolve()),
+        toJSON: jest.fn().mockReturnValue({
             id: 'comment-456',
             content: 'Hello world',
             userId: 'user-123',
             postId: 'post-456',
-            User: { id: 'user-123', name: 'Test User' },
+            User: {
+                id: 'user-123',
+                name: 'Test User',
+            },
         }),
     };
 
@@ -52,50 +55,51 @@ describe('createComment controller', () => {
     });
 
     test('creates the comment with correct fields', async () => {
-        const mockCommentInstance = {
-            reload: jest.fn(() => Promise.resolve()),
-            toJSON: jest.fn().mockReturnValue({
-                id: 'comment-456',
-                content: 'Hello world',
-                userId: 'user-123',
-                postId: 'post-456',
-                User: { id: 'user-123', name: 'Test User' }
-            })
-        };
+        mockedComment.create.mockResolvedValue(
+            mockCommentInstance as any
+        );
 
         await createComment(mockReq, mockRes, mockNext);
 
-        expect(Comment.create).toHaveBeenCalledWith({
+        expect(mockedComment.create).toHaveBeenCalledWith({
             userId: 'user-123',
             postId: 'post-456',
             content: 'Hello world',
         });
 
-        expect(mockCommentInstance.reload).toHaveBeenCalled();
+        expect(mockCommentInstance.reload).toHaveBeenCalledWith({
+            include: [User],
+        });
+
+        expect(mockRes.json).toHaveBeenCalledWith(
+            mockCommentInstance
+        );
+
+        expect(mockNext).not.toHaveBeenCalled();
     });
 
     test('reloads the comment with User relation', async () => {
-        mockedComment.create.mockResolvedValue(mockCommentInstance as any);
+        mockedComment.create.mockResolvedValue(
+            mockCommentInstance as any
+        );
 
         await createComment(mockReq, mockRes, mockNext);
+
+        expect(mockCommentInstance.reload).toHaveBeenCalledTimes(1);
 
         expect(mockCommentInstance.reload).toHaveBeenCalledWith({
             include: [User],
         });
     });
 
-    test('sends the comment as JSON response', async () => {
-        mockedComment.create.mockResolvedValue(mockCommentInstance as any);
-
-        await createComment(mockReq, mockRes, mockNext);
-
-        expect(mockRes.json).toHaveBeenCalledWith(mockCommentInstance);
-    });
-
     test('emits NEW_COMMENT event', async () => {
-        mockedComment.create.mockResolvedValue(mockCommentInstance as any);
+        mockedComment.create.mockResolvedValue(
+            mockCommentInstance as any
+        );
 
         await createComment(mockReq, mockRes, mockNext);
+
+        expect(mockedSocket.emit).toHaveBeenCalledTimes(1);
 
         expect(mockedSocket.emit).toHaveBeenCalledWith(
             SocketMessages.NEW_COMMENT,
@@ -106,7 +110,7 @@ describe('createComment controller', () => {
         );
     });
 
-    test('calls next with error if something fails', async () => {
+    test('calls next with error if create fails', async () => {
         const error = new Error('Create failed');
 
         mockedComment.create.mockRejectedValue(error);
@@ -114,6 +118,28 @@ describe('createComment controller', () => {
         await createComment(mockReq, mockRes, mockNext);
 
         expect(mockNext).toHaveBeenCalledWith(error);
+
+        expect(mockRes.json).not.toHaveBeenCalled();
+
+        expect(mockedSocket.emit).not.toHaveBeenCalled();
+    });
+
+    test('calls next with error if reload fails', async () => {
+        const error = new Error('Reload failed');
+
+        mockedComment.create.mockResolvedValue({
+            ...mockCommentInstance,
+            reload: jest.fn<() => Promise<void>>()
+                .mockRejectedValue(error)
+        } as any);
+
+        await createComment(mockReq, mockRes, mockNext);
+
+        expect(mockNext).toHaveBeenCalledWith(error);
+
+        expect(mockRes.json).not.toHaveBeenCalled();
+
+        expect(mockedSocket.emit).not.toHaveBeenCalled();
     });
 });
 

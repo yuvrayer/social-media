@@ -32,6 +32,14 @@ export async function getProfile(req: Request<{ userId: string }>, res: Response
 export async function getPost(req: Request<{ id: string }>, res: Response, next: NextFunction) {
     try {
         const post = await Post.findByPk(req.params.id, postIncludes)
+
+        if (!post) {
+            return res.status(404).json({
+                error: 'Not Found',
+                message: `Post with ID ${req.params.id} does not exist.`,
+            })
+        }
+
         res.json(post)
     } catch (e) {
         next(e)
