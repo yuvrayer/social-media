@@ -71,3 +71,25 @@ export async function start() {
 }
 
 export default app
+
+
+export function loadRoutes() {
+    app.use(cors());
+    app.use(json());
+    app.use(fileUpload());
+
+    app.use('/auth', authRouter);
+    app.use('/profile', profileRouter);
+    app.use('/follows', followsRouter);
+    app.use('/request', followsRequestRouter);
+    app.use('/comments', commentsRouter);
+    app.use('/feed', feedRouter);
+    app.use('/story', storyRouter);
+    app.use('/likes', likesRouter);
+    app.use('/chats', chatsRouter);
+    app.use('/games', gamesRouter);
+
+    app.use(notFound);
+    app.use(errorLogger);
+    app.use(errorResponder);
+}

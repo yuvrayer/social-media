@@ -1,0 +1,8 @@
+services:
+  database:
+    image: mysql:8
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: twitter_test
+    ports:
+      - "3307:3306"

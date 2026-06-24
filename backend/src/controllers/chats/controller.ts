@@ -213,7 +213,7 @@ export async function IncrementChatParticipant(req: Request<{}, {}, { chatId: st
         );
         res.status(200)
     } catch (e) {
-        alert(e)
+        next(e)
     }
 }
 

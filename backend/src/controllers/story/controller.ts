@@ -65,7 +65,7 @@ export async function deleteStory(req: Request<{ userId: string, storyId: string
         })
         res.json(deletedStory)
     } catch (e) {
-        alert(e)
+        next(e)
     }
 }
 
@@ -83,7 +83,7 @@ export async function addSaw(req: Request<{}, {}, { userIdUploaded: string, user
                 const storyAdd = await StoryViews.create({ userIdUploaded, userIdSaw })
                 res.json(storyAdd)
             } catch (e) {
-                alert(e)
+                next(e)
             }
         } else {
             res.json(alreadyExist)

@@ -1,19 +1,69 @@
 import config from "config"
-import app, { start } from "../app"
+import { jest } from "@jest/globals";
+
+jest.mock("../io/io", () => ({
+    __esModule: true,
+    default: {
+        emit: jest.fn(),
+        on: jest.fn(),
+        off: jest.fn(),
+        disconnect: jest.fn()
+    }
+}));
+
+jest.mock('@aws-sdk/lib-storage', () => ({
+    Upload: jest.fn().mockImplementation(() => ({
+        done: async () => ({
+            Bucket: 'test-bucket',
+            Key: 'test-image.jpg',
+        }),
+    })),
+}));
+
+jest.mock('../aws/sqs', () => ({
+    __esModule: true,
+    default: {
+        send: async () => ({})
+    },
+    queueUrl: 'test-queue'
+}));
+
+import app, { loadRoutes } from "../app"
 import request from 'supertest'
 import { sign } from "jsonwebtoken"
-import { describe, test, expect } from "@jest/globals"
+import { describe, test, expect, beforeAll, afterAll } from "@jest/globals"
+import User from "../models/user";
+import sequelize from "../db/sequelize"
+import Post from "../models/post";
+
+beforeAll(async () => {
+    loadRoutes();
+
+    await sequelize.sync({ force: true })
+
+    await User.create({
+        id: '1230ae30-dc4f-4752-bd84-092956f5c633',
+        username: 'testuser',
+        email: 'test@test.com',
+        password: 'password',
+        name: `Test User`
+    });
+})
+
+afterAll(async () => {
+    await sequelize.close();
+});
 
 describe('profile router tests', () => {
     describe('/userid endpoint test', () => {
-        // test all the expeptions before...
+        // test all the exceptions before...
+
         test('it should return 401 if no authorization header', async () => {
-            await start()
-            const result = await request(app).get('/profile')
+            const result = await request(app).get('/profile/1230ae30-dc4f-4752-bd84-092956f5c633')
             expect(result.statusCode).toBe(401)
         })
+
         test('it should return an array of posts', async () => {
-            await start()
             const id = '1230ae30-dc4f-4752-bd84-092956f5c633'
             const jwt = sign({ id: id }, config.get<string>('app.jwtSecret'))
 
@@ -83,15 +133,17 @@ describe('profile router tests', () => {
                 .get('/profile/post/non-existing-id')
                 .set('Authorization', `Bearer ${jwt}`)
 
-            expect(res.statusCode).toBe(200)
-            expect(res.body).toBeNull() // Sequelize returns null for not found
+            expect(res.statusCode).toBe(404)
+            expect(res.body).toHaveProperty('error', 'Not Found')
+            expect(res.body.message).toContain('does not exist')
         });
     });
 
     describe('PATCH /profile/:id (updatePost)', () => {
         const id = '1230ae30-dc4f-4752-bd84-092956f5c633'
         const jwt = sign({ id: id }, config.get<string>('app.jwtSecret'))
-        test('should update the post', async () => {
+        test('should update the post- no imageUrl given', async () => {
+            const before = await Post.findByPk(createdPostId);
             const res = await request(app)
                 .patch(`/profile/${createdPostId}`)
                 .set('Authorization', `Bearer ${jwt}`)
@@ -103,6 +155,30 @@ describe('profile router tests', () => {
             expect(res.statusCode).toBe(200)
             expect(res.body).toHaveProperty('title', 'Updated Title')
             expect(res.body).toHaveProperty('body', 'Updated body content')
+            expect(res.body.imageUrl).toBe(before?.imageUrl);
+
+        });
+
+        test('should update the post- imageUrl given', async () => {
+            const res = await request(app)
+                .patch(`/profile/${createdPostId}`)
+                .set('Authorization', `Bearer ${jwt}`)
+                .field('title', 'Updated Title')
+                .field('body', 'Updated body content')
+                .attach(
+                    'postImage',
+                    Buffer.from('fake image'),
+                    {
+                        filename: 'test.jpg',
+                        contentType: 'image/jpeg'
+                    }
+                )
+
+            expect(res.statusCode).toBe(200)
+            expect(res.body).toHaveProperty('title', 'Updated Title')
+            expect(res.body).toHaveProperty('body', 'Updated body content')
+            expect(res.body.imageUrl).toBe("test-bucket/test-image.jpg");
+
         });
 
         test('should return error if post does not exist', async () => {
@@ -154,16 +230,20 @@ describe('profile router tests', () => {
 
             expect(res.statusCode).toBe(200)
             expect(res.body).toEqual({ success: true })
-        });
 
-        test('should return 404 when trying to delete non-existent post', async () => {
-            const id = '1230ae30-dc4f-4752-bd84-092956f5c633'
-            const jwt = sign({ id: id }, config.get<string>('app.jwtSecret'))
-            const res = await request(app)
-                .delete(`/profile/${createdPostId}`) // already deleted
-                .set('Authorization', `Bearer ${jwt}`)
+            const deletedPost = await Post.findByPk(createdPostId)
 
-            expect(res.statusCode).toBe(404)
-        });
+            expect(deletedPost).toBeNull()
+        })
     });
-})
+
+    test('should return 404 when trying to delete non-existent post', async () => {
+        const id = '1230ae30-dc4f-4752-bd84-092956f5c633'
+        const jwt = sign({ id: id }, config.get<string>('app.jwtSecret'))
+        const res = await request(app)
+            .delete(`/profile/${createdPostId}`) // already deleted
+            .set('Authorization', `Bearer ${jwt}`)
+
+        expect(res.statusCode).toBe(404)
+    });
+});
