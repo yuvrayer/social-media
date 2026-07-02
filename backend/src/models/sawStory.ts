@@ -10,6 +10,7 @@ import {
     BelongsTo,
 } from "sequelize-typescript";
 import User from "./user"; // adjust the import path as needed
+import Story from "./story";
 
 @Table({
     tableName: "story_views",
@@ -39,4 +40,12 @@ export default class StoryView extends Model {
 
     @BelongsTo(() => User, "userIdSaw")
     viewer!: User;
+
+    @ForeignKey(() => Story)
+    @AllowNull(false)
+    @Column({ field: "story_id", type: DataType.UUID })
+    storyId!: string;
+
+    @BelongsTo(() => Story, "storyId")
+    storyViewed!: Story;
 }

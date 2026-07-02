@@ -14,6 +14,7 @@ import { useRef } from 'react';
 import { addFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceIReceived, deleteFollowRequestFromSliceISent, newFollowerAlert } from "../../redux/followingRequestSlice";
 import useService from "../../hooks/useService";
 import ChatService from "../../services/auth-aware/Chat"
+import { newStory, newStoryAlert, removeStory } from "../../redux/storySlice";
 
 interface SocketContextInterface {
     xClientId: string
@@ -38,7 +39,7 @@ export default function Io(props: PropsWithChildren): JSX.Element {
 
     const chatService = useService(ChatService)
 
-    const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const currentChatId = useAppSelector(state => state.chat.currentChatId)
 
     useEffect(() => {
@@ -62,8 +63,6 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                 switch (eventName) {
                     case SocketMessages.NEW_POST:
                         const newPostPayload = payload.data as Post
-                        // eslint-disable-next-line react-hooks/rules-of-hooks
-                        // const isFollowing = useAppSelector(state => state.following.following.findIndex(f => f.id === newPostPayload.userId) > -1)
                         if (newPostPayload.userId === userId) {
                             dispatch(newPost(newPostPayload))
                         }
@@ -75,6 +74,22 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                         const newCommentPayload = payload.data as Comment
                         dispatch(addComment(newCommentPayload))
                         break;
+
+                    case 'newStory':
+                        if (Array.isArray(payload.to) && payload.to.includes(userId)) {
+                            dispatch(newStoryAlert(true))
+                            dispatch(newStory(payload.story))
+                            console.log('new story');
+                        }
+                        break;
+
+                    case 'deletedStory':
+                        if (Array.isArray(payload.to) && payload.to.includes(userId)) {
+                            dispatch(removeStory(payload.storyId))
+                            console.log('a story has been deleted');
+                        }
+                        break;
+
                     case 'friendRequest:new':
                         if (payload.to === userId) {
                             dispatch(newFollowerAlert(true))

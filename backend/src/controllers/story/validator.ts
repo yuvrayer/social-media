@@ -15,7 +15,8 @@ export const newStoryFilesValidator = Joi.object({
 
 export const addSawValidator = Joi.object({
     userIdUploaded: Joi.string().required(),
-    userIdSaw: Joi.string().required()
+    userIdSaw: Joi.string().required(),
+    storyId: Joi.string().required()
 })
 
 export const deleteStoryParamsValidator = Joi.object({

@@ -5,6 +5,8 @@ import useService from "../../../hooks/useService";
 import ProgressBar from "../progressBar/ProgressBar";
 import StoryMessageInput from "../storyMessageInput/StoryMessageInput";
 import useUserId from "../../../hooks/useUserId";
+import { useAppDispatch } from "../../../redux/hooks";
+import { addISaw } from "../../../redux/storySlice";
 
 interface StoryPopupProps {
     images: string[];
@@ -23,10 +25,13 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
     const currentUserId = useUserId()
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const storyService = useService(StoryService)
+    const dispatch = useAppDispatch()
+    const storyId = storyIds[currentIndex];
 
     const markStoryViewed = async () => {
         try {
-            await storyService.markStoryAsViewed(userId, currentUserId);
+            await storyService.markStoryAsViewed(userId, currentUserId, storyId);
+            dispatch(addISaw({ userIdUploaded: userId, userIdSaw: currentUserId, storyId }))
         } catch (e) {
             console.error("Failed to mark story as viewed:", e);
         }
