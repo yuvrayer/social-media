@@ -24,6 +24,15 @@ io.on('connection', socket => {
         });
     });
 
+    socket.on('newStory', (data) => {
+        io.to(data.to).emit('newStory', data)
+        console.log(`Sent new story to user room: ${data.to}`)
+    })
+
+    socket.on('deletedStory', (data) => {
+        io.to(data.to).emit('deletedStory', data)
+        console.log(`Sent deleted story to user room: ${data.to}`)
+    })
 
     socket.on('friendRequest:new', (data) => {
         io.to(data.to).emit('friendRequest:new', data)
@@ -82,11 +91,6 @@ io.on('connection', socket => {
         socket.join(userId)
         console.log(`User ${userId} joined successfully with socket ID ${userId}`)
     })
-
-    // socket.onAny((eventName, payload) => {
-    //     console.log(`received event ${eventName} with payload`, payload)
-    //     io.emit(eventName, payload)
-    // })
 
     socket.on('disconnect', () => {
         // Remove user by socket id

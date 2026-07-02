@@ -34,9 +34,16 @@ export async function createAppBucketIfNotExist() {
             })
         )
         await setCorsRules();
-    } catch (e) {
-        // ignore
-        console.log('Bucket probably already exist')
+    } catch (e: any) {
+        if (
+            e.name === "BucketAlreadyExists" ||
+            e.name === "BucketAlreadyOwnedByYou"
+        ) {
+            console.log("Bucket already exists");
+            return;
+        }
+        console.error("Failed creating S3 bucket:", e);
+        throw e;
     }
 }
 
@@ -49,7 +56,7 @@ export async function createBucketIfNotExist(name: string) {
             })
         )
     } catch (e) {
-        alert(e)
+        console.log(e)
     }
 }
 

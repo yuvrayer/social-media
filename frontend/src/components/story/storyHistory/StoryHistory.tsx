@@ -3,15 +3,15 @@ import StoryService from "../../../services/auth-aware/Story"
 import useService from '../../../hooks/useService'
 import { useEffect, useState } from 'react'
 import StoryPopup from '../story-pop/Storypop'
-import StoryModel from '../../../models/story/Story'
+import StoryResponse from '../../../models/story/StoryResponse'
 import useUserId from '../../../hooks/useUserId'
 
 export default function StoryHistory() {
     const currentUserId = useUserId()
     const storyService = useService(StoryService)
-    const [userStoryHistory, setUserStoryHistory] = useState<StoryModel[]>([])
+    const [userStoryHistory, setUserStoryHistory] = useState<StoryResponse[]>([])
     const [showPopup, setShowPopup] = useState(false)
-    const [selectedStory, setSelectedStory] = useState<StoryModel | null>(null)
+    const [selectedStory, setSelectedStory] = useState<StoryResponse | null>(null)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,7 +25,7 @@ export default function StoryHistory() {
         fetchData()
     }, [])
 
-    const handleStoryClick = (story: StoryModel) => {
+    const handleStoryClick = (story: StoryResponse) => {
         setSelectedStory(story)
         setShowPopup(true)
     }

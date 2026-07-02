@@ -65,6 +65,16 @@ export async function newGameBestScore(req: Request<{ gameCode: string }, {}, { 
         const { gameCode } = req.params
         const { newBestScore } = req.body
 
+        if (
+            typeof newBestScore !== "number" ||
+            !Number.isInteger(newBestScore) ||
+            newBestScore < 0
+        ) {
+            return res.status(422).json({
+                message: "Invalid newBestScore"
+            });
+        }
+
         // checks if the user already has top score
         const myOldScore = await GamesBestScores.findOne({
             where: {
@@ -82,13 +92,15 @@ export async function newGameBestScore(req: Request<{ gameCode: string }, {}, { 
                 bestScore: newBestScore
             })
         } else { //there is an old score
-            await GamesBestScores.update(
-                { bestScore: newBestScore },
-                { where: { id: myOldScore.id } }
-            )
+            if (newBestScore > myOldScore.bestScore) {
+                await GamesBestScores.update(
+                    { bestScore: newBestScore },
+                    { where: { id: myOldScore.id } }
+                )
+            }
         }
 
-        res.status(200);
+        res.status(200).send();
     } catch (e) {
         next(e);
     }

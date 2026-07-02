@@ -18,13 +18,20 @@ export async function createAppQueueIfNotExist() {
                 QueueName: config.get<string>('sqs.queueName')
             })
         )
-        queueUrl = queue.QueueUrl ? queue.QueueUrl : ``
-    } catch (e) {
-        // ignore
-        console.log('Queue probably already exist')
-        if (e instanceof Error && e.name !== 'QueueAlreadyExists') {
-            console.error('Unexpected error creating queue:', e)
+
+        if (!queue.QueueUrl) {
+            throw new Error("SQS queue URL was not returned")
         }
+
+        queueUrl = queue.QueueUrl ? queue.QueueUrl : ``
+    } catch (e: any) {
+        if (e.name === 'QueueAlreadyExists') {
+            console.log("Queue already exists");
+            return;
+        }
+
+        console.error("Unexpected error creating queue:", e);
+        throw e;
     }
 }
 export default sqsClient

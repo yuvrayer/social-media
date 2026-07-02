@@ -33,13 +33,14 @@
 .following-btn {
   background-color: #17bf63; /* green to differentiate */
   color: white;
-  padding: 12px 20px;
+  padding: 10px 12px;
   font-size: 15px;
   font-weight: 600;
   border: none;
   border-radius: 999px;
   cursor: pointer;
   transition: all 0.25s ease;
+  margin: 4px;
 }
 
 .following-btn:hover {

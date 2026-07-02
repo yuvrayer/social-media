@@ -4,7 +4,7 @@ import useName from '../../../hooks/useName'
 import useProfileImg from '../../../hooks/useProfileImg'
 import profilePicSource from '../../../assets/images/profile.jpg'
 import Story from '../../story/story/Story'
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect } from 'react'
 import { AuthContext } from '../../auth/auth/Auth'
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import useService from '../../../hooks/useService'
@@ -14,7 +14,7 @@ import { v4 } from 'uuid'
 import { init as initFollowing } from '../../../redux/followingSlice'
 import { init as initProfile } from '../../../redux/profileSlice'
 import { init as initFeed } from '../../../redux/feedSlice'
-import { init as initStory } from '../../../redux/storySlice'
+import { initISaw, init as initStory } from '../../../redux/storySlice'
 import { init as initFollowers } from '../../../redux/followers'
 import { initISent as initFollowersRequestISent, newFollowerAlert } from '../../../redux/followingRequestSlice'
 import { initIReceived as initFollowersRequestIReceived } from '../../../redux/followingRequestSlice'
@@ -22,7 +22,7 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 import FollowingRequest from '../../../services/auth-aware/followRequest'
 import LikesService from '../../../services/auth-aware/Likes'
 import { initCommentLikes, initPostsLikes } from '../../../redux/likes'
-
+import { newStoryAlert as notifyNewStoryAlert } from "../../../redux/storySlice"
 
 export default function Header() {
 
@@ -33,14 +33,12 @@ export default function Header() {
     const navigate = useNavigate()
 
     const whoHasStory = useAppSelector(state => state.story.whoHasStory)
+    const newStoryAlert = useAppSelector(state => state.story.newStoryAlert)
     const profileImgUrl = useProfileImg()
-    const hasStory = whoHasStory.some(story => story.userId === userId);
-    const storyImgUrl = whoHasStory.find(user => user.userId === userId)?.storyImgUrl || ``
     const storyService = useService(StoryService)
     const followingRequest = useService(FollowingRequest)
     const likesService = useService(LikesService)
 
-    const [viewedIds, setViewedIds] = useState<string[]>([])
     const newFollowingAlert = useAppSelector(state => state.followingRequests.newFollowRequest)
     const followingRequestsNumberIReceived = useAppSelector(state => state.followingRequests.followingRequestIReceived).length
 
@@ -81,10 +79,7 @@ export default function Header() {
                 dispatch(initStory(stories))
 
                 const viewedStories = await storyService.getViewedStoryIds()
-                const viewedUserUploads = viewedStories
-                    .filter(s => s.userIdSaw === userId)
-                    .map(s => s.userIdUploaded);
-                setViewedIds(viewedUserUploads ? viewedUserUploads : [``])
+                dispatch(initISaw(viewedStories))
 
                 const requests = await followingRequest.getAllPendingRequestsIReceived()
                 dispatch(initFollowersRequestIReceived(requests.users))
@@ -123,6 +118,10 @@ export default function Header() {
         dispatch(newFollowerAlert(false))
     }
 
+    function closeNewStoryAlert() {
+        dispatch(notifyNewStoryAlert(false))
+    }
+
     return (
         <div className='Header'>
             <div className='Logo'>
@@ -130,9 +129,6 @@ export default function Header() {
             </div>
             <div className='Story'>
                 <Story key={v4()}
-                    userDetails={{ name, profileImgUrl, hasStory, userId, storyImgUrl }}
-                    currentUserId={userId}
-                    viewedIds={viewedIds}
                     reloadHeader={reloadHeader}
                 ></Story>
                 {Array.from(
@@ -144,15 +140,6 @@ export default function Header() {
                 ).map(user => (
                     <Story
                         key={user.userId}
-                        userDetails={{
-                            userId: user.userId,
-                            name: user.name,
-                            profileImgUrl: user.profileImgUrl,
-                            hasStory: true,
-                            storyImgUrl: user.storyImgUrl ?? ''
-                        }}
-                        viewedIds={viewedIds}
-                        currentUserId={userId}
                         reloadHeader={reloadHeader}
                     />
                 ))}
@@ -180,6 +167,7 @@ export default function Header() {
             </div>
             <div className='RightBottom'>
                 {newFollowingAlert && <span className='info'>you have a new friend request!<button onClick={look}>look</button><button onClick={cancelNotification}>x</button></span>}
+                {newStoryAlert && <span className='info'>someone added a new story!<button onClick={closeNewStoryAlert}>x</button></span>}
             </div>
         </div>
     )

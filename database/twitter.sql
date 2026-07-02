@@ -334,6 +334,7 @@ CREATE TABLE `story_views` (
   `id` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `user_id_uploaded` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `user_id_saw` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+  `story_id` CHAR(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
   `created_at` DATETIME NOT NULL,
   `updated_at` DATETIME NOT NULL,
 
@@ -344,6 +345,10 @@ CREATE TABLE `story_views` (
     ON UPDATE CASCADE,
 
   FOREIGN KEY (`user_id_saw`) REFERENCES `users` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+
+  FOREIGN KEY (`story_id`) REFERENCES `stories` (`id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

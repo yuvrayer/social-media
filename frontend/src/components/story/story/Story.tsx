@@ -1,53 +1,54 @@
 import './Story.css'
-import StoryModel from "../../../models/story/Story"
 import StoryService from "../../../services/auth-aware/Story"
 import useService from '../../../hooks/useService'
 import { newStory } from '../../../redux/storySlice'
-import { useAppDispatch } from '../../../redux/hooks'
-import { useEffect, useRef, useState } from 'react'
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
+import { useRef, useState } from 'react'
 import profilePicSource from '../../../assets/images/profile.jpg'
 import StoryPopup from '../story-pop/Storypop'
+import useName from '../../../hooks/useName'
+import useUserId from '../../../hooks/useUserId'
+import useProfileImg from '../../../hooks/useProfileImg'
 
 interface StoryProps {
-    userDetails: StoryModel,
-    currentUserId: string,
-    viewedIds: string[],
     reloadHeader: () => void
 }
 
 export default function Story(props: StoryProps) {
+    const name = useName()
+    const userId = useUserId()
+    const profileImgUrl = useProfileImg()
 
-    const { userDetails: { name, profileImgUrl, hasStory, userId}, currentUserId } = props
+    const hasStory = useAppSelector(state => state.story.whoHasStory)
+        .some(story => story.userId === userId);
+
+
     const storyService = useService(StoryService)
     const dispatch = useAppDispatch()
 
     const [showPopup, setShowPopup] = useState(false)
     const [images, setImages] = useState<string[]>([])
-    const [ringClass, setRingClass] = useState<string>()
     const [dates, setDates] = useState<Date[]>([])
     const [storyIds, setStoryIds] = useState<string[]>([])
 
-    const [isViewed, setIsViewed] = useState<boolean>(props.viewedIds.includes(userId))
-    const trueUser = userId === currentUserId ? true : false
-
     // Check if this story's `userId` has been seen
-    const fetchData = async () => {
-        try {
-            const result = await storyService.getViewedStoryIds();
-            const didTheUserSaw = result.find(view =>
-                view.userIdUploaded === userId && view.userIdSaw === currentUserId)
-            setIsViewed(didTheUserSaw ? true : false)
-        } catch (err) {
-            console.error(err);
-        }
-    }
+    const stories = useAppSelector(state => state.story.whoHasStory);
+    const viewedStories = useAppSelector(state => state.story.storeysISaw);
 
-    useEffect(() => {
-        fetchData();
-        setRingClass(hasStory
-            ? isViewed ? 'story-ring-viewed' : 'story-ring'
-            : 'no-ring');
-    }, [hasStory, isViewed]);
+    const userStories = stories.filter(s => s.userId === userId);
+
+    const userViewedStories = viewedStories.filter(
+        v =>
+            v.userIdSaw === userId &&
+            v.userIdUploaded === userId &&
+            !!v.storyId
+    );
+
+    const hasUnseenStory = userStories.some(
+        story =>
+            !!story.id &&
+            !userViewedStories.some(v => v.storyId === story.id)
+    );
 
     async function handleViewStory() {
         try {
@@ -58,11 +59,9 @@ export default function Story(props: StoryProps) {
             setImages(imageUrls)
             const storyIds = stories.map(story => story.id).filter((id): id is string => !!id);
             setStoryIds(storyIds);
-            const createdAtArray = stories.map(story => story.createdAt!)
+            const createdAtArray = stories.map(story => story.createdAt)
             setDates(createdAtArray)
             setShowPopup(true)
-            setIsViewed(true)
-            setRingClass('story-ring-viewed')
         } catch (e) {
             alert(e)
         }
@@ -84,7 +83,7 @@ export default function Story(props: StoryProps) {
             console.log('Uploaded URL:', uploadedInfo);
 
             //i want the app to pop an upload window, which will after going to localstack, will be the url
-            dispatch(newStory({ ...props.userDetails, storyImgUrl: uploadedInfo.storyImgUrl }))
+            dispatch(newStory(uploadedInfo))
         } catch (e) {
             alert(e)
         }
@@ -99,12 +98,16 @@ export default function Story(props: StoryProps) {
                 ref={fileInputRef}
                 onChange={handleFileChange}
             />
-            <div className={ringClass}>
+            <div className={hasStory
+                ? hasUnseenStory
+                    ? 'story-ring'
+                    : 'story-ring-viewed'
+                : 'no-ring'}>
                 <img src={profileImgUrl ? `${import.meta.env.VITE_AWS_SERVER_URL}/${profileImgUrl}` : profilePicSource}
                     onClick={hasStory ? handleViewStory : handleAddStory}
                     className='profileImg'
                 />
-                {trueUser && <span className="add-icon"
+                {<span className="add-icon"
                     onClick={handleAddStory}
                 >+</span>}
             </div>

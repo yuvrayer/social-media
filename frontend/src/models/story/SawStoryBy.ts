@@ -1,4 +1,5 @@
 export default interface SawStoryBy {
     userIdUploaded: string,
-    userIdSaw: string
+    userIdSaw: string,
+    storyId: string
 }

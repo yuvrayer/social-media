@@ -1,30 +1,45 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Story from "../models/story/Story";
+import StoryResponse from "../models/story/StoryResponse";
+import SawStoryBy from "../models/story/SawStoryBy";
 
 interface StoryState {
-    whoHasStory: Story[] //all the stories
+    whoHasStory: StoryResponse[] //all the stories
+    storeysISaw: SawStoryBy[] //stories 
+    newStoryAlert: boolean
 }
 
 const initialState: StoryState = {
-    whoHasStory: []
+    whoHasStory: [],
+    storeysISaw: [],
+    newStoryAlert: false
 }
 
 export const storySlice = createSlice({
     name: 'story',
     initialState,
     reducers: {
-        init: (state, action: PayloadAction<Story[]>) => {
+        init: (state, action: PayloadAction<StoryResponse[]>) => {
             state.whoHasStory = action.payload
         },
-        newStory: (state, action: PayloadAction<Story>) => {
+        initISaw: (state, action: PayloadAction<SawStoryBy[]>) => {
+            state.storeysISaw = action.payload
+        },
+        addISaw: (state, action: PayloadAction<SawStoryBy>) => {
+            state.storeysISaw = [action.payload, ...state.storeysISaw]
+        },
+        newStory: (state, action: PayloadAction<StoryResponse>) => {
             state.whoHasStory = [action.payload, ...state.whoHasStory]
         },
-        remove: (state, action: PayloadAction<{ id: string }>) => {
-            state.whoHasStory = state.whoHasStory.filter(p => p.userId !== action.payload.id)
+        removeStory: (state, action: PayloadAction<{ id: string }>) => {
+            state.whoHasStory = state.whoHasStory.filter(p => p.id !== action.payload.id)
+            state.storeysISaw = state.storeysISaw.filter(s => s.storyId !== action.payload.id)
+        },
+        newStoryAlert: (state, action: PayloadAction<boolean>) => {
+            state.newStoryAlert = action.payload
         }
     }
 })
 
-export const { init, remove, newStory } = storySlice.actions
+export const { init, removeStory, newStory, initISaw, addISaw, newStoryAlert } = storySlice.actions
 
 export default storySlice.reducer

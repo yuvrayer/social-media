@@ -215,6 +215,14 @@ describe('Story Controller Tests', () => {
 
             const res = mockRes();
 
+            mockedStory.findOne.mockResolvedValue({
+                id: 'abc',
+                userId: '123',
+                storyImgUrl: 'story.jpg',
+                profileImgUrl: 'profile.jpg',
+                name: 'Bob'
+            } as any);
+            mockedStoryArchive.create.mockResolvedValue({} as any);
             mockedStory.destroy.mockResolvedValue(1 as any);
 
             await deleteStory(req, res as Response, mockNext);
@@ -236,6 +244,15 @@ describe('Story Controller Tests', () => {
 
             const res = mockRes();
 
+            mockedStory.findOne.mockResolvedValue({
+                id: 'abc',
+                userId: '123',
+                storyImgUrl: 'story.jpg',
+                profileImgUrl: 'profile.jpg',
+                name: 'Bob'
+            } as any);
+            mockedStoryArchive.create.mockResolvedValue({} as any);
+
             const error = new Error('DB error');
 
             mockedStory.destroy.mockRejectedValue(error);
@@ -250,7 +267,7 @@ describe('Story Controller Tests', () => {
     describe('addSaw', () => {
         test('should create view if not exists', async () => {
             const req = {
-                body: { userIdUploaded: '1', userIdSaw: '2' },
+                body: { userIdUploaded: '1', userIdSaw: '2', storyId: "3" },
             } as Request;
 
             const res = mockRes();
@@ -264,19 +281,21 @@ describe('Story Controller Tests', () => {
             expect(mockedStoryViews.findOne).toHaveBeenCalledWith({
                 where: {
                     userIdUploaded: '1',
-                    userIdSaw: '2'
+                    userIdSaw: '2',
+                    storyId: "3"
                 }
             });
             expect(mockedStoryViews.create).toHaveBeenCalledWith({
                 userIdUploaded: '1',
-                userIdSaw: '2'
+                userIdSaw: '2',
+                storyId: "3"
             });
             expect(mockNext).not.toHaveBeenCalled();
         });
 
         test('should return existing view', async () => {
             const req = {
-                body: { userIdUploaded: '1', userIdSaw: '2' },
+                body: { userIdUploaded: '1', userIdSaw: '2', storyId: "3" },
             } as Request;
 
             const res = mockRes();
@@ -294,7 +313,7 @@ describe('Story Controller Tests', () => {
 
         test('should call next if findOne fails', async () => {
             const req = {
-                body: { userIdUploaded: '1', userIdSaw: '2' },
+                body: { userIdUploaded: '1', userIdSaw: '2', storyId: "3" },
             } as Request;
 
             const res = mockRes();
@@ -310,7 +329,7 @@ describe('Story Controller Tests', () => {
 
         test('should call next if create fails', async () => {
             const req = {
-                body: { userIdUploaded: '1', userIdSaw: '2' },
+                body: { userIdUploaded: '1', userIdSaw: '2', storyId: "3" },
             } as Request;
 
             const res = mockRes();
@@ -353,13 +372,23 @@ describe('Story Controller Tests', () => {
             const created = { id: 'abc' };
 
             mockedStory.create.mockResolvedValue(created as any);
+
+            mockedStory.findOne.mockResolvedValue({
+                id: 'abc',
+                userId: '123',
+                storyImgUrl: 'story.jpg',
+                profileImgUrl: 'url',
+                name: 'Bob'
+            } as any);
+
             mockedStory.destroy.mockResolvedValue(1 as any);
+
+            mockedStoryArchive.create.mockResolvedValue({} as any);
 
             await addStory(req, res as Response, mockNext);
 
             expect(res.json).toHaveBeenCalledWith(created);
             expect(mockedStory.create).toHaveBeenCalledWith({
-                id: 'abc',
                 userId: '123',
                 storyImgUrl: 'story.jpg',
                 profileImgUrl: 'url',
@@ -369,10 +398,11 @@ describe('Story Controller Tests', () => {
             await jest.runOnlyPendingTimersAsync();
 
             expect(mockedStory.destroy).toHaveBeenCalledWith({
-                where: { id: 'abc' },
+                where: { id: 'abc', userId: `123` },
             });
 
             expect(mockedStoryArchive.create).toHaveBeenCalledWith({
+                id: `abc`,
                 userId: '123',
                 storyImgUrl: 'story.jpg',
                 profileImgUrl: 'url',
@@ -423,6 +453,13 @@ describe('Story Controller Tests', () => {
 
             const archiveError = new Error('Archive failed');
 
+            mockedStory.findOne.mockResolvedValue({
+                id: 'abc',
+                userId: '123',
+                storyImgUrl: 'story.jpg',
+                profileImgUrl: 'url',
+                name: 'Bob'
+            } as any);
             mockedStoryArchive.create.mockRejectedValue(archiveError);
 
             const consoleSpy = jest
@@ -455,8 +492,14 @@ describe('Story Controller Tests', () => {
             } as unknown as Request;
 
             const res = mockRes();
-
-            mockedStory.create.mockResolvedValue({ id: 'abc' } as any);
+            mockedStory.findOne.mockResolvedValue({
+                id: 'abc',
+                userId: '123',
+                storyImgUrl: 'story.jpg',
+                profileImgUrl: 'url',
+                name: 'Bob'
+            } as any);
+            mockedStory.create.mockResolvedValue({} as any);
 
             mockedStoryArchive.create.mockResolvedValue({} as any);
 

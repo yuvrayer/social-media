@@ -5,6 +5,6 @@ module.exports = {
   globalSetup: "<rootDir>/jest.globalSetup.ts",
   globalTeardown: "<rootDir>/jest.globalTeardown.ts",
   transform: {
-    "^.+\.tsx?$": ["ts-jest", {}],
+    "^.+\.tsx?$": ["ts-jest", { tsconfig: "tsconfig.jest.json" }],
   },
 };
