@@ -130,6 +130,9 @@ export default function Header() {
             <div className='Story'>
                 <Story key={v4()}
                     reloadHeader={reloadHeader}
+                    userId={userId}
+                    name={name}
+                    profileImgUrl={profileImgUrl ?? "il.co.yuvalrayer/profile.jpg"}
                 ></Story>
                 {Array.from(
                     new Map(
@@ -141,6 +144,9 @@ export default function Header() {
                     <Story
                         key={user.userId}
                         reloadHeader={reloadHeader}
+                        userId={user.userId}
+                        name={user.name}
+                        profileImgUrl={user.profileImgUrl ?? "il.co.yuvalrayer/profile.jpg"}
                     />
                 ))}
 

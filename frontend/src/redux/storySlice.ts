@@ -32,6 +32,7 @@ export const storySlice = createSlice({
         },
         removeStory: (state, action: PayloadAction<{ id: string }>) => {
             state.whoHasStory = state.whoHasStory.filter(p => p.id !== action.payload.id)
+            console.log(state.whoHasStory)
             state.storeysISaw = state.storeysISaw.filter(s => s.storyId !== action.payload.id)
         },
         newStoryAlert: (state, action: PayloadAction<boolean>) => {

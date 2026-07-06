@@ -85,7 +85,7 @@ export default function Io(props: PropsWithChildren): JSX.Element {
 
                     case 'deletedStory':
                         if (Array.isArray(payload.to) && payload.to.includes(userId)) {
-                            dispatch(removeStory(payload.storyId))
+                            dispatch(removeStory({ id: payload.storyId }))
                             console.log('a story has been deleted');
                         }
                         break;
@@ -111,7 +111,6 @@ export default function Io(props: PropsWithChildren): JSX.Element {
                         if (payload.to === userId) {
                             dispatch(newFollowerAlert(false))
                             dispatch(deleteFollowRequestFromSliceIReceived({ userId: payload.from }))
-                            console.log('Your friend request declined!');
                         }
                         break;
                     case 'friendRequest:approved':
