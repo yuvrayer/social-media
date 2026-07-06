@@ -44,7 +44,7 @@ export async function login(req: Request<{}, {}, { username: string, password: s
 export async function signup(req: Request<{}, {}, { username: string, password: string, name: string }>, res: Response, next: NextFunction) {
     try {
         const { username, password, name } = req.body
-        let profileImgUrl = null
+        let profileImgUrl = "il.co.yuvalrayer/profile.jpg"
 
         const existingUsername = await User.findOne({ where: { username } });
 

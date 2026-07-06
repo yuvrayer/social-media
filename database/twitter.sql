@@ -33,7 +33,7 @@ CREATE TABLE `users` (
   `name` varchar(40) NOT NULL,
   `username` varchar(40) NOT NULL,
   `password` varchar(64) NOT NULL,
-  `profile_img_url` varchar(255),
+  `profile_img_url` varchar(255) NOT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
@@ -45,11 +45,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `password`, `profile_img_url`, `created_at`, `updated_at`) VALUES
-('034485be-cfd2-48a7-b80d-f54773eab18c', 'Diana', 'diana0', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', null, '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
-('1230ae30-dc4f-4752-bd84-092956f5c633', 'Bob', 'bob000', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', null, '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
-('4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Alice', 'alice0', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', null, '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
-('57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 'Charlie', 'charlie', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', null, '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
-('bff2018c-b130-4de4-b645-3246b6e4dbb6', 'Gustav', 'gustav', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', null, '2025-02-25 06:52:47', '2025-02-25 06:52:47');
+('034485be-cfd2-48a7-b80d-f54773eab18c', 'Diana', 'diana0', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', "il.co.yuvalrayer/profile.jpg", '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
+('1230ae30-dc4f-4752-bd84-092956f5c633', 'Bob', 'bob000', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', "il.co.yuvalrayer/profile.jpg", '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
+('4b1193cc-7ba1-462c-99c5-2e3ea4ab6d14', 'Alice', 'alice0', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', "il.co.yuvalrayer/profile.jpg", '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
+('57ca1e6a-fc89-4d28-ad45-a1f351862cfc', 'Charlie', 'charlie', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', "il.co.yuvalrayer/profile.jpg", '2025-02-25 06:52:47', '2025-02-25 06:52:47'),
+('bff2018c-b130-4de4-b645-3246b6e4dbb6', 'Gustav', 'gustav', '7f7737fddd2842bc2afdbf1868aaa8e986b83133a1f010fe96535c15e4584628', "il.co.yuvalrayer/profile.jpg", '2025-02-25 06:52:47', '2025-02-25 06:52:47');
 
 -- --------------------------------------------------------
 --

@@ -6,18 +6,19 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks'
 import { useRef, useState } from 'react'
 import profilePicSource from '../../../assets/images/profile.jpg'
 import StoryPopup from '../story-pop/Storypop'
-import useName from '../../../hooks/useName'
 import useUserId from '../../../hooks/useUserId'
-import useProfileImg from '../../../hooks/useProfileImg'
 
 interface StoryProps {
     reloadHeader: () => void
+    userId: string;
+    name: string;
+    profileImgUrl: string;
 }
 
 export default function Story(props: StoryProps) {
-    const name = useName()
-    const userId = useUserId()
-    const profileImgUrl = useProfileImg()
+    const { name, userId, profileImgUrl } = props
+    const currentUserId = useUserId();
+    const myDetails = currentUserId === userId
 
     const hasStory = useAppSelector(state => state.story.whoHasStory)
         .some(story => story.userId === userId);
@@ -39,7 +40,7 @@ export default function Story(props: StoryProps) {
 
     const userViewedStories = viewedStories.filter(
         v =>
-            v.userIdSaw === userId &&
+            v.userIdSaw === currentUserId &&
             v.userIdUploaded === userId &&
             !!v.storyId
     );
@@ -91,13 +92,13 @@ export default function Story(props: StoryProps) {
 
     return (
         <div className='SingleStory'>
-            <input
+            {myDetails && <input
                 type="file"
                 accept="image/*,video/*"
                 style={{ display: 'none' }}
                 ref={fileInputRef}
                 onChange={handleFileChange}
-            />
+            />}
             <div className={hasStory
                 ? hasUnseenStory
                     ? 'story-ring'
@@ -107,7 +108,7 @@ export default function Story(props: StoryProps) {
                     onClick={hasStory ? handleViewStory : handleAddStory}
                     className='profileImg'
                 />
-                {<span className="add-icon"
+                {myDetails && <span className="add-icon"
                     onClick={handleAddStory}
                 >+</span>}
             </div>

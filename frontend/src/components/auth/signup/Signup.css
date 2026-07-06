@@ -6,7 +6,8 @@
 }
 
 .Signup img {
-    height: 300px;
+    max-height: 300px;
+    max-width: 250px;
 }
 
 
