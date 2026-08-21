@@ -97,14 +97,12 @@ describe("S3 Service", () => {
         });
 
         test("should ignore error when bucket already exists", async () => {
+            const err = new Error("BucketAlreadyExists");
+            err.name = "BucketAlreadyExists";
 
-            sendMock.mockRejectedValue(
-                new Error("BucketAlreadyExists")
-            );
+            sendMock.mockRejectedValue(err);
 
-            await expect(
-                createAppBucketIfNotExist()
-            ).resolves.not.toThrow();
+            await expect(createAppBucketIfNotExist()).resolves.toBeUndefined();
         });
     });
 
@@ -113,7 +111,7 @@ describe("S3 Service", () => {
         test("should create custom bucket", async () => {
 
             sendMock.mockResolvedValue({});
-            
+
             await createBucketIfNotExist("my-bucket");
 
             expect(sendMock)

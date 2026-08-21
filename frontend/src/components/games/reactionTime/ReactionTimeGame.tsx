@@ -11,8 +11,7 @@ const ReactionTimeGame: React.FC = () => {
   const [message, setMessage] = useState('Click "Start" to begin.');
   const [reactionTime, setReactionTime] = useState<number | null>(null);
   const [bestTime, setBestTime] = useState<number | null>(null);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<number>(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null); const startTimeRef = useRef<number>(0);
 
   const startGame = () => {
     setMessage('Wait for the button...');

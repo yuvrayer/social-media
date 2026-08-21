@@ -20,6 +20,8 @@ export default function Footer() {
 
     const toggleChat = () => {
         if (isChatOpen) {
+            setSelectedChat(null)
+            setIsNewChatModalOpen(false)
             dispatch(setCurrentChatIdToSlice(null))
         }
         setIsChatOpen(!isChatOpen);
@@ -41,7 +43,9 @@ export default function Footer() {
     }
 
     useEffect(() => {
-        fetchChats();
+        if (isChatOpen) {
+            fetchChats();
+        }
     }, [isChatOpen]);
 
     return (
@@ -64,7 +68,10 @@ export default function Footer() {
                     setIsNewChatModalOpen={setIsNewChatModalOpen}
                     onClose={() => {
                         toggleChat()
+                    }}
+                    onBackToChats={() => {
                         setSelectedChat(null)
+                        dispatch(setCurrentChatIdToSlice(null))
                     }}
                     onChatCreated={(chat: Chat) => {
                         dispatch(addUserChatsChat(chat));
@@ -72,6 +79,7 @@ export default function Footer() {
                         setIsNewChatModalOpen(false);
                         dispatch(setCurrentChatIdToSlice(chat.id))
                     }}
+
                     onChatSelected={async (chat: Chat) => {
                         setSelectedChat(chat);
                         dispatch(setCurrentChatIdToSlice(chat.id))

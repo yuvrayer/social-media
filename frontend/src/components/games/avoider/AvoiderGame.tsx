@@ -39,9 +39,9 @@ const AvoiderGame: React.FC = () => {
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const blockIdRef = useRef(0);
-  const survivalTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const difficultyTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const spawnIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const survivalTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const difficultyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const spawnIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const playerRef = useRef(playerPos);
   const blocksRef = useRef(blocks);

@@ -10,6 +10,7 @@ interface ChatWindowProps {
     isNewChatModalOpen: boolean;
     setIsNewChatModalOpen: (val: boolean) => void;
     onClose: () => void;
+    onBackToChats: () => void;
     onChatCreated: (chat: Chat) => void;
     onChatSelected: (chat: Chat) => void;
 }
@@ -21,6 +22,7 @@ export default function ChatWindow({
     onClose,
     onChatCreated,
     onChatSelected,
+    onBackToChats
 }: ChatWindowProps) {
     return (
         <div className="chat-window">
@@ -29,7 +31,7 @@ export default function ChatWindow({
             )}
 
             {selectedChat ? (
-                <PersonalChat chat={selectedChat} onClose={onClose} />
+                <PersonalChat chat={selectedChat} onClose={onBackToChats} />
             ) : (
                 <>
                     <ChatHeaderFooter

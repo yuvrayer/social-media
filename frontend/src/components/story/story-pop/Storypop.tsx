@@ -29,11 +29,13 @@ export default function StoryPopup({ images, onClose, name, profileImgUrl, userI
     const storyId = storyIds[currentIndex];
 
     const markStoryViewed = async () => {
-        try {
-            await storyService.markStoryAsViewed(userId, currentUserId, storyId);
-            dispatch(addISaw({ userIdUploaded: userId, userIdSaw: currentUserId, storyId }))
-        } catch (e) {
-            console.error("Failed to mark story as viewed:", e);
+        if (!archiveStory) {
+            try {
+                await storyService.markStoryAsViewed(userId, currentUserId, storyId);
+                dispatch(addISaw({ userIdUploaded: userId, userIdSaw: currentUserId, storyId }))
+            } catch (e) {
+                console.error("Failed to mark story as viewed:", e);
+            }
         }
     };
 

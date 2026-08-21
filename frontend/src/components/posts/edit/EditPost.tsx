@@ -31,30 +31,32 @@ export default function EditPost(): JSX.Element {
             const { title, body, imageUrl } = post
             reset({ title, body })
             if (imageUrl) {
-                setPreviewImageSrc(imageUrl)
+                setPreviewImageSrc(`${import.meta.env.VITE_AWS_SERVER_URL}/${imageUrl}`)
+                setValue('postImage', imageUrl)
             }
         }
     }, [id, post, reset])
 
     function deleteImage() {
         setPreviewImageSrc('')
-        setValue('postImage', undefined as unknown as File) // clear file input
         setRemoveImage(true)
     }
 
     function previewImage(event: ChangeEvent<HTMLInputElement>) {
-        const file = event.currentTarget.files && event.currentTarget.files[0]
+        const file = event.target.files?.[0]
         if (file) {
             const imageSource = URL.createObjectURL(file)
             setPreviewImageSrc(imageSource)
+            setRemoveImage(false)
         }
     }
 
     async function submit(draft: PostDraft) {
         try {
+            console.log(draft)
             if (id) {
                 if (removeImage)
-                    draft.postImage = (undefined as unknown as File)
+                    draft.postImage = ""
                 const updatedPost = await profileService.update(id, draft)
                 dispatch(updatePost(updatedPost))
                 navigate('/profile')
@@ -89,7 +91,13 @@ export default function EditPost(): JSX.Element {
                     },
                 })} />
                 <span className='error'>{formState.errors.body?.message}</span>
-                <input type="file" accept='image/png, image/jpeg, image/jpg' {...register('postImage')} onChange={previewImage} />
+                <input
+                    type="file"
+                    accept="image/png, image/jpeg, image/jpg"
+                    {...register('postImage', {
+                        onChange: previewImage
+                    })}
+                />
 
                 {previewImageSrc && (
                     <div>

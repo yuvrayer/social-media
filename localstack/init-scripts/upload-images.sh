@@ -33,8 +33,10 @@ for file in /init-resources/il.co.yuvalrayer/*; do
 done
 
 for file in /init-resources/*; do
+  if [ -f "$file" ]; then
   echo "Uploading $file"
   awslocal s3 cp "$file" s3://il.co.yuvalrayer/ --acl public-read
+  fi
 done
 
 # Upload image2 to bob user bucket (to present pre loaded story)

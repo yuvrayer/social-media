@@ -33,8 +33,19 @@ export default class Profile extends AuthAware {
     }
 
     async update(id: string, draft: PostDraft): Promise<Post> {
-        const { title, body, postImage } = draft
-        const response = await this.axiosInstance.patch<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/${id}`, { title, body, postImage })
+        const formData = new FormData();
+
+        formData.append("title", draft.title);
+        formData.append("body", draft.body);
+        if (draft.postImage instanceof FileList && draft.postImage.length > 0) {
+            formData.append("postImage", draft.postImage[0]);
+        } else if (draft.postImage === "") {
+            formData.append("postImage", "");
+        } else if (draft.postImage) {
+            formData.append("postImage", draft.postImage)
+        }
+
+        const response = await this.axiosInstance.patch<Post>(`${import.meta.env.VITE_REST_SERVER_URL}/profile/${id}`, formData)
         return response.data
     }
 }
