@@ -44,6 +44,7 @@ beforeAll(async () => {
     await User.create({
         id: '1230ae30-dc4f-4752-bd84-092956f5c633',
         username: 'testuser',
+        profileImgUrl: 'testImg',
         email: 'test@test.com',
         password: 'password',
         name: `Test User`

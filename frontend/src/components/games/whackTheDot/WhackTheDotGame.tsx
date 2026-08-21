@@ -24,7 +24,7 @@ const WhackTheDotGame: React.FC = () => {
 
   const gameAreaRef = useRef<HTMLDivElement>(null);
   const dotIdCounter = useRef(0);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (isPlaying && timeLeft > 0) {

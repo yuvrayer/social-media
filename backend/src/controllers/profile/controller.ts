@@ -101,6 +101,10 @@ export async function updatePost(req: Request<{ id: string }>, res: Response, ne
 
         if (req.imageUrl) {
             post.imageUrl = req.imageUrl
+        } else if (req.body?.postImage) {
+            post.imageUrl = req.body.postImage
+        } else {
+            post.imageUrl = ""
         }
 
         const { title, body } = req.body

@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { setIsGameOpen, setScores } from '../../../redux/games';
 import useService from '../../../hooks/useService';
 import GamesService from "../../../services/auth-aware/Games"
-import TopThreeScores from '../topThreeScores/TopThreeScores';
 
 type GameKey =
     | 'ButtonClick'
@@ -69,40 +68,6 @@ const GameMenu: React.FC = () => {
                                 </li>
                             ))}
                         </ul>
-                        <TopThreeScores
-                            scores={[
-                                {
-                                    userId: '1',
-                                    name: 'Alice',
-                                    profileImgUrl: '/avatars/alice.png',
-                                    bestScore: 980,
-                                },
-                                {
-                                    userId: '2',
-                                    name: 'Bob',
-                                    profileImgUrl: '/avatars/bob.png',
-                                    bestScore: 860,
-                                },
-                                {
-                                    userId: '3',
-                                    name: 'Charlie',
-                                    profileImgUrl: '/avatars/charlie.png',
-                                    bestScore: 750,
-                                },
-                                {
-                                    userId: '4',
-                                    name: 'Forth',
-                                    profileImgUrl: '/avatars/charlie.png',
-                                    bestScore: 710,
-                                },
-                                {
-                                    userId: '5',
-                                    name: 'fifth',
-                                    profileImgUrl: '/avatars/charlie.png',
-                                    bestScore: 70,
-                                },
-                            ]}
-                        />
                     </div>
                 )}
 

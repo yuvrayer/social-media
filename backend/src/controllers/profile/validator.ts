@@ -22,7 +22,9 @@ export const newPostFilesValidator = Joi.object({
     }).unknown(true).optional()
 })
 
-export const updatePostValidator = newPostValidator
+export const updatePostValidator = newPostValidator.keys({
+    postImage: Joi.string().allow("").optional()
+})
 
 export const updatePostFilesValidator = Joi.object({
     postImage: Joi.object({
